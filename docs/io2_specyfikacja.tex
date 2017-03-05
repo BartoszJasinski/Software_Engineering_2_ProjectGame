@@ -1,6 +1,8 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 
+\usepackage{geometry}
+
 \usepackage{graphicx}
 \usepackage{adjustbox}
 \graphicspath{{images/}}
@@ -132,7 +134,7 @@ The whole project can be divided into four main phases. The length of those phas
 
 Each phase is divided into smaller tasks, that are assigned man-hours. Those hours also include time for unit test, which are written after each task.
 
-\begin{longtable}{| p{3.5cm} | p{3cm} | p{4cm} | l |} \hline
+\begin{tabular}{| p{3.5cm} | p{3cm} | p{4cm} | l |} \hline
 \textbf{Phase} & \textbf{Category} & \textbf{Task} & \textbf{Man-hours} \\ \hline
 Communication & Server & Connecting to the server & 15 \\ \cline{3-4}
 & & Creating game & 15 \\ \cline{3-4}
@@ -159,15 +161,15 @@ Cooperation & Integration & Integration of communication server & 86 \\ \cline{3
 & Bugs & Bug fixing & 8 \\ \hline
 Championship & Player & Player strategy & 50 \\ \cline{3-4}
 & & Leader strategy & 30 \\ \hline
-\end{longtable}
+\end{tabular}
 
+\newgeometry{left=2cm}
 
 \subsection{Personal work schedule}
 
-
-\begin{array}{ | l | l | l | l | l | l | }
+\begin{tabular}{ | p{4cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | }
 \hline
-	\textbf{Functionality} & \textbf{Bartek} & \textbf{Filip} & \textbf{Ivan} & \textbf{Kamil} & \textbf{Tomek}\\ \hline
+	\textbf{Functionality} & \textbf{Bartosz Jasiński} & \textbf{Filip Grajek} & \textbf{Ivan Rukhavets} & \textbf{Kamil Grabowski} & \textbf{Tomasz Koter}\\ \hline
 	Connecting\ to\ server & 1 & 6 & 6 & 1 & 1   \\ \hline
 	Creating\ game & 1 & 1 & 6 & 1 & 6   \\ \hline
 	Joining\ game & 9 & 3 & 2 & 6 & 2   \\ \hline
@@ -199,8 +201,9 @@ Championship & Player & Player strategy & 50 \\ \cline{3-4}
 	Player\ strategy & 7 & 7 & 12 & 12 & 12   \\ \hline
 	Leader\ strategy & 9 & 9 & 4 & 4 & 4 \\ \hline
 	 &  &  &  &  &  \\ \hline
-\end{array}
+\end{tabular} \\
 
+The numbers in the table above indicate how many hours each team member spends on each task. Most often two to three people work on a task, while the rest is doing another one. Every person has to spend at least one hour on each task to review and understand the code.
 
 
 \end{document}
