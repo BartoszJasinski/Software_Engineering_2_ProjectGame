@@ -29,6 +29,8 @@ Feb 27, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, I
 Mar 3, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets & Added project roles & 1.1 \\ \hline
 Mar 4, 2017 & Filip Grajek, Tomasz Koter & Added project schedule & 1.2 \\ \hline
 Mar 4, 2017 & Filip Grajek, Tomasz Koter, Bartosz Jasiński & Added new specification errors & 1.3 \\ \hline
+Mar 5, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets  & Added personal work schedule& 1.4 \\ \hline
+Mar 5, 2017 &  Filip Grajek, Bartosz Jasiński & Added more specification errors& 1.5 \\ \hline
 \end{longtable}
 
 \tableofcontents
@@ -70,6 +72,20 @@ Mar 4, 2017 & Filip Grajek, Tomasz Koter, Bartosz Jasiński & Added new specific
 & Sec. 2.5, action delay list
 & Are actions supposed to be asynchronous or synchronous (ie. can a player request \textit{test} (500 ms) and during that time \textit{move} (100 ms) 5 times?)? We assume synchronous, as it would be pointless to request \textit{discover} and then \textit{move} somewhere else.
 \\ \hline
+9
+& Sec. 3.2, 1st paragraph
+& What will happen if Player which carries piece atempts to take another piece by sending PickUp message.
+\\ \hline
+10
+& Sec. 3.2, 1st paragraph
+& What info Player will get if he sends Discover request directly alongside Goal Area or when he is on Goal Area.
+\\ \hline
+11
+& Sec. 3.2, 1st paragraph
+& What happens if Player tries to place piece on Task Area.
+\\ \hline
+
+
 \end{longtable}
 
 \section{Software development methodologies}
@@ -149,44 +165,39 @@ Championship & Player & Player strategy & 50 \\ \cline{3-4}
 \subsection{Personal work schedule}
 
 
-
-
-
-
-
 \begin{array}{ | l | l | l | l | l | l | }
 \hline
 	\textbf{Functionality} & \textbf{Bartek} & \textbf{Filip} & \textbf{Ivan} & \textbf{Kamil} & \textbf{Tomek}\\ \hline
-	Connecting to server & 1 & 6 & 6 & 1 & 1   \\ \hline
-	Creating game & 1 & 1 & 6 & 1 & 6   \\ \hline
-	Joining game & 9 & 3 & 2 & 6 & 2   \\ \hline
-	Message flow & 2 & 6 & 2 & 6 & 6   \\ \hline
-	Mock game master & 1 & 1 & 1 & 3 & 2   \\ \hline
-	Mock player & 4 & 1 & 1 & 1 & 1   \\ \hline
-	Integration test & 3 & 3 & 3 & 3 & 3   \\ \hline
-	Bug fixing & 3 & 3 & 3 & 3 & 3  \\ \hline
+	Connecting\ to\ server & 1 & 6 & 6 & 1 & 1   \\ \hline
+	Creating\ game & 1 & 1 & 6 & 1 & 6   \\ \hline
+	Joining\ game & 9 & 3 & 2 & 6 & 2   \\ \hline
+	Message\ flow & 2 & 6 & 2 & 6 & 6   \\ \hline
+	Mock\ game\ master & 1 & 1 & 1 & 3 & 2   \\ \hline
+	Mock\ player & 4 & 1 & 1 & 1 & 1   \\ \hline
+	Integration\ test & 3 & 3 & 3 & 3 & 3   \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3  \\ \hline
 	 &  &  &  &  &   \\ \hline
 
-	Connecting to server & 1 & 3 & 3 & 1 & 1    \\ \hline
-	Creating a game & 5 & 1 & 4 & 4 & 1   \\ \hline
-	Accepting players & 3 & 2 & 1 & 1 & 1   \\ \hline
-	Board creation & 1 & 1 & 2 & 5 & 6    \\ \hline
-	Data responses & 2 & 8 & 8 & 3 & 8   \\ \hline
-	Ending game & 3 & 1 & 1 & 2 & 1   \\ \hline
-	Connecting to game & 3 & 1 & 3 & 1 & 1   \\ \hline
-	Player messages and actions & 7 & 8 & 3 & 8 & 3\  \\ \hline
-	Simple strategy & 1 & 1 & 1 & 1 & 4   \\ \hline
-	Integration Tests & 3 & 3 & 3 & 3 & 3   \\ \hline
-	Bug fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
-	 &  &  &  &  &  \  \\ \hline
+	Connecting\ to\ server & 1 & 3 & 3 & 1 & 1    \\ \hline
+	Creating\ a\ game & 5 & 1 & 4 & 4 & 1   \\ \hline
+	Accepting\ players & 3 & 2 & 1 & 1 & 1   \\ \hline
+	Board\ creation & 1 & 1 & 2 & 5 & 6    \\ \hline
+	Data\ responses & 2 & 8 & 8 & 3 & 8   \\ \hline
+	Ending\ game & 3 & 1 & 1 & 2 & 1   \\ \hline
+	Connecting\ to\ game & 3 & 1 & 3 & 1 & 1   \\ \hline
+	Player\ messages\ and\ actions & 7 & 8 & 3 & 8 & 3\  \\ \hline
+	Simple\ strategy & 1 & 1 & 1 & 1 & 4   \\ \hline
+	Integration\ Tests & 3 & 3 & 3 & 3 & 3   \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
+	 &  &  &  &  &  \\ \hline
 	
-	Integration of communication server & 10 & 20 & 20 & 15 & 20   \\ \hline
-	Integration of game master & 15 & 10 & 10 & 25 & 20    \\ \hline
-	Integration of players & 24 & 19 & 19 & 9 & 9    \\ \hline
-	Bug fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
-	\  & \  & \  & \  & \  & \   \\ \hline
-	Player strategy & 7 & 7 & 12 & 12 & 12   \\ \hline
-	Leader strategy & 9 & 9 & 4 & 4 & \  \\ \hline
+	Integration\ of\ communication\ server & 10 & 20 & 20 & 15 & 20   \\ \hline
+	Integration\ of\ game\ master & 15 & 10 & 10 & 25 & 20    \\ \hline
+	Integration\ of\ players & 24 & 19 & 19 & 9 & 9    \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
+	\  & \  & \  & \  & \  &   \\ \hline
+	Player\ strategy & 7 & 7 & 12 & 12 & 12   \\ \hline
+	Leader\ strategy & 9 & 9 & 4 & 4 & 4 \\ \hline
 	 &  &  &  &  &  \\ \hline
 \end{array}
 
