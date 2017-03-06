@@ -1,0 +1,219 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}
+
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\graphicspath{{images/}}
+
+%\usepackage[paper=a4paper]{geometry}
+\usepackage{longtable}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+%\newgeometry{top=3in,bottom=1in,right=1.0in,left=1.0in}
+\huge Project game - implementation \\
+\vspace{1.5cm}
+\large Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets \\
+\vspace{1.0cm}
+Version 1.5 \\
+\vspace{1.0cm}
+\today
+\end{titlepage}
+
+\begin{longtable}{| l | p{4.5cm} | p{4.5cm} | l | }
+\hline
+\textbf{Date} & \textbf{Author} & \textbf{Description} & \textbf{Version} \\ \hline
+Feb 27, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets & Initial version & 1.0 \\ \hline
+Mar 3, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets & Added project roles & 1.1 \\ \hline
+Mar 4, 2017 & Filip Grajek, Tomasz Koter & Added project schedule & 1.2 \\ \hline
+Mar 4, 2017 & Filip Grajek, Tomasz Koter, Bartosz Jasiński & Added new specification errors & 1.3 \\ \hline
+Mar 5, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets  & Added personal work schedule& 1.4 \\ \hline
+Mar 5, 2017 &  Filip Grajek, Bartosz Jasiński & Added more specification errors& 1.5 \\ \hline
+\end{longtable}
+
+\tableofcontents
+
+\newpage
+
+\section{Specification errors}
+\begin{tabular}{| p{0.5cm} | p{2.5cm} | p{6cm} | p{5cm} | }
+\hline
+\textbf{Id}
+& \textbf{Location}
+& \textbf{Remarks}
+& \textbf{Links}
+\\ \hline
+1
+& Fig. 3.8
+& How is initial player location determined?
+\\ \hline
+2
+& Fig. 3.14
+& Should distance to piece take into account pieces already being carried by other players?
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/61
+\\ \hline
+3
+& Sec. 1.4
+& Possible player moves list lacks \textit{pick up piece} action
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/62
+\\ \hline
+5
+& Sec. 2.6
+& Shouldn't the Game Master also have a --conf parameter?
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/63
+\\ \hline
+6
+& Sec. 3.2.1, 2nd paragraph, list pt. 1
+& "Game Mastered" typo
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/50
+\\ \hline
+7
+& Sec. 3.2.1, 2nd paragraph, list pt. 1
+& "send" typo, should be "sent"
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/50
+\\ \hline
+8
+& Sec. 2.5, action delay list
+& Are actions supposed to be asynchronous or synchronous (ie. can a player request \textit{test} (500 ms) and during that time \textit{move} (100 ms) 5 times?)? We assume synchronous, as it would be pointless to request \textit{discover} and then \textit{move} somewhere else.
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/64
+\\ \hline
+9
+& Sec. 3.2, 1st paragraph
+& What will happen if Player which carries piece attempts to take another piece by sending PickUp message.
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/65
+\\ \hline
+10
+& Sec. 3.2, 1st paragraph
+& What info Player will get if he sends Discover request directly alongside Goal Area or when he is on Goal Area.
+& 
+\\ \hline
+11
+& Sec. 3.2, 1st paragraph
+& What happens if Player tries to place piece on Task Area.
+& https://se2.mini.pw.edu.pl/17-results/17-results/issues/66
+\\ \hline
+
+
+\end{tabular}
+
+\section{Software development methodologies}
+The team implements scrum methodology. Every Monday of the semester the team conducts a three-hour long meeting. In the first 15 minutes next sprint is planned, rest of the meeting is intended for coding. Sprints last one week and begin each Monday after the team's meeting. Additionally, the team holds two more meetings a week to discuss the ongoing process. Other than that the team shall maintain a constant connection via Slack or other messengers.
+
+The team should utilize GitLab's issue board for creating backlogs, planning sprints and organizing workflow.
+
+During meetings the team shall produce following documents:
+
+\begin{enumerate}
+\item Updated issue board
+\item Meeting protocol
+\item Backlog (every sprint-planning meeting - Mondays)
+\end{enumerate}
+
+According to scrum methodology, team members are assigned following roles:
+
+\begin{description}
+\item[Product owner] Bartosz Jasiński
+\item[Scrum master] Filip Grajek
+\end{description}
+
+Additionally, every team member holds developer's responsibilities. Issue board administration is responsibility of Kamil Grabowski and meeting protocols are responsibility of Tomasz Koter. Any other not predicted responsibilities shall be distributed on the fly.
+
+
+\section{Software technologies}
+The project is designed in .NET C\# using Microsoft Visual Studio. Every member of the team already has two years of experience with this environment and there was no other environment mutual for the whole team, hence the choice was obvious.
+
+
+
+\section{Schedule}
+\subsection{Project schedule}
+
+The whole project can be divided into four main phases. The length of those phases is determined by project deadlines. Every phase has to be ready two days before the given date, the last two days are used to fix bugs found during the "testing" deadlines. \\
+
+\begin{longtable}{| p{1cm} | p{4cm} | p{3cm} | l | l |}
+\hline
+\textbf{Id} & \textbf{Phase} & \textbf{Estimated time} & \textbf{From} & \textbf{To} \\ \hline
+1 & Communication & 16 days & 6.03.2017 & 21.03.2017 \\ \hline
+2 & Game & 21 days & 22.03.2017 & 11.04.2017 \\ \hline
+3 & Cooperation & 36 days & 12.04.2016 & 17.05.2017 \\ \hline
+4 & Championship & 11 days & 18.05.2017 & 28.05.2017 \\ \hline
+\end{longtable}
+
+Each phase is divided into smaller tasks, that are assigned man-hours. Those hours also include time for unit test, which are written after each task.
+
+\begin{tabular}{| p{3.5cm} | p{3cm} | p{4cm} | l |} \hline
+\textbf{Phase} & \textbf{Category} & \textbf{Task} & \textbf{Man-hours} \\ \hline
+Communication & Server & Connecting to the server & 15 \\ \cline{3-4}
+& & Creating game & 15 \\ \cline{3-4}
+& & Joining game & 22 \\ \cline{3-4}
+& & Message flow & 22 \\ \cline{2-4}
+& Game master & Mock game master & 8 \\ \cline{2-4}
+& Player & Mock player & 8 \\ \cline{2-4}
+& Tests & Integration tests & 15 \\ \cline{2-4}
+& Bugs & Bug fixing & 15 \\ \hline
+Game & Game master & Connecting to server & 9 \\ \cline{3-4}
+& & Creating a game & 15 \\ \cline{3-4}
+& & Accepting players & 8 \\ \cline{3-4}
+& & Board Creation & 15 \\ \cline{3-4}
+& & Data responses & 29 \\ \cline{3-4}
+& & Ending game & 8 \\ \cline{2-4}
+& Player & Connecting to game & 8 \\ \cline{3-4}
+& & Player messages and actions & 29 \\ \cline{3-4}
+& & Simple strategy & 29 \\ \cline{2-4}
+& Tests & Integration Tests & 8 \\ \cline{2-4}
+& Bugs & Bug fixing & 8 \\ \hline
+Cooperation & Integration & Integration of communication server & 86 \\ \cline{3-4}
+& & Integration of game master & 80 \\ \cline{3-4}
+& & Integration of players & 79 \\ \cline{2-4}
+& Bugs & Bug fixing & 8 \\ \hline
+Championship & Player & Player strategy & 50 \\ \cline{3-4}
+& & Leader strategy & 30 \\ \hline
+\end{tabular}
+
+\newgeometry{left=2cm}
+
+\subsection{Personal work schedule}
+
+\begin{tabular}{ | p{4cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | }
+\hline
+	\textbf{Functionality} & \textbf{Bartosz Jasiński} & \textbf{Filip Grajek} & \textbf{Ivan Rukhavets} & \textbf{Kamil Grabowski} & \textbf{Tomasz Koter}\\ \hline
+	Connecting\ to\ server & 1 & 6 & 6 & 1 & 1   \\ \hline
+	Creating\ game & 1 & 1 & 6 & 1 & 6   \\ \hline
+	Joining\ game & 9 & 3 & 2 & 6 & 2   \\ \hline
+	Message\ flow & 2 & 6 & 2 & 6 & 6   \\ \hline
+	Mock\ game\ master & 1 & 1 & 1 & 3 & 2   \\ \hline
+	Mock\ player & 4 & 1 & 1 & 1 & 1   \\ \hline
+	Integration\ test & 3 & 3 & 3 & 3 & 3   \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3  \\ \hline
+	 &  &  &  &  &   \\ \hline
+
+	Connecting\ to\ server & 1 & 3 & 3 & 1 & 1    \\ \hline
+	Creating\ a\ game & 5 & 1 & 4 & 4 & 1   \\ \hline
+	Accepting\ players & 3 & 2 & 1 & 1 & 1   \\ \hline
+	Board\ creation & 1 & 1 & 2 & 5 & 6    \\ \hline
+	Data\ responses & 2 & 8 & 8 & 3 & 8   \\ \hline
+	Ending\ game & 3 & 1 & 1 & 2 & 1   \\ \hline
+	Connecting\ to\ game & 3 & 1 & 3 & 1 & 1   \\ \hline
+	Player\ messages\ and\ actions & 7 & 8 & 3 & 8 & 3\  \\ \hline
+	Simple\ strategy & 1 & 1 & 1 & 1 & 4   \\ \hline
+	Integration\ Tests & 3 & 3 & 3 & 3 & 3   \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
+	 &  &  &  &  &  \\ \hline
+	
+	Integration\ of\ communication\ server & 10 & 20 & 20 & 15 & 20   \\ \hline
+	Integration\ of\ game\ master & 15 & 10 & 10 & 25 & 20    \\ \hline
+	Integration\ of\ players & 24 & 19 & 19 & 9 & 9    \\ \hline
+	Bug\ fixing & 3 & 3 & 3 & 3 & 3   \\ \hline
+	\  & \  & \  & \  & \  &   \\ \hline
+	Player\ strategy & 7 & 7 & 12 & 12 & 12   \\ \hline
+	Leader\ strategy & 9 & 9 & 4 & 4 & 4 \\ \hline
+	 &  &  &  &  &  \\ \hline
+\end{tabular} \\
+
+The numbers in the table above indicate how many hours each team member spends on each task. Most often two to three people work on a task, while the rest is doing another one. Every person has to spend at least one hour on each task to review and understand the code.
+
+
+\end{document}
