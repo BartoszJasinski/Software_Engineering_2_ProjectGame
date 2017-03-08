@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server
+namespace Server.Connection
 {
     public interface IConnectionEndpoint
     {
         int Port { get; set; }
         void Listen();
+        event EventHandler<ConnectEventArgs> OnConnect;
+        event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        //TODO add send event maybe
     }
 }

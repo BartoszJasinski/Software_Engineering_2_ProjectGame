@@ -7,13 +7,17 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Server
+namespace Server.Connection
 {
+    //TODO add send callback maybe
     public class ConnectionEndpoint : IConnectionEndpoint
     {
         public int Port { get; set; }
 
         private ManualResetEvent resetEvent;
+
+        public event EventHandler<ConnectEventArgs> OnConnect;
+        public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
 
         public ConnectionEndpoint(int port)
         {
@@ -62,7 +66,8 @@ namespace Server
             Socket handler = listener.EndAccept(asyncResult);
 
             string address = (handler.RemoteEndPoint as IPEndPoint).Address.ToString();
-            Console.WriteLine("Accepted client: {0}", address);
+            //inform that a new client connected
+            OnConnect(this, new ConnectEventArgs(handler));
 
             StateObject state = new StateObject();
             state.Socket = handler;
@@ -87,7 +92,8 @@ namespace Server
                 //messages end with <ETB> (0x23)
                 if (content.IndexOf((char)0x23) > -1)
                 {
-                    Console.WriteLine(content);
+                    //inform that a new message was received
+                    OnMessageRecieve(this, new MessageRecieveEventArgs(content, handler));
                 }
                 else
                 {
