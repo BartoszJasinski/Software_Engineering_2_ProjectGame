@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Server;
 
 namespace ServerConsole
 {
@@ -10,7 +11,9 @@ namespace ServerConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            CommunicationServer server = new CommunicationServer(int.Parse(args[0]));
+
+            server.Listen();
         }
     }
 }
