@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockGameMaster
+namespace Common.Connection
 {
     // State object for receiving data from remote device.
     public class StateObject

@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\Connection.cs" />
+    <Compile Include="Connection\IConnetion.cs" />
+    <Compile Include="Connection\StateObject.cs" />
     <Compile Include="Schema\Message\PlayerMessage\AcceptExchangeRequest.cs" />
     <Compile Include="Schema\Message\GameMessage\AuthorizeKnowledgeExchange.cs" />
     <Compile Include="Schema\Message\PlayerMessage\BetweenPlayersMessage.cs" />
