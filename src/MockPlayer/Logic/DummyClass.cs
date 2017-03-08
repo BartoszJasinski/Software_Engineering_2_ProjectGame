@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MockPlayer
+namespace MockPlayer.Logic
 {
-    class Program
+    class DummyClass
     {
-        static void Main(string[] args)
-        {
-        }
     }
 }
