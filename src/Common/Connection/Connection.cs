@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Common.Connection
 {
-    public class Connection : IConnetion
+    public class Connection : IConnection
     {
         // ManualResetEvent instances signal completion.
         private static ManualResetEvent connectDone =
@@ -18,9 +18,20 @@ namespace Common.Connection
             new ManualResetEvent(false);
         private static ManualResetEvent receiveDone =
             new ManualResetEvent(false);
+        private string ipString;
+        private int port;
+        
+        public event EventHandler OnConnect;
+       
 
         // The response from the remote device.
         private static String response = String.Empty;
+
+        public Connection(string ipString, int port)
+        {
+            this.ipString = ipString;
+            this.port = port;
+        }
 
         public void ConnectCallback(IAsyncResult ar)
         {
@@ -129,7 +140,7 @@ namespace Common.Connection
             }
         }
 
-        public void StartClient(int port, string ipString)
+        public void StartClient()
         {
             // Connect to a remote device.
             try

@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common
+namespace Common.Connection
 {
-    public interface IConnetion
+    public interface IConnection
     {
-        void StartClient(int port, string ipString);
+        void StartClient();
         void ConnectCallback(IAsyncResult ar);
         void Receive(Socket client);
         void ReceiveCallback(IAsyncResult ar);
