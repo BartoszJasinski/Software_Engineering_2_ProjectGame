@@ -11,9 +11,11 @@ namespace ServerConsole
     {
         static void Main(string[] args)
         {
-            CommunicationServer server = new CommunicationServer(int.Parse(args[0]));
+            IConnectionEndpoint endpoint = new ConnectionEndpoint(int.Parse(args[0]));
 
-            server.Listen();
+            CommunicationServer server = new CommunicationServer(endpoint);
+
+            server.Start();
         }
     }
 }

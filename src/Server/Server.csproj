@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionEndpoint.cs" />
+    <Compile Include="IConnectionEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommunicationServer.cs" />
     <Compile Include="StateObject.cs" />
