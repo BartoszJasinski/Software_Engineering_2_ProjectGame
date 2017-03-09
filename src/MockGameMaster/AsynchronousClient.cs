@@ -24,6 +24,11 @@ namespace MockGameMaster
             connection.OnMessageSend += OnMessageSend;
         }
 
+        public void Disconnect()
+        {
+            connection.StopClient(socket);
+        }
+
         public void Connect()
         {
             connection.StartClient();
@@ -31,10 +36,11 @@ namespace MockGameMaster
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
+            
             //TODO extension method to get address from socket
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("Successful connection with address {0}", address.ToString());
-            socket = eventArgs.Handler as Socket;
+            socket = eventArgs.Handler as Socket;           
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -52,7 +58,7 @@ namespace MockGameMaster
 
         public void Send(string data)
         {
-            connection.Send(socket, data);
+            connection.SendReceive(socket, data);
         }
                   
 

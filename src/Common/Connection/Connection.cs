@@ -61,25 +61,24 @@ namespace Common.Connection
                     new AsyncCallback(ConnectCallback), client);
                 connectDone.WaitOne();
 
-                // Send test data to the remote device.
-                Send(client, "This is a test" + (char)0x23);
-                sendDone.WaitOne();
 
-                // Receive the response from the remote device.
-                Receive(client);
-                receiveDone.WaitOne();
 
-                // Write the response to the console.
-                Console.WriteLine("Response received : {0}", response);
+                //// Write the response to the console.
+                //Console.WriteLine("Response received : {0}", response);
 
-                // Release the socket.
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
+              
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        public void StopClient(Socket client)
+        {
+            // Release the socket.
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
         }
 
         public void ConnectCallback(IAsyncResult ar)
@@ -174,6 +173,19 @@ namespace Common.Connection
             // Begin sending the data to the remote device.
             client.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), client);
+        }
+
+       
+
+        public void SendReceive(Socket client, string data)
+        {
+            // Send test data to the remote device.
+            Send(client, data + (char)0x23);
+            sendDone.WaitOne();
+
+            //// Receive the response from the remote device.
+            Receive(client);
+            receiveDone.WaitOne();
         }
 
         public void SendCallback(IAsyncResult ar)

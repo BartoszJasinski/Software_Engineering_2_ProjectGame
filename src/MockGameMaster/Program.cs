@@ -14,6 +14,8 @@ namespace MockGameMaster
         {
             AsynchronousClient client = new AsynchronousClient(new Connection("192.168.0.16", 12612));
             client.Connect();
+            client.Send("Message");
+            client.Disconnect();
         }
     }
 }
