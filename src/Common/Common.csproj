@@ -43,6 +43,9 @@
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Connection\IConnection.cs" />
     <Compile Include="Connection\StateObject.cs" />
+    <Compile Include="EventArg\ConnectEventArgs.cs" />
+    <Compile Include="EventArg\MessageRecieveEventArgs.cs" />
+    <Compile Include="EventArg\MessageSendEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

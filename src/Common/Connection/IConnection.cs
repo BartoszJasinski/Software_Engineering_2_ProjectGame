@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.EventArg;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -15,6 +16,10 @@ namespace Common.Connection
         void ReceiveCallback(IAsyncResult ar);
         void Send(Socket client, String data);
         void SendCallback(IAsyncResult ar);
+
+        event EventHandler<ConnectEventArgs> OnConnection;
+        event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        event EventHandler<MessageSendEventArgs> OnMessageSend;
 
 
     }

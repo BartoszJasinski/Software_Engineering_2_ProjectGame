@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.EventArg;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -20,9 +21,17 @@ namespace Common.Connection
             new ManualResetEvent(false);
         private string ipString;
         private int port;
-        
-        public event EventHandler OnConnect;
-       
+
+
+        public event EventHandler<ConnectEventArgs> OnConnection;
+        public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        public event EventHandler<MessageSendEventArgs> OnMessageSend;
+
+
+
+
+
+
 
         // The response from the remote device.
         private static String response = String.Empty;
@@ -31,6 +40,46 @@ namespace Common.Connection
         {
             this.ipString = ipString;
             this.port = port;
+        }
+
+        public void StartClient()
+        {
+            // Connect to a remote device.
+            try
+            {
+                // Establish the remote endpoint for the socket.
+                // The name of the 
+                // remote device is "host.contoso.com".
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ipString), port);
+
+                // Create a TCP/IP socket.
+                Socket client = new Socket(AddressFamily.InterNetwork,
+                    SocketType.Stream, ProtocolType.Tcp);
+
+                // Connect to the remote endpoint.
+                client.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), client);
+                connectDone.WaitOne();
+
+                // Send test data to the remote device.
+                Send(client, "This is a test" + (char)0x23);
+                sendDone.WaitOne();
+
+                // Receive the response from the remote device.
+                Receive(client);
+                receiveDone.WaitOne();
+
+                // Write the response to the console.
+                Console.WriteLine("Response received : {0}", response);
+
+                // Release the socket.
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         public void ConnectCallback(IAsyncResult ar)
@@ -43,8 +92,11 @@ namespace Common.Connection
                 // Complete the connection.
                 client.EndConnect(ar);
 
-                Console.WriteLine("Socket connected to {0}",
-                    client.RemoteEndPoint.ToString());
+                //Console.WriteLine("Socket connected to {0}",
+                //    client.RemoteEndPoint.ToString());
+
+                //inform about a connection
+                OnConnection(this, new ConnectEventArgs(client));
 
                 // Signal that the connection has been made.
                 connectDone.Set();
@@ -99,6 +151,10 @@ namespace Common.Connection
                     if (state.sb.Length > 1)
                     {
                         response = state.sb.ToString();
+                        
+                        //inform that a new message was received
+                        OnMessageRecieve(this, new MessageRecieveEventArgs(response, client));
+
                     }
                     // Signal that all bytes have been received.
                     receiveDone.Set();
@@ -129,7 +185,10 @@ namespace Common.Connection
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+              //  Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+
+                //inform that a message was sent
+                OnMessageSend(this, new MessageSendEventArgs(client));
 
                 // Signal that all bytes have been sent.
                 sendDone.Set();
@@ -140,45 +199,7 @@ namespace Common.Connection
             }
         }
 
-        public void StartClient()
-        {
-            // Connect to a remote device.
-            try
-            {
-                // Establish the remote endpoint for the socket.
-                // The name of the 
-                // remote device is "host.contoso.com".
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ipString), port);
-
-                // Create a TCP/IP socket.
-                Socket client = new Socket(AddressFamily.InterNetwork,
-                    SocketType.Stream, ProtocolType.Tcp);
-
-                // Connect to the remote endpoint.
-                client.BeginConnect(remoteEP,
-                    new AsyncCallback(ConnectCallback), client);
-                connectDone.WaitOne();
-
-                // Send test data to the remote device.
-                Send(client, "This is a test" + (char)0x23);
-                sendDone.WaitOne();
-
-                // Receive the response from the remote device.
-                Receive(client);
-                receiveDone.WaitOne();
-
-                // Write the response to the console.
-                Console.WriteLine("Response received : {0}", response);
-
-                // Release the socket.
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
+       
 
     }//class
 }

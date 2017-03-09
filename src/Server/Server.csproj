@@ -40,13 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connection\ConnectEventArgs.cs" />
     <Compile Include="Connection\ConnectionEndpoint.cs" />
     <Compile Include="Connection\IConnectionEndpoint.cs" />
-    <Compile Include="Connection\MessageRecieveEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommunicationServer.cs" />
     <Compile Include="Connection\StateObject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9bbfc02c-89f0-4387-8ff1-eac1b06b662c}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
