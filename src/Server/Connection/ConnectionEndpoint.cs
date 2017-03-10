@@ -94,12 +94,40 @@ namespace Server.Connection
                 {
                     //inform that a new message was received
                     OnMessageRecieve(this, new MessageRecieveEventArgs(content, handler));
+                    state.StringBuilder.Clear();
                 }
-                else
-                {
-                    //not everything was received
-                    handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
-                }
+            }
+
+            handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
+        }
+
+        public void SendFromServer(Socket handler, string message)
+        {
+            send(handler, message + (char)0x23);
+        }
+
+        private void send(Socket handler, string message)
+        {
+            byte[] byteData = Encoding.ASCII.GetBytes(message);
+
+            handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(sendCallback), handler);
+        }
+
+        private void sendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                // Retrieve the socket from the state object.
+                Socket handler = (Socket)ar.AsyncState;
+
+                // Complete sending the data to the remote device.
+                int bytesSent = handler.EndSend(ar);
+                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
         }
     }

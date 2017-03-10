@@ -37,6 +37,7 @@ namespace Server
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+            connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
         }
     }
 }
