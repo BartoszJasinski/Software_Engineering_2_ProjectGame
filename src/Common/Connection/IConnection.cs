@@ -17,7 +17,7 @@ namespace Common.Connection
         void ReceiveCallback(IAsyncResult ar);
         void Send(Socket client, String data);
         void SendCallback(IAsyncResult ar);
-        void SendReceive(Socket client, String data);
+        void SendFromClient(Socket client, String data);
 
         event EventHandler<ConnectEventArgs> OnConnection;
         event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;

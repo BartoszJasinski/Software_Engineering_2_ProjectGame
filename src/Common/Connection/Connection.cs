@@ -61,7 +61,11 @@ namespace Common.Connection
                     new AsyncCallback(ConnectCallback), client);
                 connectDone.WaitOne();
 
+                //// Send test data to the remote device.
+                //Send(client, "Message" + (char)0x23);
+                //sendDone.WaitOne();
 
+                while (true) ;
 
                 //// Write the response to the console.
                 //Console.WriteLine("Response received : {0}", response);
@@ -99,6 +103,9 @@ namespace Common.Connection
 
                 // Signal that the connection has been made.
                 connectDone.Set();
+                
+                // Receive the response from the remote device.
+                Receive(client);
             }
             catch (Exception e)
             {
@@ -177,15 +184,11 @@ namespace Common.Connection
 
        
 
-        public void SendReceive(Socket client, string data)
+        public void SendFromClient(Socket client, string data)
         {
             // Send test data to the remote device.
             Send(client, data + (char)0x23);
             sendDone.WaitOne();
-
-            //// Receive the response from the remote device.
-            Receive(client);
-            receiveDone.WaitOne();
         }
 
         public void SendCallback(IAsyncResult ar)

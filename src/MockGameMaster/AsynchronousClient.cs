@@ -40,13 +40,15 @@ namespace MockGameMaster
             //TODO extension method to get address from socket
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("Successful connection with address {0}", address.ToString());
-            socket = eventArgs.Handler as Socket;           
+            socket = eventArgs.Handler as Socket;
+            connection.SendFromClient(socket, "Welcome message");        
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+            connection.SendFromClient(socket, "Answer to answer message");
         }
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
@@ -56,10 +58,7 @@ namespace MockGameMaster
             
         }
 
-        public void Send(string data)
-        {
-            connection.SendReceive(socket, data);
-        }
+   
                   
 
 
