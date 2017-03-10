@@ -55,6 +55,7 @@ namespace MockGameMaster
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
              Console.WriteLine("New message sent to {0}", address.ToString());
+            var socket = eventArgs.Handler as Socket;
             
         }
 

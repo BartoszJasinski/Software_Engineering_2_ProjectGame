@@ -148,23 +148,19 @@ namespace Common.Connection
                     // There might be more data, so store the data received so far.
                     state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
-                    // Get the rest of the data.
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state);
-                }
-                else {
-                    // All the data has arrived; put it in response.
-                    if (state.sb.Length > 1)
-                    {
-                        response = state.sb.ToString();
-                        
-                        //inform that a new message was received
-                        OnMessageRecieve(this, new MessageRecieveEventArgs(response, client));
+                    var content = state.sb.ToString();
 
+                    //messages end with <ETB> (0x23)
+                    if (content.IndexOf((char)0x23) > -1)
+                    {
+                        //inform that a new message was received
+                        OnMessageRecieve(this, new MessageRecieveEventArgs(content, client));
+                        state.sb.Clear();
+                        receiveDone.Set();
                     }
-                    // Signal that all bytes have been received.
-                    receiveDone.Set();
+
                 }
+                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), state);
             }
             catch (Exception e)
             {
