@@ -15,6 +15,9 @@ namespace MockPlayer.IO
         [Option('p', "port", HelpText = "server port number")]
         public int Port { get; set; }
 
+        //Probably will be added in next version of documentation
+        //        [Option('c', "conf", HelpText = "configurationfilename")]
+//        public string FileName { get; set; }
 
     }
 }

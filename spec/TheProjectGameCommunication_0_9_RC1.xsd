@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://theprojectgame.mini.pw.edu.pl/" targetNamespace="http://theprojectgame.mini.pw.edu.pl/">
+  <xs:simpleType name="guid">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Location">
+    <xs:attribute name="x" type="xs:unsignedInt" use="required" />
+    <xs:attribute name="y" type="xs:unsignedInt" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="Field" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="Location">
+        <xs:attribute name="timestamp" type="xs:dateTime" use="required" />
+        <xs:attribute name="playerId" type="xs:unsignedLong" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="TaskField">
+    <xs:complexContent>
+      <xs:extension base="Field">
+        <xs:attribute name="distanceToPiece" type="xs:unsignedInt" use="required" />
+        <xs:attribute name="pieceId" type="xs:unsignedLong" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="GoalFieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unknown" />
+      <xs:enumeration value="goal" />
+      <xs:enumeration value="non-goal" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="GoalField">
+    <xs:complexContent>
+      <xs:extension base="Field">
+        <xs:attribute name="type" type="GoalFieldType" use="required" />
+        <xs:attribute name="team" type="TeamColour" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="PieceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unknown" />
+      <xs:enumeration value="sham" />
+      <xs:enumeration value="normal" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Piece">
+    <xs:attribute name="id" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="type" type="PieceType" use="required" />
+    <xs:attribute name="timestamp" type="xs:dateTime" use="required" />
+    <xs:attribute name="playerId" type="xs:unsignedLong" use="optional" />
+  </xs:complexType>
+
+  <xs:simpleType name="TeamColour">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="red" />
+      <xs:enumeration value="blue" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MoveType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="up" />
+      <xs:enumeration value="down" />
+      <xs:enumeration value="left" />
+      <xs:enumeration value="right" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PlayerType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="leader" />
+      <xs:enumeration value="player" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="PlayerMessage">
+    <xs:attribute name="playerId" type="xs:unsignedLong"  use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="BetweenPlayersMessage" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="PlayerMessage">
+        <xs:attribute name="senderPlayerId" type="xs:unsignedLong"  use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="GameMessage" abstract="true">
+    <xs:attribute name="playerGuid" type="guid" use="required" />
+    <xs:attribute name="gameId" type="xs:unsignedLong"  use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="GameInfo">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="redTeamPlayers" type="xs:unsignedLong" use="required" />
+    <xs:attribute name="blueTeamPlayers" type="xs:unsignedLong" use="required"  />
+  </xs:complexType>
+
+  <xs:complexType name="Player">
+    <xs:attribute name="team" type="TeamColour" use="required" />
+    <xs:attribute name="type" type="PlayerType" use="required" />
+    <xs:attribute name="id" type="xs:unsignedLong" use="required" />
+  </xs:complexType>
+
+
+  <xs:element name="Data">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="PlayerMessage">
+          <xs:sequence>
+            <xs:element name="TaskFields" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="TaskField" type="TaskField" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="GoalFields" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="GoalField" type="GoalField" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="Pieces" minOccurs="0" >
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Piece" type="Piece" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="PlayerLocation" type="Location" minOccurs="0" />
+          </xs:sequence>
+          <xs:attribute type="xs:boolean" name="gameFinished" use="required" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="TestPiece">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="GameMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PlacePiece">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="GameMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PickUpPiece">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="GameMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Move">
+    <xs:complexType>
+    <xs:complexContent>
+      <xs:extension base="GameMessage">
+        <xs:attribute name="direction" type="MoveType" />
+      </xs:extension>
+    </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Discover">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="GameMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AuthorizeKnowledgeExchange">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="GameMessage">
+          <xs:attribute name="withPlayerId" type="xs:unsignedLong" use="required" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="KnowledgeExchangeRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="BetweenPlayersMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AcceptExchangeRequest">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="BetweenPlayersMessage" />
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RejectKnowledgeExchange">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="BetweenPlayersMessage">
+          <xs:attribute name="permanent" type="xs:boolean" use="required" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="Game">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="PlayerMessage">
+          <xs:sequence>
+            <xs:element name="Players">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element maxOccurs="unbounded" name="Player" type="Player" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="Board">
+              <xs:complexType>
+                <xs:attribute name="width" type="xs:unsignedInt" use="required" />
+                <xs:attribute name="tasksHeight" type="xs:unsignedInt" use="required" />
+                <xs:attribute name="goalsHeight" type="xs:unsignedInt" use="required" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="PlayerLocation" type="Location" />
+          </xs:sequence>
+         </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RegisterGame">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="NewGameInfo" type="GameInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ConfirmGameRegistration">
+    <xs:complexType>
+      <xs:attribute name="gameId" type="xs:unsignedLong" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GameFinished">
+    <xs:complexType>
+      <xs:attribute name="gameId" type="xs:unsignedLong" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetGames">
+    <xs:complexType>
+      
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RegisteredGames">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="GameInfo" type="GameInfo" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="JoinGame">
+    <xs:complexType>
+      <xs:attribute name="gameName" type="xs:string" use="required" />
+      <xs:attribute name="preferedTeam" type="TeamColour" use="required" />
+      <xs:attribute name="preferedRole" type="PlayerType" use="required"  />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ConfirmJoiningGame">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="PlayerMessage">
+          <xs:sequence>
+            <xs:element name="PlayerDefinition" type="Player" />
+          </xs:sequence>
+          <xs:attribute name="gameId" type="xs:unsignedLong" use="required" />
+          <xs:attribute name="privateGuid" type="guid" use="required" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+</xs:schema>
