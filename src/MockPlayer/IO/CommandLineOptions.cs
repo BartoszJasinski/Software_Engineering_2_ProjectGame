@@ -15,13 +15,6 @@ namespace MockPlayer.IO
         [Option('p', "port", HelpText = "server port number")]
         public int Port { get; set; }
 
-//        [HelpOption(HelpText = "Display this help screen.")]
-//        public string GetUsage()
-//        {
-//            var usage = new StringBuilder();
-//            usage.AppendLine("Quickstart Application 1.0");
-//            usage.AppendLine("Read user manual for usage instructions...");
-//            return usage.ToString();
-//        }
+
     }
 }
