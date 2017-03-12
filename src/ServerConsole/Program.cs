@@ -12,7 +12,7 @@ namespace ServerConsole
     {
         static void Main(string[] args)
         {
-            IConnectionEndpoint endpoint = new ConnectionEndpoint(int.Parse(args[0]));
+            IConnectionEndpoint endpoint = new ConnectionEndpoint(12196);
 
             CommunicationServer server = new CommunicationServer(endpoint);
 
