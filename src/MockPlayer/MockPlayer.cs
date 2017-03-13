@@ -14,8 +14,9 @@ namespace MockPlayer
     {
         public static void Main(string[] args)
         {
-         //   CommandLineOptions options = CommandLineParser.ParseArgs(args);
-            AsynchronousClient client = new AsynchronousClient(new Connection("192.168.0.19", 12196));
+            CommandLineOptions options = CommandLineParser.ParseArgs(args);
+
+            AsynchronousClient client = new AsynchronousClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
 
