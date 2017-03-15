@@ -70,7 +70,7 @@ namespace Common.Connection
                 //// Write the response to the console.
                 //Console.WriteLine("Response received : {0}", response);
 
-              
+
             }
             catch (Exception e)
             {
@@ -104,7 +104,7 @@ namespace Common.Connection
 
                 // Signal that the connection has been made.
                 connectDone.Set();
-                
+
                 // Receive the response from the remote device.
                 Receive(client);
             }
@@ -134,13 +134,13 @@ namespace Common.Connection
 
         public void ReceiveCallback(IAsyncResult ar)
         {
+            // Retrieve the state object and the client socket 
+            // from the asynchronous state object.
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket client = state.workSocket;
+
             try
             {
-                // Retrieve the state object and the client socket 
-                // from the asynchronous state object.
-                StateObject state = (StateObject)ar.AsyncState;
-                Socket client = state.workSocket;
-
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
 
@@ -163,10 +163,11 @@ namespace Common.Connection
                 }
                 client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), state);
             }
-            catch (Exception e)
+            catch (SocketException)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Server {0} stopped working.", client.GetRemoteAddress().ToString());
             }
+
         }
 
         public void Send(Socket client, string data)
@@ -179,7 +180,7 @@ namespace Common.Connection
                 new AsyncCallback(SendCallback), client);
         }
 
-       
+
 
         public void SendFromClient(Socket client, string data)
         {
@@ -197,7 +198,7 @@ namespace Common.Connection
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-              //  Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+                //  Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
                 //inform that a message was sent
                 OnMessageSend(this, new MessageSendEventArgs(client));
@@ -211,7 +212,7 @@ namespace Common.Connection
             }
         }
 
-       
+
 
     }//class
 }
