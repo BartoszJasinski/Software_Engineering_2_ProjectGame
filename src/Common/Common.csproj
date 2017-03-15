@@ -50,6 +50,9 @@
     <Compile Include="EventArg\ConnectEventArgs.cs" />
     <Compile Include="EventArg\MessageRecieveEventArgs.cs" />
     <Compile Include="EventArg\MessageSendEventArgs.cs" />
+    <Compile Include="IO\Console\CommandLineOptions.cs" />
+    <Compile Include="IO\Console\CommandLineParser.cs" />
+    <Compile Include="IO\Net\AsynchronousClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\Board\Field.cs" />
     <Compile Include="Schema\Board\Fields\GoalField.cs" />
@@ -90,6 +93,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
