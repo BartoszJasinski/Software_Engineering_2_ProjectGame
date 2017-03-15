@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CommandLine;
 using Common.Connection;
-using MockGameMaster;
-using MockPlayer.IO;
+using Common.IO.Console;
+using Common.IO.Net;
 
 namespace MockPlayer
 {

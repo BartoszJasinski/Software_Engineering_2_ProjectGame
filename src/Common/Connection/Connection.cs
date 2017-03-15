@@ -19,6 +19,8 @@ namespace Common.Connection
             new ManualResetEvent(false);
         private static ManualResetEvent receiveDone =
             new ManualResetEvent(false);
+        private static ManualResetEvent disconnectDone =
+            new ManualResetEvent(false);
         private string ipString;
         private int port;
 
@@ -65,12 +67,18 @@ namespace Common.Connection
                 //Send(client, "Message" + (char)0x23);
                 //sendDone.WaitOne();
 
-                while (true) ;
+                disconnectDone.WaitOne();
 
-                //// Write the response to the console.
-                //Console.WriteLine("Response received : {0}", response);
+                // Release the socket.
+
+                Console.WriteLine("Finished connection with {0}", client.GetRemoteAddress().ToString());
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+                
 
               
+
+
             }
             catch (Exception e)
             {
@@ -78,11 +86,9 @@ namespace Common.Connection
             }
         }
 
-        public void StopClient(Socket client)
+        public void StopClient()
         {
-            // Release the socket.
-            client.Shutdown(SocketShutdown.Both);
-            client.Close();
+            disconnectDone.Set();
         }
 
         public void ConnectCallback(IAsyncResult ar)
@@ -103,7 +109,7 @@ namespace Common.Connection
 
                 // Signal that the connection has been made.
                 connectDone.Set();
-                
+
                 // Receive the response from the remote device.
                 Receive(client);
             }
@@ -133,13 +139,13 @@ namespace Common.Connection
 
         public void ReceiveCallback(IAsyncResult ar)
         {
+            // Retrieve the state object and the client socket 
+            // from the asynchronous state object.
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket client = state.workSocket;
+
             try
             {
-                // Retrieve the state object and the client socket 
-                // from the asynchronous state object.
-                StateObject state = (StateObject)ar.AsyncState;
-                Socket client = state.workSocket;
-
                 // Read data from the remote device.
                 int bytesRead = client.EndReceive(ar);
 
@@ -162,10 +168,12 @@ namespace Common.Connection
                 }
                 client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), state);
             }
-            catch (Exception e)
+            catch (SocketException)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Server {0} stopped working.", client.GetRemoteAddress().ToString());
+                StopClient();
             }
+
         }
 
         public void Send(Socket client, string data)
@@ -178,7 +186,7 @@ namespace Common.Connection
                 new AsyncCallback(SendCallback), client);
         }
 
-       
+
 
         public void SendFromClient(Socket client, string data)
         {
@@ -196,7 +204,7 @@ namespace Common.Connection
 
                 // Complete sending the data to the remote device.
                 int bytesSent = client.EndSend(ar);
-              //  Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+                //  Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
                 //inform that a message was sent
                 OnMessageSend(this, new MessageSendEventArgs(client));
@@ -210,7 +218,7 @@ namespace Common.Connection
             }
         }
 
-       
+
 
     }//class
 }

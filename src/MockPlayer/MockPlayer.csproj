@@ -47,9 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsynchronousClient.cs" />
-    <Compile Include="IO\CommandLineOptions.cs" />
-    <Compile Include="IO\CommandLineParser.cs" />
     <Compile Include="Logic\DummyClass.cs" />
     <Compile Include="MockPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

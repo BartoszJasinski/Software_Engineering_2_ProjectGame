@@ -50,11 +50,50 @@
     <Compile Include="EventArg\ConnectEventArgs.cs" />
     <Compile Include="EventArg\MessageRecieveEventArgs.cs" />
     <Compile Include="EventArg\MessageSendEventArgs.cs" />
+    <Compile Include="IO\Console\CommandLineOptions.cs" />
+    <Compile Include="IO\Console\CommandLineParser.cs" />
+    <Compile Include="IO\Net\AsynchronousClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schema\Board\Field.cs" />
+    <Compile Include="Schema\Board\Fields\GoalField.cs" />
+    <Compile Include="Schema\Board\Fields\GoalFieldType.cs" />
+    <Compile Include="Schema\Board\Fields\TaskField.cs" />
+    <Compile Include="Schema\Board\GameBoard.cs" />
+    <Compile Include="Schema\Board\Location.cs" />
+    <Compile Include="Schema\Board\Piece.cs" />
+    <Compile Include="Schema\Board\PieceType.cs" />
+    <Compile Include="Schema\Game\GameFinished.cs" />
+    <Compile Include="Schema\Game\GameInfo.cs" />
+    <Compile Include="Schema\Message\GameMessage.cs" />
+    <Compile Include="Schema\Message\GameMessage\AuthorizeKnowledgeExchange.cs" />
+    <Compile Include="Schema\Message\GameMessage\Discover.cs" />
+    <Compile Include="Schema\Message\GameMessage\Move.cs" />
+    <Compile Include="Schema\Message\GameMessage\MoveType.cs" />
+    <Compile Include="Schema\Message\GameMessage\PickUpPiece.cs" />
+    <Compile Include="Schema\Message\GameMessage\PlacePiece.cs" />
+    <Compile Include="Schema\Message\GameMessage\TestPiece.cs" />
+    <Compile Include="Schema\Message\PlayerMessage.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\AcceptExchangeRequest.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\BetweenPlayersMessage.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\ConfirmJoiningGame.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\Data.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\Game.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\KnowledgeExchangeRequest.cs" />
+    <Compile Include="Schema\Message\PlayerMessage\RejectKnowledgeExchange.cs" />
+    <Compile Include="Schema\Message\Server\ConfirmGameRegistration.cs" />
+    <Compile Include="Schema\Message\Server\GetGames.cs" />
+    <Compile Include="Schema\Message\Server\JoinGame.cs" />
+    <Compile Include="Schema\Message\Server\RegisteredGames.cs" />
+    <Compile Include="Schema\Message\Server\RegisterGame.cs" />
+    <Compile Include="Schema\Player\Player.cs" />
+    <Compile Include="Schema\Player\PlayerType.cs" />
+    <Compile Include="Schema\Player\TeamColour.cs" />
+    <Compile Include="SocketExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

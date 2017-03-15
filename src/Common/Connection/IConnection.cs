@@ -11,7 +11,7 @@ namespace Common.Connection
     public interface IConnection
     {
         void StartClient();
-        void StopClient(Socket socket);
+        void StopClient();
         void ConnectCallback(IAsyncResult ar);
         void Receive(Socket client);
         void ReceiveCallback(IAsyncResult ar);
