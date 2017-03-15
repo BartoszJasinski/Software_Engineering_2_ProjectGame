@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MockPlayer.IO;
 
 namespace MockGameMaster
 {
@@ -13,9 +12,7 @@ namespace MockGameMaster
         //adres post metoda connect
         static void Main(string[] args)
         {
-            CommandLineOptions options = CommandLineParser.ParseArgs(args);
-
-            AsynchronousClient client = new AsynchronousClient(new Connection(options.Address, options.Port));
+            AsynchronousClient client = new AsynchronousClient(new Connection("192.168.143.110", 12196));
             client.Connect();
             client.Disconnect();
         }
