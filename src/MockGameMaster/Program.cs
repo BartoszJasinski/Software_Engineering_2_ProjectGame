@@ -12,7 +12,7 @@ namespace MockGameMaster
         //adres post metoda connect
         static void Main(string[] args)
         {
-            AsynchronousClient client = new AsynchronousClient(new Connection("192.168.99.1", 12196));
+            AsynchronousClient client = new AsynchronousClient(new Connection("192.168.143.110", 12196));
             client.Connect();
             client.Disconnect();
         }

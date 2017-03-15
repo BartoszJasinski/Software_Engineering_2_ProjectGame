@@ -14,7 +14,6 @@ namespace MockGameMaster
     public class AsynchronousClient
     {
         private IConnection connection;
-        private Socket socket;
 
         public AsynchronousClient(IConnection connection)
         {
@@ -26,7 +25,7 @@ namespace MockGameMaster
 
         public void Disconnect()
         {
-            connection.StopClient(socket);
+            connection.StopClient();
         }
 
         public void Connect()
@@ -40,7 +39,7 @@ namespace MockGameMaster
             //TODO extension method to get address from socket
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("Successful connection with address {0}", address.ToString());
-            socket = eventArgs.Handler as Socket;
+            var socket = eventArgs.Handler as Socket;
             connection.SendFromClient(socket, "Welcome message");        
         }
 
@@ -48,6 +47,7 @@ namespace MockGameMaster
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+            var socket = eventArgs.Handler as Socket;
             connection.SendFromClient(socket, "Answer to answer message");
         }
 
@@ -55,7 +55,7 @@ namespace MockGameMaster
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
              Console.WriteLine("New message sent to {0}", address.ToString());
-            var socket = eventArgs.Handler as Socket;
+            //var socket = eventArgs.Handler as Socket;
             
         }
 

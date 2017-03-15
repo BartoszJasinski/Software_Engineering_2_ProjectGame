@@ -19,6 +19,8 @@ namespace Common.Connection
             new ManualResetEvent(false);
         private static ManualResetEvent receiveDone =
             new ManualResetEvent(false);
+        private static ManualResetEvent disconnectDone =
+            new ManualResetEvent(false);
         private string ipString;
         private int port;
 
@@ -65,10 +67,16 @@ namespace Common.Connection
                 //Send(client, "Message" + (char)0x23);
                 //sendDone.WaitOne();
 
-                while (true) ;
+                disconnectDone.WaitOne();
 
-                //// Write the response to the console.
-                //Console.WriteLine("Response received : {0}", response);
+                // Release the socket.
+
+                Console.WriteLine("Finished connection with {0}", client.GetRemoteAddress().ToString());
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+                
+
+              
 
 
             }
@@ -78,12 +86,9 @@ namespace Common.Connection
             }
         }
 
-        public void StopClient(Socket client)
+        public void StopClient()
         {
-            // Release the socket.
-
-            client.Shutdown(SocketShutdown.Both);
-            client.Close();
+            disconnectDone.Set();
         }
 
         public void ConnectCallback(IAsyncResult ar)
@@ -166,6 +171,7 @@ namespace Common.Connection
             catch (SocketException)
             {
                 Console.WriteLine("Server {0} stopped working.", client.GetRemoteAddress().ToString());
+                StopClient();
             }
 
         }
