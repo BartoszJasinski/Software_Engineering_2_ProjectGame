@@ -1,4 +1,5 @@
-﻿using Common.EventArg;
+﻿using Common;
+using Common.EventArg;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Server.Connection
 {
-    //TODO add send callback maybe
+  
     public class ConnectionEndpoint : IConnectionEndpoint
     {
         public int Port { get; set; }
@@ -66,7 +67,7 @@ namespace Server.Connection
             Socket listener = (Socket)asyncResult.AsyncState;
             Socket handler = listener.EndAccept(asyncResult);
 
-            string address = (handler.RemoteEndPoint as IPEndPoint).Address.ToString();
+            string address = handler.GetRemoteAddress().ToString();
             //inform that a new client connected
             OnConnect(this, new ConnectEventArgs(handler));
 
@@ -83,23 +84,30 @@ namespace Server.Connection
             StateObject state = (StateObject)asyncResult.AsyncState;
             Socket handler = state.Socket;
 
-            int numberOfBytesRead = handler.EndReceive(asyncResult);
-
-            if (numberOfBytesRead > 0)
+            try
             {
-                state.StringBuilder.Append(Encoding.ASCII.GetString(state.buffer, 0, numberOfBytesRead));
+                int numberOfBytesRead = handler.EndReceive(asyncResult);
 
-                content = state.StringBuilder.ToString();
-                //messages end with <ETB> (0x23)
-                if (content.IndexOf((char)0x23) > -1)
+                if (numberOfBytesRead > 0)
                 {
-                    //inform that a new message was received
-                    OnMessageRecieve(this, new MessageRecieveEventArgs(content, handler));
-                    state.StringBuilder.Clear();
-                }
-            }
+                    state.StringBuilder.Append(Encoding.ASCII.GetString(state.buffer, 0, numberOfBytesRead));
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
+                    content = state.StringBuilder.ToString();
+                    //messages end with <ETB> (0x23)
+                    if (content.IndexOf((char)0x23) > -1)
+                    {
+                        //inform that a new message was received
+                        OnMessageRecieve(this, new MessageRecieveEventArgs(content, handler));
+                        state.StringBuilder.Clear();
+                    }
+                }
+
+                handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
+            }
+            catch(SocketException e)
+            {
+                Console.WriteLine("Client {0} disconnected", handler.GetRemoteAddress().ToString());
+            }
         }
 
         public void SendFromServer(Socket handler, string message)

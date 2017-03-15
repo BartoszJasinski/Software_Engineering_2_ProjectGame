@@ -81,6 +81,7 @@ namespace Common.Connection
         public void StopClient(Socket client)
         {
             // Release the socket.
+
             client.Shutdown(SocketShutdown.Both);
             client.Close();
         }
