@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -27,12 +28,36 @@ namespace Server.Connection
             resetEvent = new ManualResetEvent(false);
         }
 
+        //is needed to avoid virtualbox ips :(
+        private IPAddress getPhysicalIp()
+        {
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                var addr = ni.GetIPProperties().GatewayAddresses.FirstOrDefault();
+                if (addr != null && !addr.Address.ToString().Equals("0.0.0.0"))
+                {
+                    if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                    {
+                        foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                        {
+                            if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                            {
+                                return ip.Address;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public void Listen()
         {
             //for empty string GetHostEntry returns hostEntry for local machine
             IPHostEntry iphostEntry = Dns.GetHostEntry(string.Empty);
             //Find local endpoint, the last is in lan, the first for internet
-            IPAddress address = iphostEntry.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork).Last();
+            var test = iphostEntry.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork);
+            IPAddress address = getPhysicalIp();
             IPEndPoint localEndPoint = new IPEndPoint(address, Port);
 
             Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
