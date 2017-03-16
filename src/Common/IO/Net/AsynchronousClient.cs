@@ -1,7 +1,13 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Sockets;
+using System.Xml;
+using System.Xml.Serialization;
 using Common.Connection;
 using Common.EventArg;
+using Common.Schema.Game;
+using Common.Schema.Message;
+using Common.Xml;
 
 namespace Common.IO.Net
 {
@@ -17,15 +23,17 @@ namespace Common.IO.Net
             connection.OnMessageSend += OnMessageSend;
         }
 
+        public void Connect()
+        {
+            connection.StartClient();
+        }
+
         public void Disconnect()
         {
             connection.StopClient();
         }
 
-        public void Connect()
-        {
-            connection.StartClient();
-        }
+
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
@@ -42,8 +50,13 @@ namespace Common.IO.Net
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
             var socket = eventArgs.Handler as Socket;
-            connection.SendFromClient(socket, "Answer to answer message");
+
+            string xml = XmlOperations.Serialize();
+            connection.SendFromClient(socket, xml);
+
+
         }
+
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {

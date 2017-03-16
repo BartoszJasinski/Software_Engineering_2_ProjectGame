@@ -21,19 +21,13 @@ namespace Common.Connection
             new ManualResetEvent(false);
         private static ManualResetEvent disconnectDone =
             new ManualResetEvent(false);
+
         private string ipString;
         private int port;
-
 
         public event EventHandler<ConnectEventArgs> OnConnection;
         public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
         public event EventHandler<MessageSendEventArgs> OnMessageSend;
-
-
-
-
-
-
 
         // The response from the remote device.
         private static String response = String.Empty;
