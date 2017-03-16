@@ -1,4 +1,4 @@
-﻿namespace Common.Schema.Message
+﻿namespace Common.Schema
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
@@ -9,14 +9,14 @@
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://theprojectgame.mini.pw.edu.pl/", IsNullable=false)]
     public partial class ConfirmJoiningGame : PlayerMessage {
     
-        private Player.Player playerDefinitionField;
+        private Player playerDefinitionField;
     
         private ulong gameIdField;
     
         private string privateGuidField;
     
         /// <remarks/>
-        public Player.Player PlayerDefinition {
+        public Player PlayerDefinition {
             get {
                 return this.playerDefinitionField;
             }
