@@ -53,6 +53,8 @@
     <Compile Include="IO\Console\CommandLineOptions.cs" />
     <Compile Include="IO\Console\CommandLineParser.cs" />
     <Compile Include="IO\Net\AsynchronousClient.cs" />
+    <Compile Include="Message\IMessageHandler.cs" />
+    <Compile Include="Message\XmlMessageConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\Board\Field.cs" />
     <Compile Include="Schema\Board\Fields\GoalField.cs" />

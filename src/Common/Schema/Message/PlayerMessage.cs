@@ -1,4 +1,4 @@
-﻿namespace Common.Schema.Message
+﻿namespace Common.Schema
 {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(BetweenPlayersMessage))]
