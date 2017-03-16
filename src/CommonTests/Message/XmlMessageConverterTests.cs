@@ -21,10 +21,46 @@ namespace CommonTests.Message
             Console.WriteLine(xmlString);
         }
 
+
         [TestMethod]
-        public void ConvertToObjectTest()
+        public void CorrectMoveMessageTest()
         {
-            
+            string xml =
+                $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
+                $"<Move xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\ngameId=\"1\"\r\n" +
+                $"playerGuid=\"c094cab7-da7b-457f-89e5-a5c51756035f\"\r\n" +
+                $"direction=\"up\"/>\r";
+            var obj = XmlMessageConverter.ToObject(xml);
+            Assert.IsTrue(obj is Move);
+            Assert.IsFalse(obj is Discover);
+            Move m = obj as Move;
+            Assert.AreEqual(m.direction, MoveType.up);
+            Assert.AreEqual(m.directionSpecified, true);
+            Assert.AreEqual(m.playerGuid, "c094cab7-da7b-457f-89e5-a5c51756035f");
+            Assert.AreEqual(m.gameId, (ulong)1);
+        }
+
+
+        [TestMethod]
+        public void WrongMoveMessageTest()
+        {
+            string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
+                                    "<ConfirmGameRegistration\r\n" +
+                                    "xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\n" +
+                                    "/>";
+            var obj = XmlMessageConverter.ToObject(xmlNoGameId);
+            Assert.IsTrue(obj is ConfirmGameRegistration);
+        }
+
+        [TestMethod]
+        public void NotExistigMessageType()
+        {
+            string xml= "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
+                                    "<ConfirmasdasdGameRegistration\r\n" +
+                                    "xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\n" +
+                                    "/>";
+            var obj = XmlMessageConverter.ToObject(xml);
+            Assert.IsNull(obj);
         }
     }
 }
