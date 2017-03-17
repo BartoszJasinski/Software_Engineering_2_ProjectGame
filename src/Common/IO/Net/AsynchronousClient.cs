@@ -29,9 +29,9 @@ namespace Common.IO.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
+            //some copy-pasta happened here, i feel
 
-            //TODO extension method to get address from socket
-            var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
+            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
             connection.SendFromClient(socket, "Welcome message");
@@ -39,7 +39,7 @@ namespace Common.IO.Net
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
+            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
             var socket = eventArgs.Handler as Socket;
             connection.SendFromClient(socket, "Answer to answer message");
