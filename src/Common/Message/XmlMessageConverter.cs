@@ -18,15 +18,30 @@ namespace Common.Message
         {
             XmlDocument xd = new XmlDocument();
             xd.LoadXml(xmlString);
-            XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
-            return xs.Deserialize(new StringReader(xmlString));
+            try
+            {
+                XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
+                using (var s=new StringReader(xmlString))
+                {
+                    return xs.Deserialize(s);
+                }
+                
+                
+            }
+            catch (ArgumentNullException)
+            {
+                return null;
+            }
         }
 
         public static string ToXml(object msg)
         {
             XmlSerializer xs = new XmlSerializer(msg.GetType());
             StringBuilder sb = new StringBuilder();
-            xs.Serialize(new StringWriter(sb), msg);
+            using (var s = new StringWriter(sb))
+            {
+                xs.Serialize(s, msg);
+            }
             return sb.ToString();
         }
     }
