@@ -1,6 +1,4 @@
-﻿using Common.Schema.Board.Fields;
-
-namespace Common.Schema.Board
+﻿namespace Common.Schema
 {
     /// <remarks/>
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(Field))]

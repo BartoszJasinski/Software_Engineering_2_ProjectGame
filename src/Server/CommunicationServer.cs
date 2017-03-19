@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Connection;
 using Server.Connection;
 using Common.EventArg;
 
@@ -29,23 +30,15 @@ namespace Server
 
         private void OnClientConnect(object sender, ConnectEventArgs eventArgs)
         {
-            //TODO extension method to get address from socket
-            var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
+
+            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             Console.WriteLine("New client connected with address {0}", address.ToString());
         }
 
-       // private static long counter = 0;
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
-            
-            var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
+            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
-
-
-//            counter++;
-//            if(counter > 10)
-//                Common.Xml.XmlOperations.Deserialize(eventArgs.Message);
-
             connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
         }
     }

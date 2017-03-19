@@ -1,4 +1,4 @@
-﻿namespace Common.Schema.Game
+﻿namespace Common.Schema
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]

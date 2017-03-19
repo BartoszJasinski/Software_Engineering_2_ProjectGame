@@ -1,6 +1,6 @@
-﻿using Common.Schema.Board;
+﻿
 
-namespace Common.Schema.Message
+namespace Common.Schema
 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
@@ -11,7 +11,7 @@ namespace Common.Schema.Message
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://theprojectgame.mini.pw.edu.pl/", IsNullable=false)]
     public partial class Game : PlayerMessage {
     
-        private Player.Player[] playersField;
+        private Player[] playersField;
     
         private GameBoard boardField;
     
@@ -19,7 +19,7 @@ namespace Common.Schema.Message
     
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public Player.Player[] Players {
+        public Player[] Players {
             get {
                 return this.playersField;
             }

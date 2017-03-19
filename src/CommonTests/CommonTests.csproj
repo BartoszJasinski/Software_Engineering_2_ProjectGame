@@ -52,6 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="IO\Console\CommandLineParserTests.cs" />
+    <Compile Include="Message\XmlMessageConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,7 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
