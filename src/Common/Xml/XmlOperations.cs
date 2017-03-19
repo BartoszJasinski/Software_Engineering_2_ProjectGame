@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
-using Common.Schema.Game;
+using Common.Schema;
 
 namespace Common.Xml
 {

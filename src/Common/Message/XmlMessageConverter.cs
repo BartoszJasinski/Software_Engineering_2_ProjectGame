@@ -21,7 +21,7 @@ namespace Common.Message
             try
             {
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
-                using (var s=new StringReader(xmlString))
+                using (var s = new StringReader(xmlString))
                 {
                     return xs.Deserialize(s);
                 }

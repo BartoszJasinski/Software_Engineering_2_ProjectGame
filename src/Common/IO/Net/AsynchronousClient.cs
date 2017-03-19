@@ -5,8 +5,6 @@ using System.Xml;
 using System.Xml.Serialization;
 using Common.Connection;
 using Common.EventArg;
-using Common.Schema.Game;
-using Common.Schema.Message;
 using Common.Xml;
 
 namespace Common.IO.Net
@@ -47,8 +45,9 @@ namespace Common.IO.Net
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+//            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+//            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+
             var socket = eventArgs.Handler as Socket;
 
             string xml = XmlOperations.Serialize();
