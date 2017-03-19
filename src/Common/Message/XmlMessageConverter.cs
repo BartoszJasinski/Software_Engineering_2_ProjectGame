@@ -14,21 +14,30 @@ namespace Common.Message
     /// </summary>
     public class XmlMessageConverter
     {
+        ///<summary>
+        /// XML Desirializer
+        /// </summary>
+        ///<returns>
+        /// Object of desired type if XML is valid
+        /// otherwise NULL
+        /// </returns>   
         public static object ToObject(string xmlString, string ns = "Common.Schema.")
         {
             XmlDocument xd = new XmlDocument();
-            xd.LoadXml(xmlString);
             try
             {
+                xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
                 using (var s = new StringReader(xmlString))
                 {
                     return xs.Deserialize(s);
                 }
-                
-                
             }
             catch (ArgumentNullException)
+            {
+                return null;
+            }
+            catch (XmlException)
             {
                 return null;
             }

@@ -62,5 +62,24 @@ namespace CommonTests.Message
             var obj = XmlMessageConverter.ToObject(xml);
             Assert.IsNull(obj);
         }
+
+        [TestMethod]
+        public void BullshitParseTest()
+        {
+            string xml = "sadasdsad";
+            var obj = XmlMessageConverter.ToObject(xml);
+            Assert.IsNull(obj);
+        }
+
+        [TestMethod]
+        public void BrokenXmlTest()
+        {
+            string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
+                        "<ConfirmGameRegistration\r\n" +
+                        "xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\n" +
+                        "/";
+            var obj = XmlMessageConverter.ToObject(xmlNoGameId);
+            Assert.IsNull(obj);
+        }
     }
 }
