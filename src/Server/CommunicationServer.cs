@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Server.Connection;
-using Common.Message;
+using Common;
 
 namespace Server
 {
@@ -32,13 +32,13 @@ namespace Server
         private void OnClientConnect(object sender, ConnectEventArgs eventArgs)
         {
 
-            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+            var address = eventArgs.Handler.GetRemoteAddress();
             Console.WriteLine("New client connected with address {0}", address.ToString());
         }
 
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
-            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+            var address = eventArgs.Handler.GetRemoteAddress();
             Console.WriteLine("SERVER \n New message from {0}: {1}", address, eventArgs.Message);
 
 

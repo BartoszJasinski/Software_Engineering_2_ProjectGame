@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Xml;
 using System.Xml.Serialization;
+using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
@@ -45,7 +46,7 @@ namespace MockPlayer.Net
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
             //some copy-pasta happened here, i feel
-            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+            var address = eventArgs.Handler.GetRemoteAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 

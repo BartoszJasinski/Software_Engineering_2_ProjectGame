@@ -12,7 +12,7 @@ namespace Common
     { 
         public static IPAddress GetRemoteAddress(this Socket socket)
         {
-            return (socket.RemoteEndPoint as IPEndPoint).Address;
+            return (socket.RemoteEndPoint as IPEndPoint)?.Address;
         } 
     }
 }

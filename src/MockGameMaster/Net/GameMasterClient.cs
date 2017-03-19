@@ -46,7 +46,7 @@ namespace Common.IO.Net
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
             //some copy-pasta happened here, i feel
-            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+            var address = eventArgs.Handler.GetRemoteAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 

@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Connection\IConnection.cs" />
-    <Compile Include="Connection\SocketExtension.cs" />
     <Compile Include="Connection\StateObject.cs" />
     <Compile Include="Connection\EventArg\ConnectEventArgs.cs" />
     <Compile Include="Connection\EventArg\MessageRecieveEventArgs.cs" />
