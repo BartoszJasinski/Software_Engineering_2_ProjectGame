@@ -151,11 +151,12 @@ namespace Common.Connection
                     var content = state.sb.ToString();
 
                     //messages end with <ETB> (0x23)
-                    if (content.IndexOf((char)0x23) > -1)
+                    int etbIndex = content.IndexOf((char)0x23);
+                    if (etbIndex > -1)
                     {
                         //inform that a new message was received
-                        OnMessageRecieve(this, new MessageRecieveEventArgs(content, client));
-                        state.sb.Clear();
+                        OnMessageRecieve(this, new MessageRecieveEventArgs(content.Substring(0, etbIndex), client));
+                        state.sb.Remove(0, etbIndex + 1);
                         receiveDone.Set();
                     }
 

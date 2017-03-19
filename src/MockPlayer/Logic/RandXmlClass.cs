@@ -12,12 +12,14 @@ namespace MockPlayer.Logic
 {
     public class RandXmlClass
     {
+        static Random rng = new Random();
+
         [TestMethod()]
         public static object GetXmlClass()
         {
             Fixture fixture = new Fixture();
             object obj = new object();
-            int rand = (new Random()).Next(0, 25);
+            int rand = rng.Next(0, 25);
 
             //DONT LOOK BELLOW DIS LINE
             switch (rand)

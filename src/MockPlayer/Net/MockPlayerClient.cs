@@ -65,6 +65,8 @@ namespace MockPlayer.Net
 
             var socket = eventArgs.Handler as Socket;
 
+            System.Console.WriteLine("New message from: {0} \n {1}", socket.GetRemoteAddress(), eventArgs.Message);
+
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
             connection.SendFromClient(socket, xmlMessage);

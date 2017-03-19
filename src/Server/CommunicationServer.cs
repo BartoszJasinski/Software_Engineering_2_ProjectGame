@@ -47,7 +47,7 @@ namespace Server
 //            Console.WriteLine("\n \n" + xmlObject.ToString() + "\n \n");
 //            //// end test
 
-            connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
+            connectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
         }
     }
 }

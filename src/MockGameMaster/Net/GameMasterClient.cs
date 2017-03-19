@@ -68,6 +68,8 @@ namespace Common.IO.Net
 
             var socket = eventArgs.Handler as Socket;
 
+            System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
+
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
             connection.SendFromClient(socket, xmlMessage);
@@ -79,7 +81,7 @@ namespace Common.IO.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            //System.Console.WriteLine("New message sent to {0}", address.ToString());
             //var socket = eventArgs.Handler as Socket;
 
         }
