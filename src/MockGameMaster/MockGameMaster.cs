@@ -16,7 +16,7 @@ namespace MockGameMaster
         {
             CommandLineOptions options = CommandLineParser.ParseArgs(args);
 
-            AsynchronousClient client = new AsynchronousClient(new Connection(options.Address, options.Port));
+            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
         }
