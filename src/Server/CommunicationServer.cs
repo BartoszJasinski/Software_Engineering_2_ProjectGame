@@ -34,10 +34,18 @@ namespace Server
             Console.WriteLine("New client connected with address {0}", address.ToString());
         }
 
+       // private static long counter = 0;
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
+            
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
+
+//            counter++;
+//            if(counter > 10)
+//                Common.Xml.XmlOperations.Deserialize(eventArgs.Message);
+
             connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
         }
     }

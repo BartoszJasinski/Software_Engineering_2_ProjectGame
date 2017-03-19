@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using Common.Schema.Game;
@@ -19,6 +20,16 @@ namespace Common.Xml
 
             return sww.ToString();
 
+        }
+
+        public static void Deserialize(string xml)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(GameFinished));
+            TextReader xmlReader = new StringReader(xml);
+//            StreamReader xmlReader = new StreamReader();
+            GameFinished gameFinished = (GameFinished)serializer.Deserialize(xmlReader);
+
+            Console.WriteLine("Pimpuś " + gameFinished.gameId);
         }
     }
 }
