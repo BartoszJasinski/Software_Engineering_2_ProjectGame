@@ -7,8 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Connection;
+using Common.Connection.EventArg;
 using Server.Connection;
-using Common.EventArg;
+using Common.Message;
 
 namespace Server
 {
@@ -38,7 +39,14 @@ namespace Server
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
             var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+            Console.WriteLine("SERVER \n New message from {0}: {1}", address, eventArgs.Message);
+
+
+//            /////test
+//            dynamic xmlObject = XmlMessageConverter.ToObject(KeepAliveCutter.Cut(eventArgs.Message));
+//            Console.WriteLine("\n \n" + xmlObject.ToString() + "\n \n");
+//            //// end test
+
             connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
         }
     }

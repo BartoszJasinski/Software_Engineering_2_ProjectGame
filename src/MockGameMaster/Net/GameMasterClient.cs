@@ -11,15 +11,15 @@ using Common.Xml;
 
 namespace Common.IO.Net
 {
-    //WE SHOULD PROBABLY DELETE THIS CLASS
-    public class AsynchronousClient
+    
+    public class GameMasterClient
     {
         private IConnection connection;
         
         //TESTING ONLY maybe we should change Iconnection a bit 
         private Socket client;
 
-        public AsynchronousClient(IConnection connection)
+        public GameMasterClient(IConnection connection)
         {
             this.connection = connection;
             connection.OnConnection += OnConnection;

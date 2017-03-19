@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Schema;
+using Ploeh.AutoFixture;
 
 namespace Common.IO.Console.Tests
 {
@@ -14,6 +16,8 @@ namespace Common.IO.Console.Tests
         [TestMethod()]
         public void ParseArgsTest()
         {
+         
+
             CommandLineOptions expectedOptions = new CommandLineOptions
             {
                 Address = "172.16.254.1",

@@ -8,18 +8,18 @@ using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
 using Common.Xml;
+using MockPlayer.Logic;
 
-namespace Common.IO.Net
+namespace MockPlayer.Net
 {
-    //WE SHOULD PROBABLY DELETE THIS CLASS
-    public class AsynchronousClient
+    public class MockPlayerClient
     {
         private IConnection connection;
-        
+
         //TESTING ONLY maybe we should change Iconnection a bit 
         private Socket client;
 
-        public AsynchronousClient(IConnection connection)
+        public MockPlayerClient(IConnection connection)
         {
             this.connection = connection;
             connection.OnConnection += OnConnection;
@@ -54,7 +54,7 @@ namespace Common.IO.Net
 
             connection.SendFromClient(socket, "Welcome message");
 
-            
+
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -64,10 +64,8 @@ namespace Common.IO.Net
 
             var socket = eventArgs.Handler as Socket;
 
-            GameFinished gf = new GameFinished();
-            gf.gameId = 123;
+            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
-            string xmlMessage = XmlMessageConverter.ToXml(gf);
             connection.SendFromClient(socket, xmlMessage);
 
 
@@ -81,9 +79,6 @@ namespace Common.IO.Net
             //var socket = eventArgs.Handler as Socket;
 
         }
-
-
-
 
 
     }//class

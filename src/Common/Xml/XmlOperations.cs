@@ -6,6 +6,7 @@ using Common.Schema;
 
 namespace Common.Xml
 {
+    //PROBABLY useless class because it is doubling XmlMessageConverter functionality
     public class XmlOperations
     {
         public static string Serialize()
