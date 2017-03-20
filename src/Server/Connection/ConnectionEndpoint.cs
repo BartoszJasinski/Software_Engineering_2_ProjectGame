@@ -1,16 +1,18 @@
-﻿using Common.EventArg;
+﻿using Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Connection.EventArg;
 
 namespace Server.Connection
 {
-    //TODO add send callback maybe
+  
     public class ConnectionEndpoint : IConnectionEndpoint
     {
         public int Port { get; set; }
@@ -26,12 +28,36 @@ namespace Server.Connection
             resetEvent = new ManualResetEvent(false);
         }
 
+        //is needed to avoid virtualbox ips :(
+        private IPAddress getPhysicalIp()
+        {
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                var addr = ni.GetIPProperties().GatewayAddresses.FirstOrDefault();
+                if (addr != null && !addr.Address.ToString().Equals("0.0.0.0"))
+                {
+                    if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                    {
+                        foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                        {
+                            if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                            {
+                                return ip.Address;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public void Listen()
         {
             //for empty string GetHostEntry returns hostEntry for local machine
             IPHostEntry iphostEntry = Dns.GetHostEntry(string.Empty);
             //Find local endpoint, the last is in lan, the first for internet
-            IPAddress address = iphostEntry.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork).Last();
+            var test = iphostEntry.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork);
+            IPAddress address = getPhysicalIp();
             IPEndPoint localEndPoint = new IPEndPoint(address, Port);
 
             Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -66,7 +92,7 @@ namespace Server.Connection
             Socket listener = (Socket)asyncResult.AsyncState;
             Socket handler = listener.EndAccept(asyncResult);
 
-            string address = (handler.RemoteEndPoint as IPEndPoint).Address.ToString();
+            string address = handler.GetRemoteAddress().ToString();
             //inform that a new client connected
             OnConnect(this, new ConnectEventArgs(handler));
 
@@ -83,23 +109,31 @@ namespace Server.Connection
             StateObject state = (StateObject)asyncResult.AsyncState;
             Socket handler = state.Socket;
 
-            int numberOfBytesRead = handler.EndReceive(asyncResult);
-
-            if (numberOfBytesRead > 0)
+            try
             {
-                state.StringBuilder.Append(Encoding.ASCII.GetString(state.buffer, 0, numberOfBytesRead));
+                int numberOfBytesRead = handler.EndReceive(asyncResult);
 
-                content = state.StringBuilder.ToString();
-                //messages end with <ETB> (0x23)
-                if (content.IndexOf((char)0x23) > -1)
+                if (numberOfBytesRead > 0)
                 {
-                    //inform that a new message was received
-                    OnMessageRecieve(this, new MessageRecieveEventArgs(content, handler));
-                    state.StringBuilder.Clear();
-                }
-            }
+                    state.StringBuilder.Append(Encoding.ASCII.GetString(state.buffer, 0, numberOfBytesRead));
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
+                    content = state.StringBuilder.ToString();
+                    //messages end with <ETB> (0x23)
+                    int etbIndex = content.IndexOf((char)0x23);
+                    if (etbIndex > -1)
+                    {
+                        //inform that a new message was received
+                        OnMessageRecieve(this, new MessageRecieveEventArgs(content.Substring(0, etbIndex), handler));
+                        state.StringBuilder.Remove(0, etbIndex + 1);
+                    }
+                }
+
+                handler.BeginReceive(state.buffer, 0, StateObject.BUFFER_SIZE, 0, new AsyncCallback(readCallback), state);
+            }
+            catch(SocketException e)
+            {
+                Console.WriteLine("Client {0} disconnected", handler.GetRemoteAddress().ToString());
+            }
         }
 
         public void SendFromServer(Socket handler, string message)

@@ -5,8 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using CommandLine;
 using Common.Connection;
-using MockGameMaster;
-using MockPlayer.IO;
+using Common.IO.Console;
+using Common.IO.Net;
+using Common.Message;
+using Common.Schema;
+using MockPlayer.Net;
+
 
 namespace MockPlayer
 {
@@ -16,7 +20,7 @@ namespace MockPlayer
         {
             CommandLineOptions options = CommandLineParser.ParseArgs(args);
 
-            AsynchronousClient client = new AsynchronousClient(new Connection(options.Address, options.Port));
+            MockPlayerClient client = new MockPlayerClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
 
