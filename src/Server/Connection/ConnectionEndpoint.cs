@@ -119,7 +119,7 @@ namespace Server.Connection
 
                     content = state.StringBuilder.ToString();
                     //messages end with <ETB> (0x23)
-                    int etbIndex = content.IndexOf((char)0x23);
+                    int etbIndex = content.IndexOf((char)23);
                     if (etbIndex > -1)
                     {
                         //inform that a new message was received
@@ -138,7 +138,7 @@ namespace Server.Connection
 
         public void SendFromServer(Socket handler, string message)
         {
-            send(handler, message + (char)0x23);
+            send(handler, message + (char)23);
         }
 
         private void send(Socket handler, string message)

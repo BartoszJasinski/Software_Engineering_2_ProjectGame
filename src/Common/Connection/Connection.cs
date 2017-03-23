@@ -151,7 +151,7 @@ namespace Common.Connection
                     var content = state.sb.ToString();
 
                     //messages end with <ETB> (0x23)
-                    int etbIndex = content.IndexOf((char)0x23);
+                    int etbIndex = content.IndexOf((char)23);
                     if (etbIndex > -1)
                     {
                         //inform that a new message was received
@@ -186,7 +186,7 @@ namespace Common.Connection
         public void SendFromClient(Socket client, string data)
         {
             // Send test data to the remote device.
-            Send(client, data + (char)0x23);
+            Send(client, data + (char)23);
             sendDone.WaitOne();
         }
 
