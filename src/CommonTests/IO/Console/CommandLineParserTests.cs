@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
-using Ploeh.AutoFixture;
 
 namespace Common.IO.Console.Tests
 {

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Ploeh.AutoFixture;
 
 namespace MockPlayer.Logic
 {
@@ -17,7 +16,6 @@ namespace MockPlayer.Logic
         [TestMethod()]
         public static object GetXmlClass()
         {
-            Fixture fixture = new Fixture();
             object obj = new object();
             int rand = rng.Next(0, 25);
 
