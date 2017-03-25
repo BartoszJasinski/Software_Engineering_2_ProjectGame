@@ -21,6 +21,7 @@ namespace Server
     {
         private IConnectionEndpoint connectionEndpoint;
         private IGamesContainer registeredGames;
+
         public CommunicationServer(IConnectionEndpoint connectionEndpoint)
         {
             this.connectionEndpoint = connectionEndpoint;
