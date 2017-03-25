@@ -135,12 +135,13 @@ namespace CommonTests.Message
         {
             ConfirmGameRegistration confirmGameRegistration = new ConfirmGameRegistration();
 
-            confirmGameRegistration.gameId = 0;
+            ulong test = 4;
+            confirmGameRegistration.gameId = test;
 
             string xml = XmlMessageConverter.ToXml(confirmGameRegistration);
             ConfirmGameRegistration result = (ConfirmGameRegistration)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual(0, result.gameId);
+            Assert.AreEqual(test, result.gameId);
         }
 
 
