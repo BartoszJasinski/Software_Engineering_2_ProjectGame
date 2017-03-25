@@ -1,23 +1,19 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Xml;
-using System.Xml.Serialization;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
-using Common.Schema;
-using MockPlayer.Logic;
+using Player.Logic;
 
-namespace MockPlayer.Net
+namespace Player.Net
 {
     public class MockPlayerClient
     {
         private IConnection connection;
 
         //TESTING ONLY maybe we should change Iconnection a bit 
-   //     private Socket client;
+        //private Socket client;
 
         public MockPlayerClient(IConnection connection)
         {
@@ -50,7 +46,7 @@ namespace MockPlayer.Net
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-    //        client = socket;
+       //     client = socket;
 
             connection.SendFromClient(socket, "Welcome message");
 

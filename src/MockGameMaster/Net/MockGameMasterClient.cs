@@ -1,25 +1,22 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Xml;
-using System.Xml.Serialization;
+using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
-using Common.Schema;
-using MockGameMaster.Logic;
+using GameMaster.Logic;
 
-namespace Common.IO.Net
+namespace GameMaster.Net
 {
     
-    public class GameMasterClient
+    public class MockGameMasterClient
     {
         private IConnection connection;
         
         //TESTING ONLY maybe we should change Iconnection a bit 
-        private Socket client;
+ //       private Socket client;
 
-        public GameMasterClient(IConnection connection)
+        public MockGameMasterClient(IConnection connection)
         {
             this.connection = connection;
             connection.OnConnection += OnConnection;
@@ -37,10 +34,10 @@ namespace Common.IO.Net
             connection.StopClient();
         }
 
-        public void Send(string message)
-        {
-            connection.Send(client, message);
-        }
+//        public void Send(string message)
+//        {
+//            connection.Send(client, message);
+//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
@@ -50,7 +47,7 @@ namespace Common.IO.Net
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-            client = socket;
+   //         client = socket;
 
             connection.SendFromClient(socket, "Welcome message");
 

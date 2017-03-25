@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommandLine;
-using Common.Connection;
+﻿using Common.Connection;
 using Common.IO.Console;
-using Common.IO.Net;
-using Common.Message;
-using Common.Schema;
-using MockPlayer.Net;
+using Player.Net;
 
-
-namespace MockPlayer
+namespace Player
 {
     public class MockPlayer
     {

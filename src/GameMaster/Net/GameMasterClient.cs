@@ -1,25 +1,23 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Xml;
-using System.Xml.Serialization;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
-using MockPlayer.Logic;
+using GameMaster.Logic;
 
-namespace MockPlayer.Net
+namespace GameMaster.Net
 {
-    public class MockPlayerClient
+    
+    public class GameMasterClient
     {
         private IConnection connection;
-
+        
         //TESTING ONLY maybe we should change Iconnection a bit 
-   //     private Socket client;
+    //    private Socket client;
 
-        public MockPlayerClient(IConnection connection)
+        public GameMasterClient(IConnection connection)
         {
             this.connection = connection;
             connection.OnConnection += OnConnection;
@@ -50,11 +48,18 @@ namespace MockPlayer.Net
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-    //        client = socket;
+   //         client = socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            GameInfo gameInfo = new GameInfo();
+            gameInfo.name = "Test Game";
+            gameInfo.blueTeamPlayers = 42;
+            gameInfo.redTeamPlayers = 24;
+            RegisterGame registerGame = new RegisterGame();
+            registerGame.NewGameInfo = gameInfo;
 
-
+            string registerGameMessage = XmlMessageConverter.ToXml(registerGame);
+            connection.SendFromClient(socket, registerGameMessage);
+            
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -62,9 +67,12 @@ namespace MockPlayer.Net
             //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
 
+            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
+            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+
             var socket = eventArgs.Handler as Socket;
 
-            System.Console.WriteLine("New message from: {0} \n {1}", socket.GetRemoteAddress(), eventArgs.Message);
+            System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
 
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
@@ -77,10 +85,13 @@ namespace MockPlayer.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            //System.Console.WriteLine("New message sent to {0}", address.ToString());
             //var socket = eventArgs.Handler as Socket;
 
         }
+
+
+
 
 
     }//class
