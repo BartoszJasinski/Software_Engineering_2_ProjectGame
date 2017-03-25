@@ -2,17 +2,16 @@
 
 namespace Common.IO.Console
 {
-    public class CommandLineParser
+    public static class CommandLineParser
     {
-        public static CommandLineOptions ParseArgs(string[] args)
+        public static T ParseArgs<T>(string[] args, ICommandLineOptions commandLineOptions) where T: ICommandLineOptions
         {
-            CommandLineOptions options = new CommandLineOptions();
-            CommandLine.Parser parser = new Parser();
+            Parser parser = new Parser();
 
-            if (!parser.ParseArguments(args, options))
+            if (!parser.ParseArguments(args, commandLineOptions))
                 throw new ParserException("Command Line parser error");
 
-            return options;
+            return (T) commandLineOptions;
 
         }
     }

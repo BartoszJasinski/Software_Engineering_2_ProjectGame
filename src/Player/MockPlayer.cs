@@ -8,7 +8,7 @@ namespace Player
     {
         public static void Main(string[] args)
         {
-            CommandLineOptions options = CommandLineParser.ParseArgs(args);
+            AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
             MockPlayerClient client = new MockPlayerClient(new Connection(options.Address, options.Port));
             client.Connect();

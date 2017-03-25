@@ -55,6 +55,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{9BBFC02C-89F0-4387-8FF1-EAC1B06B662C}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Server\Server.csproj">
       <Project>{1cd588b1-5458-4e94-84be-292aca25972c}</Project>
       <Name>Server</Name>

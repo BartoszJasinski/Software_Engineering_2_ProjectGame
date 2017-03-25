@@ -15,7 +15,7 @@ namespace GameMaster
         //adres post metoda connect
         static void Main(string[] args)
         {
-            CommandLineOptions options = CommandLineParser.ParseArgs(args);
+            AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
             MockGameMasterClient client = new MockGameMasterClient(new Connection(options.Address, options.Port));
             client.Connect();
