@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection\BehaviorChooser.cs" />
     <Compile Include="Connection\ConnectionEndpoint.cs" />
     <Compile Include="Connection\IConnectionEndpoint.cs" />
     <Compile Include="Game\Game.cs" />

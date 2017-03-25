@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Common;
 using Common.Connection.EventArg;
+using Common.Message;
 using Common.Schema;
 using Server.Connection;
 using Server.Game;
@@ -17,19 +19,20 @@ namespace Server
 {
     public class CommunicationServer
     {
-        private IConnectionEndpoint connectionEndpoint;
-        private IGamesContainer registeredGames;
+        public IConnectionEndpoint ConnectionEndpoint;
+        public IGamesContainer RegisteredGames;
+
         public CommunicationServer(IConnectionEndpoint connectionEndpoint)
         {
-            this.connectionEndpoint = connectionEndpoint;
-            registeredGames = new GamesContainer();
+            this.ConnectionEndpoint = connectionEndpoint;
+            RegisteredGames = new GamesContainer();
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
         }
 
         public void Start()
         {
-            connectionEndpoint.Listen();
+            ConnectionEndpoint.Listen();
         }
 
         private void OnClientConnect(object sender, ConnectEventArgs eventArgs)
@@ -41,49 +44,45 @@ namespace Server
 
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
-            var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
-            connectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
+            var address = eventArgs.Handler.GetRemoteAddress();
+            if (address!=null)
+                Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+            BehaviorChooser.React((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
+                eventArgs.Handler);
+            //ConnectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
+            
         }
 
-        private void OnRegisterGame(object sender, MessageRecieveEventArgs eventArgs)
+        public void OnRegisterGame(object sender, MessageRecieveEventArgs eventArgs)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(RegisterGame));
-            try
-            {
-                RegisterGame request;
-                using (TextReader reader = new StringReader(eventArgs.Message))
-                {
-                    request = (RegisterGame)serializer.Deserialize(reader);
-                }
-                if (request == null)
-                    return;
+            RegisterGame request = (RegisterGame) XmlMessageConverter.ToObject(eventArgs.Message);
 
-                Game.Game g = new Game.Game(gameId: registeredGames.NextGameId(), name: request.NewGameInfo.name,
-                    bluePlayers: (int)request.NewGameInfo.blueTeamPlayers, redPlayers: (int)request.NewGameInfo.redTeamPlayers);
+            if (request == null)
+                return;
 
-                registeredGames.RegisterGame(g);
-                ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() { gameId = (ulong)g.Id };
+            Game.Game g = new Game.Game(gameId: RegisteredGames.NextGameId(), name: request.NewGameInfo.name,
+                bluePlayers: request.NewGameInfo.blueTeamPlayers,
+                redPlayers: request.NewGameInfo.redTeamPlayers
+                );
 
-                var response = Serialize(gameRegistration);
-                connectionEndpoint.SendFromServer(eventArgs.Handler, response);
-            }
-            catch
-            {
-                // TODO add some logger
-            }
+            RegisteredGames.RegisterGame(g);
+
+            ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() {gameId = (ulong) g.Id};
+
+            var response = XmlMessageConverter.ToXml(gameRegistration);
+            ConnectionEndpoint.SendFromServer(eventArgs.Handler, response);
         }
 
-        private static string Serialize<T>(T gameRegistration)
-        {
-            XmlSerializer ser = new XmlSerializer(typeof(T));
-            string response;
-            using (TextWriter writer = new StringWriter())
-            {
-                ser.Serialize(writer, gameRegistration);
-                response = writer.ToString();
-            }
-            return response;
-        }
+        //private static string Serialize<T>(T gameRegistration)
+        //{
+        //    XmlSerializer ser = new XmlSerializer(typeof(T));
+        //    string response;
+        //    using (TextWriter writer = new StringWriter())
+        //    {
+        //        ser.Serialize(writer, gameRegistration);
+        //        response = writer.ToString();
+        //    }
+        //    return response;
+        //}
     }
 }

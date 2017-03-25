@@ -1,7 +1,14 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Threading;
+using Common.Connection.EventArg;
+using Common.Message;
+using Common.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Server;
+using Server.Connection;
 using Server.Game;
+using Game = Server.Game.Game;
 
 namespace ServerTests
 {
@@ -16,7 +23,20 @@ namespace ServerTests
             gc.RegisterGame(new Game());
             gc.RegisterGame(new Game(name:"g1", gameId:1, bluePlayers:2, redPlayers:2));
         }
-        
+
+        [TestMethod]
+        public void BehavTest()
+        {
+            var m = new MockEndpoint();
+            CommunicationServer sv = new CommunicationServer(m);
+
+            m.Receive(XmlMessageConverter.ToXml(new RegisterGame(){NewGameInfo = new GameInfo()
+            {
+                blueTeamPlayers = 4, name = "dasd", redTeamPlayers = 2
+            }}));
+
+        }
+
         [TestMethod]
         public void RegisterGameTest()
         {
@@ -54,5 +74,27 @@ namespace ServerTests
         }
 
 
+    }
+
+    class MockEndpoint : IConnectionEndpoint
+    {
+        public int Port { get; set; }
+        public void Listen()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendFromServer(Socket handler, string message)
+        {
+            
+        }
+
+        public void Receive(string message)
+        {
+            OnMessageRecieve(null, new MessageRecieveEventArgs(message, new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)));
+        }
+
+        public event EventHandler<ConnectEventArgs> OnConnect;
+        public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
     }
 }
