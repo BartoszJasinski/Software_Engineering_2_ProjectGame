@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logic\RandXmlClass.cs" />
-    <Compile Include="Net\GameMasterClient.cs" />
+    <Compile Include="Net\MockGameMasterClient.cs" />
     <Compile Include="MockGameMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

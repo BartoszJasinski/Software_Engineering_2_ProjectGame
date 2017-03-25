@@ -1,16 +1,13 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Xml;
-using System.Xml.Serialization;
+using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
-using Common.Xml;
-using MockGameMaster.Logic;
+using GameMaster.Logic;
 
-namespace Common.IO.Net
+namespace GameMaster.Net
 {
     
     public class GameMasterClient
@@ -18,7 +15,7 @@ namespace Common.IO.Net
         private IConnection connection;
         
         //TESTING ONLY maybe we should change Iconnection a bit 
-        private Socket client;
+    //    private Socket client;
 
         public GameMasterClient(IConnection connection)
         {
@@ -38,10 +35,10 @@ namespace Common.IO.Net
             connection.StopClient();
         }
 
-        public void Send(string message)
-        {
-            connection.Send(client, message);
-        }
+//        public void Send(string message)
+//        {
+//            connection.Send(client, message);
+//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
@@ -51,10 +48,17 @@ namespace Common.IO.Net
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-            client = socket;
+   //         client = socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            GameInfo gameInfo = new GameInfo();
+            gameInfo.name = "Test Game";
+            gameInfo.blueTeamPlayers = 42;
+            gameInfo.redTeamPlayers = 24;
+            RegisterGame registerGame = new RegisterGame();
+            registerGame.NewGameInfo = gameInfo;
 
+            string registerGameMessage = XmlMessageConverter.ToXml(registerGame);
+            connection.SendFromClient(socket, registerGameMessage);
             
         }
 

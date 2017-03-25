@@ -10,14 +10,14 @@ using GameMaster.Net;
 
 namespace GameMaster
 {
-    class MockGameMaster
+    class GameMaster
     {
         //adres post metoda connect
         static void Main(string[] args)
         {
             CommandLineOptions options = CommandLineParser.ParseArgs(args);
 
-            MockGameMasterClient client = new MockGameMasterClient(new Connection(options.Address, options.Port));
+            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
         }
