@@ -18,7 +18,7 @@ namespace MockPlayer.Net
         private IConnection connection;
 
         //TESTING ONLY maybe we should change Iconnection a bit 
-        private Socket client;
+   //     private Socket client;
 
         public MockPlayerClient(IConnection connection)
         {
@@ -38,10 +38,10 @@ namespace MockPlayer.Net
             connection.StopClient();
         }
 
-        public void Send(string message)
-        {
-            connection.Send(client, message);
-        }
+//        public void Send(string message)
+//        {
+//            connection.Send(client, message);
+//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
@@ -51,7 +51,7 @@ namespace MockPlayer.Net
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-            client = socket;
+    //        client = socket;
 
             connection.SendFromClient(socket, "Welcome message");
 
