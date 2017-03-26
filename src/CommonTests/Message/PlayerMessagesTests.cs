@@ -17,21 +17,21 @@ namespace CommonTests.Message
         {
             ConfirmJoiningGame message = new ConfirmJoiningGame();
     
-            message.playerId = 0;
+            message.playerId = 3;
 
             message.gameId = 1;
 
             message.privateGuid = "testPrivateGuid";
 
-            message.PlayerDefinition = new Player() { id = 0 };
+            message.PlayerDefinition = new Player() { id = 2 };
 
             string xml = XmlMessageConverter.ToXml(message);
             ConfirmJoiningGame result = (ConfirmJoiningGame)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual((ulong)0, result.playerId);
+            Assert.AreEqual((ulong)3, result.playerId);
             Assert.AreEqual((ulong)1, result.gameId);
             Assert.AreEqual("testPrivateGuid", result.privateGuid);
-            Assert.AreEqual((ulong)0, result.PlayerDefinition.id);
+            Assert.AreEqual((ulong)2, result.PlayerDefinition.id);
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ namespace CommonTests.Message
             message.Board = new GameBoard() { width = 10 };
 
             Player[] playerTab = new Player[3];
-            playerTab[0] = new Player() { id = 0 };
+            playerTab[0] = new Player() { id = 1 };
 
             message.Players = playerTab;
 
@@ -90,7 +90,7 @@ namespace CommonTests.Message
             Assert.AreEqual((ulong)0, result.playerId);
             Assert.AreEqual((uint)3, result.PlayerLocation.x);
             Assert.AreEqual((uint)10, result.Board.width);
-            Assert.AreEqual((ulong)0, result.Players[0].id);
+            Assert.AreEqual((ulong)1, result.Players[0].id);
         }
 
         
@@ -107,5 +107,38 @@ namespace CommonTests.Message
 
             Assert.AreEqual(false, result.permanent);
         }
+
+        [TestMethod]
+        public void PlayerTest()
+        {
+           Player message = new Player();
+
+            message.id = 0;
+            message.team = TeamColour.blue;
+            message.type = PlayerType.leader;
+
+            string xml = XmlMessageConverter.ToXml(message);
+            Player result = (Player)XmlMessageConverter.ToObject(xml);
+
+            Assert.AreEqual((ulong)0, result.id);
+            Assert.AreEqual(TeamColour.blue, result.team);
+            Assert.AreEqual(PlayerType.leader, result.type);
+        }
+
+        [TestMethod]
+        public void PlayerMessageTest()
+        {
+            PlayerMessage message = new PlayerMessage();
+
+            message.playerId = 1;
+
+
+            string xml = XmlMessageConverter.ToXml(message);
+            PlayerMessage result = (PlayerMessage)XmlMessageConverter.ToObject(xml);
+
+            Assert.AreEqual((ulong)1, result.playerId);
+
+        }
+
     }
 }

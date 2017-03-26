@@ -56,6 +56,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="IO\Console\CommandLineParserTests.cs" />
+    <Compile Include="Message\BoardTests.cs" />
     <Compile Include="Message\GameMessagesTests.cs" />
     <Compile Include="Message\PlayerMessagesTests.cs" />
     <Compile Include="Message\ServerMessagesTests.cs" />
