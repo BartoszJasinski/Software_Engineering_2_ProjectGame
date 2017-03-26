@@ -28,7 +28,8 @@ namespace Common.Message
             {
                 xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
-                using (var s = new StringReader(xmlString))
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xmlString)))
+                using (var s = new StreamReader(stream, Encoding.UTF8))
                 {
                     return xs.Deserialize(s);
                 }
@@ -47,7 +48,7 @@ namespace Common.Message
         {
             XmlSerializer xs = new XmlSerializer(msg.GetType());
             StringBuilder sb = new StringBuilder();
-            using (var s = new StringWriter(sb))
+            using (var s = new Utf8StringWriter(sb))
             {
                 xs.Serialize(s, msg);
             }
