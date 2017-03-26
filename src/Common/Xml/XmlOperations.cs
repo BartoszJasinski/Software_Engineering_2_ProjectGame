@@ -11,26 +11,27 @@ namespace Common.Xml
     {
         public static string Serialize()
         {
-            GameFinished subReq = new GameFinished();
-            subReq.gameId = 123;
+            //GameFinished subReq = new GameFinished();
+            //subReq.gameId = 123;
 
-            XmlSerializer xsSubmit = new XmlSerializer(typeof(GameFinished));
-            var sww = new StringWriter();
-            XmlWriter writer = XmlWriter.Create(sww);
-            xsSubmit.Serialize(writer, subReq);
+            //XmlSerializer xsSubmit = new XmlSerializer(typeof(GameFinished));
+            //var sww = new StringWriter();
+            //XmlWriter writer = XmlWriter.Create(sww);
+            //xsSubmit.Serialize(writer, subReq);
 
-            return sww.ToString();
+            //return sww.ToString();
+            return null;
 
         }
 
         public static void Deserialize(string xml)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(GameFinished));
-            TextReader xmlReader = new StringReader(xml);
-//            StreamReader xmlReader = new StreamReader();
-            GameFinished gameFinished = (GameFinished)serializer.Deserialize(xmlReader);
+//            XmlSerializer serializer = new XmlSerializer(typeof(GameFinished));
+//            TextReader xmlReader = new StringReader(xml);
+////            StreamReader xmlReader = new StreamReader();
+//            GameFinished gameFinished = (GameFinished)serializer.Deserialize(xmlReader);
 
-            Console.WriteLine("Pimpuś " + gameFinished.gameId);
+//            Console.WriteLine("Pimpuś " + gameFinished.gameId);
         }
     }
 }
