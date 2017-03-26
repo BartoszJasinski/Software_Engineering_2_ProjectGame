@@ -19,12 +19,12 @@ namespace CommonTests.Message
         {
             AuthorizeKnowledgeExchange message = new AuthorizeKnowledgeExchange();
 
-            message.withPlayerId = 0;
+            message.withPlayerId = 4;
 
             string xml = XmlMessageConverter.ToXml(message);
             AuthorizeKnowledgeExchange result = (AuthorizeKnowledgeExchange)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual((ulong)0, result.withPlayerId);
+            Assert.AreEqual((ulong)4, result.withPlayerId);
         }
 
         [TestMethod]
@@ -41,6 +41,38 @@ namespace CommonTests.Message
 
             Assert.AreEqual(MoveType.down, result.direction);
             Assert.AreEqual(true, result.directionSpecified);
+        }
+
+        [TestMethod]
+        public void GameFinishedTest()
+        {
+            GameFinished message =  new GameFinished();
+
+            message.gameId = 0;
+
+            string xml = XmlMessageConverter.ToXml(message);
+            GameFinished result = (GameFinished)XmlMessageConverter.ToObject(xml);
+
+            Assert.AreEqual((ulong)0, result.gameId);
+
+        }
+
+        [TestMethod]
+        public void GameInfoTest()
+        {
+            GameInfo message = new GameInfo();
+
+            message.blueTeamPlayers = 3;
+            message.redTeamPlayers = 3;
+            message.name = "testName";
+
+            string xml = XmlMessageConverter.ToXml(message);
+            GameInfo result = (GameInfo)XmlMessageConverter.ToObject(xml);
+
+            Assert.AreEqual((ulong)3,result.redTeamPlayers);
+            Assert.AreEqual((ulong)3, result.blueTeamPlayers);
+            Assert.AreEqual("testName", result.name);
+
         }
     }
 }
