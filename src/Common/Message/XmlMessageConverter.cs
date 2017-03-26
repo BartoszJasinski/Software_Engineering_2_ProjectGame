@@ -47,7 +47,7 @@ namespace Common.Message
         {
             XmlSerializer xs = new XmlSerializer(msg.GetType());
             StringBuilder sb = new StringBuilder();
-            using (var s = new StringWriter(sb))
+            using (StringWriter s = new Utf8StringWriter(sb))
             {
                 xs.Serialize(s, msg);
             }
