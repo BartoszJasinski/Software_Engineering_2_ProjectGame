@@ -36,9 +36,6 @@ namespace MockGameMaster.Logic
                 case 4:
                     obj = new Piece();
                     break;
-                case 5:
-                    obj = new GameFinished();
-                    break;
                 case 6:
                     obj = new GameInfo();
                     break;
@@ -104,6 +101,7 @@ namespace MockGameMaster.Logic
                     rg.NewGameInfo = new GameInfo();
                     rg.NewGameInfo.blueTeamPlayers = 42;
                     rg.NewGameInfo.redTeamPlayers = 24;
+                    rg.NewGameInfo.gameName = "test";
                     obj = rg;
                     break;
             }

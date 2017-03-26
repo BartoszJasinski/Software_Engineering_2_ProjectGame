@@ -37,9 +37,6 @@ namespace MockPlayer.Logic
                 case 4:
                     obj = new Piece();
                     break;
-                case 5:
-                    obj = new GameFinished();
-                    break;
                 case 6:
                     obj = new GameInfo();
                     break;
