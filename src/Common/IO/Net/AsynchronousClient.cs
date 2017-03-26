@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
-using Common.Schema;
+using Common;
 using Common.Xml;
 
 namespace Common.IO.Net
