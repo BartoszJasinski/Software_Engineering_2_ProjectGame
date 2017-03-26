@@ -21,6 +21,45 @@ namespace CommonTests.Message
             Console.WriteLine(xmlString);
         }
 
+        [TestMethod]
+        public void MoveSerDeserTest()
+        {
+            Move msg = new Move();
+            msg.direction = MoveType.down;
+            msg.directionSpecified = true;
+            msg.gameId = 21321;
+            msg.playerGuid = "asdasdsad";
+            var s1 = XmlMessageConverter.ToXml(msg);
+            var s2 = XmlMessageConverter.ToXml(XmlMessageConverter.ToObject(s1));
+            Assert.AreEqual(s1,s2);
+        }
+
+        [TestMethod]
+        public void GameSerDeserTest()
+        {
+            Game g = new Game();
+            g.Board = new GameBoard()
+            {
+                goalsHeight = 10,
+                tasksHeight = 4,
+                width = 5
+            };
+            g.PlayerLocation = new Location()
+            {
+                x = 10,
+                y = 10
+            };
+            g.Players = new Player[]
+            {
+                new Player(){id=4, team = TeamColour.blue, type = PlayerType.leader}
+            };
+            var s1 = XmlMessageConverter.ToXml(g);
+            var s2 = XmlMessageConverter.ToXml(XmlMessageConverter.ToObject(s1));
+            Assert.AreEqual(s1, s2);
+        }
+
+      
+
 
         [TestMethod]
         public void CorrectMoveMessageTest()

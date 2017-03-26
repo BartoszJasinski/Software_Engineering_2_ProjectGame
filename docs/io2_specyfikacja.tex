@@ -19,7 +19,7 @@
 \vspace{1.5cm}
 \large Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets \\
 \vspace{1.0cm}
-Version 1.5 \\
+Version 1.6 \\
 \vspace{1.0cm}
 \today
 \end{titlepage}
@@ -33,6 +33,7 @@ Mar 4, 2017 & Filip Grajek, Tomasz Koter & Added project schedule & 1.2 \\ \hlin
 Mar 4, 2017 & Filip Grajek, Tomasz Koter, Bartosz Jasiński & Added new specification errors & 1.3 \\ \hline
 Mar 5, 2017 & Kamil Grabowski, Filip Grajek, Bartosz Jasiński, Tomasz Koter, Ivan Rukhavets  & Added personal work schedule& 1.4 \\ \hline
 Mar 5, 2017 &  Filip Grajek, Bartosz Jasiński & Added more specification errors& 1.5 \\ \hline
+Mar 22, 2017 &  Filip Grajek & Added new schedule & 1.6 \\ \hline
 \end{longtable}
 
 \tableofcontents
@@ -145,6 +146,8 @@ The whole project can be divided into four main phases. The length of those phas
 
 Each phase is divided into smaller tasks, that are assigned man-hours. Those hours also include time for unit test, which are written after each task.
 
+\subsubsection{Schedule 5.03.2017}
+
 \begin{tabular}{| p{3.5cm} | p{3cm} | p{4cm} | l |} \hline
 \textbf{Phase} & \textbf{Category} & \textbf{Task} & \textbf{Man-hours} \\ \hline
 Communication & Server & Connecting to the server & 15 \\ \cline{3-4}
@@ -174,9 +177,46 @@ Championship & Player & Player strategy & 50 \\ \cline{3-4}
 & & Leader strategy & 30 \\ \hline
 \end{tabular}
 
+\subsubsection{Schedule 22.03.2017}
+
+\begin{tabular}{| p{3.5cm} | p{3cm} | p{4cm} | l |} \hline
+\textbf{Phase} & \textbf{Category} & \textbf{Task} & \textbf{Man-hours} \\ \hline
+Communication & Setup & Initial setup  & 8 \\ \cline{2-4}
+& Server & Connecting to the server & 15 \\ \cline{3-4}
+& & Handling connection loss & 8 \\ \cline{2-4}
+& Game master & Mock game master & 8 \\ \cline{2-4}
+& Xml & Sending xml & 15 \\ \cline{3-4}
+& & Validating xml & 8 \\ \cline{2-4}
+& Player & Mock player & 8 \\ \cline{2-4}
+& Tests & Integration tests & 15 \\ \cline{2-4}
+& Bugs & Bug fixing & 15 \\ \hline
+Game & Server & Creating game & 15 \\ \cline{3-4}
+& & Joining game & 22 \\ \cline{3-4}
+& & Message flow & 22 \\ \cline{2-4}
+& Game master & Connecting to server & 9 \\ \cline{3-4}
+& & Creating a game & 15 \\ \cline{3-4}
+& & Accepting players & 8 \\ \cline{3-4}
+& & Board Creation & 15 \\ \cline{3-4}
+& & Data responses & 29 \\ \cline{3-4}
+& & Ending game & 8 \\ \cline{2-4}
+& Player & Connecting to game & 8 \\ \cline{3-4}
+& & Player messages and actions & 29 \\ \cline{3-4}
+& & Simple strategy & 29 \\ \cline{2-4}
+& Tests & Integration Tests & 8 \\ \cline{2-4}
+& Bugs & Bug fixing & 8 \\ \hline
+Cooperation & Integration & Integration of communication server & 86 \\ \cline{3-4}
+& & Integration of game master & 80 \\ \cline{3-4}
+& & Integration of players & 79 \\ \cline{2-4}
+& Bugs & Bug fixing & 8 \\ \hline
+Championship & Player & Player strategy & 50 \\ \cline{3-4}
+& & Leader strategy & 30 \\ \hline
+\end{tabular}
+
 \newgeometry{left=2cm}
 
 \subsection{Personal work schedule}
+
+\subsubsection{Personal work schedule 5.03.2017}
 
 \begin{tabular}{ | p{4cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | }
 \hline
@@ -213,6 +253,45 @@ Championship & Player & Player strategy & 50 \\ \cline{3-4}
 	Leader\ strategy & 9 & 9 & 4 & 4 & 4 \\ \hline
 	 &  &  &  &  &  \\ \hline
 \end{tabular} \\
+
+\subsubsection{Personal work schedule 22.03.2017}
+
+\begin{tabular}{ | p{4cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | p{2cm} | }
+\hline
+	\textbf{Functionality} & \textbf{Bartosz Jasiński} & \textbf{Filip Grajek} & \textbf{Ivan Rukhavets} & \textbf{Kamil Grabowski} & \textbf{Tomasz Koter}\\ \hline
+	Initial setup & 2 & 2 & 1 & 2 & 1 \\ \hline
+	Connecting to server & 1 & 6 & 5 & 2 & 1 \\ \hline
+	Handling connection loss & 1 & 2 & 1 & 3 & 1 \\ \hline
+	Mock game master & 1 & 1 & 1 & 4 & 1 \\ \hline
+	Sending xml & 4 & 1 & 4 & 1 & 5 \\ \hline
+	Xml validation & 1 & 1 & 1 & 1 & 4 \\ \hline
+	Mock player & 4 & 1 & 1 & 1 & 1 \\ \hline
+	Integration test & 3 & 3 & 3 & 3 & 3 \\ \hline
+	Bug fixing & 3 & 3 & 3 & 3 & 3 \\ \hline
+	\  & \  & \  & \  & \  & \  \\ \hline
+	Creating game & 1 & 1 & 6 & 1 & 6 \\ \hline
+	Joining game & 8 & 2 & 2 & 8 & 2 \\ \hline
+	Message flow & 2 & 6 & 2 & 6 & 6 \\ \hline
+	Creating a game & 5 & 4 & 4 & 1 & 1 \\ \hline
+	Accepting players & 3 & 2 & 1 & 1 & 1 \\ \hline
+	Board creation & 1 & 1 & 2 & 5 & 6 \\ \hline
+	Data responses & 2 & 8 & 8 & 3 & 8 \\ \hline
+	Ending game & 3 & 2 & 1 & 1 & 1 \\ \hline
+	Connecting to game & 3 & 1 & 3 & 1 & 1 \\ \hline
+	Player messages and actions & 7 & 8 & 3 & 8 & 3 \\ \hline
+	Simple strategy & 1 & 1 & 4 & 1 & 1 \\ \hline
+	Integration Tests & 3 & 3 & 3 & 3 & 3 \\ \hline
+	Bug fixing & 3 & 3 & 3 & 3 & 3 \\ \hline
+	\  & \  & \  & \  & \  & \  \\ \hline
+	Integration of communication server & 10 & 20 & 20 & 15 & 20 \\ \hline
+	Integration of game master & 15 & 10 & 10 & 25 & 20 \\ \hline
+	Integration of players & 24 & 19 & 19 & 9 & 9 \\ \hline
+	Bug fixing & 3 & 3 & 3 & 3 & 3 \\ \hline
+	\  & \  & \  & \  & \  & \  \\ \hline
+	Player strategy & 7 & 7 & 12 & 12 & 12 \\ \hline
+	Leader strategy & 9 & 9 & 4 & 4 & 4 \\ \hline
+\end{tabular} \\
+
 
 The numbers in the table above indicate how many hours each team member spends on each task. Most often two to three people work on a task, while the rest is doing another one. Every person has to spend at least one hour on each task to review and understand the code.
 

@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 using Common.Connection;
 using Common.IO.Console; 
 using Common.IO.Net;
+using GameMaster.Net;
 
-namespace MockGameMaster
+namespace GameMaster
 {
     class MockGameMaster
     {
         //adres post metoda connect
         static void Main(string[] args)
         {
-            CommandLineOptions options = CommandLineParser.ParseArgs(args);
+            AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
-            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port));
+            MockGameMasterClient client = new MockGameMasterClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
         }
