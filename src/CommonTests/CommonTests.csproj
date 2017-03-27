@@ -55,9 +55,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BoardTests.cs" />
+    <Compile Include="GameMessagesTests.cs" />
     <Compile Include="IO\Console\CommandLineParserTests.cs" />
     <Compile Include="Message\XmlMessageConverterTests.cs" />
+    <Compile Include="PlayerMessagesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerMessagesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
