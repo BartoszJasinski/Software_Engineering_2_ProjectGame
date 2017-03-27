@@ -44,6 +44,7 @@ namespace Server
 
         private void OnMessage(object sender, MessageRecieveEventArgs eventArgs)
         {
+
             var address = eventArgs.Handler.GetRemoteAddress();
             if (address!=null)
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);

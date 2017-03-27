@@ -16,24 +16,26 @@ namespace ServerTests
     public class GamesTests
     {
         GamesContainer gc = new GamesContainer();
-
+        CommunicationServer MockServer;
         [TestInitialize]
         public void InitTest()
         {
             gc.RegisterGame(new Game());
             gc.RegisterGame(new Game(name:"g1", gameId:1, bluePlayers:2, redPlayers:2));
+            MockServer = new CommunicationServer(new MockEndpoint());
         }
 
         [TestMethod]
         public void BehavTest()
         {
-            var m = new MockEndpoint();
-            CommunicationServer sv = new CommunicationServer(m);
+            //var m = new MockEndpoint();
+            //CommunicationServer sv = new CommunicationServer(m);
 
-            m.Receive(XmlMessageConverter.ToXml(new RegisterGame(){NewGameInfo = new GameInfo()
+            ((MockEndpoint)MockServer.ConnectionEndpoint).Receive(XmlMessageConverter.ToXml(new RegisterGame(){NewGameInfo = new GameInfo()
             {
                 blueTeamPlayers = 4, name = "dasd", redTeamPlayers = 2
             }}));
+
 
         }
 

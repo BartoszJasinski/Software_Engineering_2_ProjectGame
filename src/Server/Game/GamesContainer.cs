@@ -76,7 +76,8 @@ namespace Server.Game
 
         public int NextGameId()
         {
-            return games.Values.Max(game => game.Id) + 1;
+
+            return games.Count>0? games.Values.Max(game => game.Id) + 1 : 0;
         }
     }
 
