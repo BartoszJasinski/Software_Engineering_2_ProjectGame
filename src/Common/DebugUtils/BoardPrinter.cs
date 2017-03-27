@@ -31,17 +31,60 @@ namespace Common.DebugUtils
 
         private static void PrintField(Field field)
         {
-            Console.WriteLine("handling generic");
-        }
+            if(field is GoalField)
+            {
+                var f = field as GoalField;
+                switch(f.team)
+                {
+                    case TeamColour.red:
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        break;
+                    case TeamColour.blue:
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        break;
+                }
+                switch(f.type)
+                {
+                    case GoalFieldType.goal:
+                        {
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                            Console.Write(" ");
+                            break;
+                        }
+                    case GoalFieldType.nongoal:
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkYellow;
+                            Console.Write(" ");
+                            break;
+                        }
+                    case GoalFieldType.unknown:
+                        {
+                            Console.BackgroundColor = ConsoleColor.Gray;
+                            Console.Write(" ");
+                            break;
+                        }
+                }
+                
+            }
+            else if(field is TaskField)
+            {
+                var f = field as TaskField;
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
+                
+                if(f.pieceIdSpecified)
+                {
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("P");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" ");
+                }
+                
+            }
 
-        private static void PrintField(GoalField field)
-        {
-            Console.WriteLine("handling goal");
-        }
-
-        private static void PrintField(TaskField field)
-        {
-            
+            Console.ResetColor();
         }
     }
 }

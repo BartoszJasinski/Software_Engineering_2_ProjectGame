@@ -48,10 +48,12 @@ namespace GameMaster.Logic.Board
                         team = TeamColour.red,
                         type = goalLayout[x,y] ? GoalFieldType.goal : GoalFieldType.nongoal
                     };
-                    board.Fields[x, y + goalsOffset] = new GoalField()
+                    var xLocal = board.Width - x - 1;
+                    var yLocal = board.GoalsHeight - y - 1 + goalsOffset;
+                    board.Fields[xLocal, yLocal] = new GoalField()
                     {
-                        x = (uint)x,
-                        y = (uint)y,
+                        x = (uint)xLocal,
+                        y = (uint)yLocal,
                         playerIdSpecified = false,
                         timestamp = timestamp,
                         team = TeamColour.blue,
@@ -60,7 +62,7 @@ namespace GameMaster.Logic.Board
                 }
             }
 
-            for (int y = 0; y < board.TasksHeight; y++)
+            for (uint y = board.GoalsHeight; y < board.GoalsHeight + board.TasksHeight; y++)
             {
                 for (int x = 0; x < board.Width; x++)
                 {
@@ -69,7 +71,7 @@ namespace GameMaster.Logic.Board
                         pieceIdSpecified = false,
                         playerIdSpecified = false,
                         x = (uint)x,
-                        y = (uint)y,
+                        y = y,
                         timestamp = timestamp
                     };
                 }
