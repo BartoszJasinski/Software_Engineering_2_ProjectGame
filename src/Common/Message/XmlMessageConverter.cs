@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Common.Message
@@ -26,6 +27,7 @@ namespace Common.Message
             XmlDocument xd = new XmlDocument();
             try
             {
+                XmlValidation.Validate(xmlString);
                 xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
                 using (var s = new StringReader(xmlString))
@@ -38,6 +40,10 @@ namespace Common.Message
                 return null;
             }
             catch (XmlException)
+            {
+                return null;
+            }
+            catch (XmlSchemaValidationException)
             {
                 return null;
             }

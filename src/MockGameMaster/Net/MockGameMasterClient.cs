@@ -13,9 +13,7 @@ namespace GameMaster.Net
     public class MockGameMasterClient
     {
         private IConnection connection;
-        
-        //TESTING ONLY maybe we should change Iconnection a bit 
- //       private Socket client;
+       
 
         public MockGameMasterClient(IConnection connection)
         {
@@ -35,20 +33,12 @@ namespace GameMaster.Net
             connection.StopClient();
         }
 
-//        public void Send(string message)
-//        {
-//            connection.Send(client, message);
-//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            //some copy-pasta happened here, i feel
             var address = eventArgs.Handler.GetRemoteAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
-
-            //TESTING ONLY maybe we should change Iconnection a bit 
-   //         client = socket;
 
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 

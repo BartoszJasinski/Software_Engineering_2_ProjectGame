@@ -15,8 +15,7 @@ namespace GameMaster.Net
     {
         private IConnection connection;
         
-        //TESTING ONLY maybe we should change Iconnection a bit 
-    //    private Socket client;
+
 
         public GameMasterClient(IConnection connection)
         {
@@ -36,10 +35,6 @@ namespace GameMaster.Net
             connection.StopClient();
         }
 
-//        public void Send(string message)
-//        {
-//            connection.Send(client, message);
-//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
@@ -47,10 +42,7 @@ namespace GameMaster.Net
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            //TESTING ONLY maybe we should change Iconnection a bit 
-            //         client = socket;
-
-            ////TEST
+            ////TEST game registration
             GameInfo gameInfo = new GameInfo();
             gameInfo.gameName = "Test Game";
             gameInfo.blueTeamPlayers = 42;
@@ -77,7 +69,7 @@ namespace GameMaster.Net
 
             System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
 
-            ////TEST
+            ////TEST game registation
             dynamic recivedMessage = XmlMessageConverter.ToObject(eventArgs.Message);
 
             if (recivedMessage is ConfirmGameRegistration)
