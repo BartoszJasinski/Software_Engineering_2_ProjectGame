@@ -58,12 +58,17 @@
     <Compile Include="Message\KeepAliveCutter.cs" />
     <Compile Include="Message\Utf8StringWriter.cs" />
     <Compile Include="Message\XmlMessageConverter.cs" />
+    <Compile Include="Message\XmlValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SocketExtensions.cs" />
     <Compile Include="TheProjectGameCommunication.cs">
       <DependentUpon>TheProjectGameCommunication.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Xml\XmlOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -74,7 +79,19 @@
   <ItemGroup>
     <Folder Include="EventArg\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Jesus.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>echo $(ProjectDir) &gt; "$(ProjectDir)\Jesus.txt"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

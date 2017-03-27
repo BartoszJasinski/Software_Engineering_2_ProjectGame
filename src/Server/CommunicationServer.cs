@@ -10,6 +10,7 @@ using Common.Connection;
 using Common.Connection.EventArg;
 using Server.Connection;
 using Common;
+using Common.Message;
 
 namespace Server
 {
@@ -46,6 +47,8 @@ namespace Server
 //            dynamic xmlObject = XmlMessageConverter.ToObject(KeepAliveCutter.Cut(eventArgs.Message));
 //            Console.WriteLine("\n \n" + xmlObject.ToString() + "\n \n");
 //            //// end test
+
+            XmlValidation.Validate(eventArgs.Message);
 
             connectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
         }
