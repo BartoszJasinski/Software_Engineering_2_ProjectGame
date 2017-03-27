@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using Common;
 using Common.Connection;
@@ -42,20 +43,22 @@ namespace GameMaster.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            //some copy-pasta happened here, i feel
             var address = eventArgs.Handler.GetRemoteAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
             //TESTING ONLY maybe we should change Iconnection a bit 
-   //         client = socket;
+            //         client = socket;
 
+            ////TEST
             GameInfo gameInfo = new GameInfo();
-            gameInfo.name = "Test Game";
+            gameInfo.gameName = "Test Game";
             gameInfo.blueTeamPlayers = 42;
             gameInfo.redTeamPlayers = 24;
             RegisterGame registerGame = new RegisterGame();
             registerGame.NewGameInfo = gameInfo;
+            ////TEST
+
 
             string registerGameMessage = XmlMessageConverter.ToXml(registerGame);
             connection.SendFromClient(socket, registerGameMessage);
@@ -73,6 +76,15 @@ namespace GameMaster.Net
             var socket = eventArgs.Handler as Socket;
 
             System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
+
+            ////TEST
+            dynamic recivedMessage = XmlMessageConverter.ToObject(eventArgs.Message);
+
+            if (recivedMessage is ConfirmGameRegistration)
+                Console.WriteLine(((ConfirmGameRegistration)recivedMessage).gameId);
+            ////TEST
+            
+
 
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 

@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Common;
 using Common.Connection.EventArg;
-using Common.Schema;
 using Server.Connection;
+using Common.Message;
 using Server.Game;
+using Common.Schema;
 
 namespace Server
 {
@@ -48,10 +49,12 @@ namespace Server
             Console.WriteLine("SERVER \n New message from {0}: {1}", address, eventArgs.Message);
 
 
-            //            /////test
-            //            dynamic xmlObject = XmlMessageConverter.ToObject(KeepAliveCutter.Cut(eventArgs.Message));
-            //            Console.WriteLine("\n \n" + xmlObject.ToString() + "\n \n");
-            //            //// end test
+//            /////test
+//            dynamic xmlObject = XmlMessageConverter.ToObject(KeepAliveCutter.Cut(eventArgs.Message));
+//            Console.WriteLine("\n \n" + xmlObject.ToString() + "\n \n");
+//            //// end test
+
+            XmlValidation.Validate(eventArgs.Message);
 
             connectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
         }
@@ -69,7 +72,7 @@ namespace Server
                 if (request == null)
                     return;
 
-                Game.Game g = new Game.Game(gameId: registeredGames.NextGameId(), name: request.NewGameInfo.name,
+                Game.Game g = new Game.Game(gameId: registeredGames.NextGameId(), name: request.NewGameInfo.gameName,
                     bluePlayers: (int)request.NewGameInfo.blueTeamPlayers, redPlayers: (int)request.NewGameInfo.redTeamPlayers);
 
                 registeredGames.RegisterGame(g);

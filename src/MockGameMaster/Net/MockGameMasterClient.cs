@@ -4,7 +4,8 @@ using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
-using GameMaster.Logic;
+using Common.Schema;
+using MockGameMaster.Logic;
 
 namespace GameMaster.Net
 {
@@ -49,7 +50,9 @@ namespace GameMaster.Net
             //TESTING ONLY maybe we should change Iconnection a bit 
    //         client = socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
+
+            connection.SendFromClient(socket, xmlMessage);
 
             
         }

@@ -11,7 +11,7 @@ namespace Common.IO.Console
             if (!parser.ParseArguments(args, commandLineOptions))
                 throw new ParserException("Command Line parser error");
 
-            return (T) commandLineOptions;
+            return (T)commandLineOptions;
 
         }
     }
