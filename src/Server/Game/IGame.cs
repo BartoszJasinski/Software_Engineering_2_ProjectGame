@@ -1,10 +1,14 @@
-﻿namespace Server.Game
+﻿using System.Net.Sockets;
+
+namespace Server.Game
 {
     public interface IGame
     {
         int Id { get; set; }
         string Name { get; set; }
-        int BlueTeamPlayersCount { get; set; }
-        int RedTeamPlayersCount { get; set; }
+        ulong BlueTeamPlayersCount { get; set; }
+        ulong RedTeamPlayersCount { get; set; }
+
+        Socket GameMaster { get; set; }
     }
 }
