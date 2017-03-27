@@ -95,7 +95,6 @@
     <Compile Include="Schema\Player\PlayerType.cs" />
     <Compile Include="Schema\Player\TeamColour.cs" />
     <Compile Include="SocketExtensions.cs" />
-    <Compile Include="Xml\XmlOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
