@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{1CD588B1-5458-4E94-84BE-292ACA25972C}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameMaster", "GameMaster\GameMaster.csproj", "{A7A00589-8A4E-4F56-BF4A-59EFE0CB6393}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Player", "Player\Player.csproj", "{C740B77F-5ABB-4066-81BB-D94BF4014EB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{C740B77F-5ABB-4066-81BB-D94BF4014EB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C740B77F-5ABB-4066-81BB-D94BF4014EB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C740B77F-5ABB-4066-81BB-D94BF4014EB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
