@@ -12,9 +12,6 @@ namespace Player.Net
     {
         private IConnection connection;
 
-        //TESTING ONLY maybe we should change Iconnection a bit 
-        //private Socket client;
-
         public MockPlayerClient(IConnection connection)
         {
             this.connection = connection;
@@ -33,20 +30,12 @@ namespace Player.Net
             connection.StopClient();
         }
 
-//        public void Send(string message)
-//        {
-//            connection.Send(client, message);
-//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            //some copy-pasta happened here, i feel
             var address = eventArgs.Handler.GetRemoteAddress();
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
-
-            //TESTING ONLY maybe we should change Iconnection a bit 
-       //     client = socket;
 
             connection.SendFromClient(socket, "Welcome message");
 
