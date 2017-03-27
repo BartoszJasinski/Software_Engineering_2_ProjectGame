@@ -66,8 +66,8 @@ namespace CommonTests.Message
         {
             string xml =
                 $"<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
-                $"<Move xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\ngameId=\"1\"\r\n" +
-                $"playerGuid=\"c094cab7-da7b-457f-89e5-a5c51756035f\"\r\n" +
+                $"<Move xmlns=\"https://se2.mini.pw.edu.pl/17-results/\"\r\ngameId=\"1\"\r\n" +
+            $"playerGuid=\"c094cab7-da7b-457f-89e5-a5c51756035f\"\r\n" +
                 $"direction=\"up\"/>\r";
             var obj = XmlMessageConverter.ToObject(xml);
             Assert.IsTrue(obj is Move);
@@ -85,8 +85,8 @@ namespace CommonTests.Message
         {
             string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
                                     "<ConfirmGameRegistration\r\n" +
-                                    "xmlns=\"http://theprojectgame.mini.pw.edu.pl/\"\r\n" +
-                                    "/>";
+                                    "xmlns=\"https://se2.mini.pw.edu.pl/17-results/\"\r\n" +
+            "/>";
             var obj = XmlMessageConverter.ToObject(xmlNoGameId);
             Assert.IsTrue(obj is ConfirmGameRegistration);
         }

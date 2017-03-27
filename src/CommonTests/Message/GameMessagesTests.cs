@@ -44,34 +44,20 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
-        public void GameFinishedTest()
-        {
-            GameFinished message =  new GameFinished();
-
-            message.gameId = 0;
-
-            string xml = XmlMessageConverter.ToXml(message);
-            GameFinished result = (GameFinished)XmlMessageConverter.ToObject(xml);
-
-            Assert.AreEqual((ulong)0, result.gameId);
-
-        }
-
-        [TestMethod]
         public void GameInfoTest()
         {
             GameInfo message = new GameInfo();
 
             message.blueTeamPlayers = 3;
             message.redTeamPlayers = 3;
-            message.name = "testName";
+            message.gameName = "testName";
 
             string xml = XmlMessageConverter.ToXml(message);
             GameInfo result = (GameInfo)XmlMessageConverter.ToObject(xml);
 
             Assert.AreEqual((ulong)3,result.redTeamPlayers);
             Assert.AreEqual((ulong)3, result.blueTeamPlayers);
-            Assert.AreEqual("testName", result.name);
+            Assert.AreEqual("testName", result.gameName);
 
         }
     }

@@ -17,15 +17,15 @@ namespace CommonTests.Message
         {
             JoinGame joinGame = new JoinGame();
             joinGame.gameName = "testGameName";
-            joinGame.preferedRole = PlayerType.leader;
-            joinGame.preferedTeam = TeamColour.red;
+            joinGame.preferredRole = PlayerType.leader;
+            joinGame.preferredTeam = TeamColour.red;
 
             string xml = XmlMessageConverter.ToXml(joinGame);
             JoinGame result = (JoinGame)XmlMessageConverter.ToObject(xml);
 
             Assert.AreEqual("testGameName", result.gameName);
-            Assert.AreEqual(PlayerType.leader, result.preferedRole);
-            Assert.AreEqual(TeamColour.red, result.preferedTeam);
+            Assert.AreEqual(PlayerType.leader, result.preferredRole);
+            Assert.AreEqual(TeamColour.red, result.preferredTeam);
         }
 
         [TestMethod]
@@ -33,14 +33,14 @@ namespace CommonTests.Message
         {
             RegisteredGames registeredGames = new RegisteredGames();
             GameInfo[] gameInfoTab = new GameInfo[3];
-            gameInfoTab[0] = new GameInfo() { name = "testName" };
+            gameInfoTab[0] = new GameInfo() { gameName = "testName" };
             registeredGames.GameInfo = gameInfoTab;
 
 
             string xml = XmlMessageConverter.ToXml(registeredGames);
             RegisteredGames result = (RegisteredGames)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual("testName", result.GameInfo[0].name);
+            Assert.AreEqual("testName", result.GameInfo[0].gameName);
         }
 
 
@@ -49,14 +49,14 @@ namespace CommonTests.Message
         {
             RegisterGame registerGame = new RegisterGame();
             GameInfo gameInfo = new GameInfo();
-            gameInfo = new GameInfo() { name = "testName" };
+            gameInfo = new GameInfo() { gameName = "testName" };
             registerGame.NewGameInfo = gameInfo;
 
 
             string xml = XmlMessageConverter.ToXml(registerGame);
             RegisterGame result = (RegisterGame)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual("testName", result.NewGameInfo.name);
+            Assert.AreEqual("testName", result.NewGameInfo.gameName);
         }
 
 

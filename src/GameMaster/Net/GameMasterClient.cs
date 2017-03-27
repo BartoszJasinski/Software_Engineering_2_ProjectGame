@@ -52,7 +52,7 @@ namespace GameMaster.Net
 
             ////TEST
             GameInfo gameInfo = new GameInfo();
-            gameInfo.name = "Test Game";
+            gameInfo.gameName = "Test Game";
             gameInfo.blueTeamPlayers = 42;
             gameInfo.redTeamPlayers = 24;
             RegisterGame registerGame = new RegisterGame();
