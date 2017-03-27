@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GameMaster.Logic
+namespace Player.Logic
 {
     public class RandXmlClass
     {
         static Random rng = new Random();
+
         [TestMethod()]
         public static object GetXmlClass()
         {
@@ -82,7 +78,7 @@ namespace GameMaster.Logic
                     obj = new PlayerMessage();
                     break;
                 case 20:
-                    obj = new Player();
+                    obj = new Common.Schema.Player();
                     break;
                 case 21:
                     obj = new ConfirmGameRegistration();

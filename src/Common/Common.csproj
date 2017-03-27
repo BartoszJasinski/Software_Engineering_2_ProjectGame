@@ -51,8 +51,10 @@
     <Compile Include="Connection\EventArg\ConnectEventArgs.cs" />
     <Compile Include="Connection\EventArg\MessageRecieveEventArgs.cs" />
     <Compile Include="Connection\EventArg\MessageSendEventArgs.cs" />
-    <Compile Include="IO\Console\CommandLineOptions.cs" />
+    <Compile Include="IO\Console\AgentCommandLineOptions.cs" />
     <Compile Include="IO\Console\CommandLineParser.cs" />
+    <Compile Include="IO\Console\ICommandLineOptions.cs" />
+    <Compile Include="IO\Console\ServerCommandLineOptions.cs" />
     <Compile Include="IO\Net\AsynchronousClient.cs" />
     <Compile Include="Message\IMessageHandler.cs" />
     <Compile Include="Message\KeepAliveCutter.cs" />
@@ -93,14 +95,11 @@
     <Compile Include="Schema\Player\PlayerType.cs" />
     <Compile Include="Schema\Player\TeamColour.cs" />
     <Compile Include="SocketExtensions.cs" />
-    <Compile Include="Xml\XmlOperations.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EventArg\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

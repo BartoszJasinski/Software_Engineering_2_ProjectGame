@@ -17,7 +17,7 @@ namespace Common.IO.Console.Tests
         {
          
 
-            CommandLineOptions expectedOptions = new CommandLineOptions
+            AgentCommandLineOptions expectedOptions = new AgentCommandLineOptions
             {
                 Address = "172.16.254.1",
                 Port = 666
@@ -25,7 +25,8 @@ namespace Common.IO.Console.Tests
 
             //"17-PL-01",
             string[] args = new[] { "--address", "172.16.254.1", "--port", "666" };
-            CommandLineOptions options = CommandLineParser.ParseArgs(args);
+           // ICommandLineOptions commandLineOptions = ;
+            AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
             Assert.AreEqual(expectedOptions.Address, options.Address);
             Assert.AreEqual(expectedOptions.Port, options.Port);
