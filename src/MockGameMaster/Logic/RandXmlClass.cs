@@ -16,7 +16,7 @@ namespace MockGameMaster.Logic
         public static object GetXmlClass()
         {
             object obj = new object();
-            int rand = rng.Next(30, 35);
+            int rand = rng.Next(0, 25);
 
             //DONT LOOK BELLOW DIS LINE
             switch (rand)
