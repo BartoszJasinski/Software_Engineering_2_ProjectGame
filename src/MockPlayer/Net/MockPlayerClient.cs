@@ -52,7 +52,9 @@ namespace MockPlayer.Net
             //TESTING ONLY maybe we should change Iconnection a bit 
             client = socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
+
+            connection.SendFromClient(socket, xmlMessage);
 
 
         }

@@ -70,6 +70,17 @@ namespace MockPlayer.Logic
                         playerId = 1
                     };
                     break;
+                case 5:
+                    obj = new RegisterGame()
+                    {
+                        NewGameInfo = new GameInfo()
+                        {
+                            blueTeamPlayers = 10,
+                            redTeamPlayers = 9,
+                            gameName = "game"
+                        }
+                    };
+                    break;
                 case 6:
                     obj = new GameInfo()
                     {
@@ -224,17 +235,7 @@ namespace MockPlayer.Logic
                         }
                     };
                     break;
-                case 25:
-                    obj = new RegisterGame()
-                    {
-                        NewGameInfo = new GameInfo()
-                        {
-                            blueTeamPlayers = 10,
-                            redTeamPlayers = 9,
-                            gameName = "game"
-                        }
-                    };
-                    break;
+
             }
 
             return obj;
