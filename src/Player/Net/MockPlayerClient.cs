@@ -37,7 +37,9 @@ namespace Player.Net
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
+
+            connection.SendFromClient(socket, xmlMessage);
 
 
         }
