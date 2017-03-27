@@ -8,7 +8,6 @@ using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
-using Common.Xml;
 using MockPlayer.Logic;
 
 namespace MockPlayer.Net

@@ -7,7 +7,6 @@ using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
-using Common.Xml;
 using MockGameMaster.Logic;
 
 namespace Common.IO.Net
@@ -53,9 +52,11 @@ namespace Common.IO.Net
             //TESTING ONLY maybe we should change Iconnection a bit 
             client = socket;
 
-            connection.SendFromClient(socket, "Welcome message");
+            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
-            
+            connection.SendFromClient(socket, xmlMessage);
+
+
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)

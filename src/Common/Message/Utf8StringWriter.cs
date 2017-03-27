@@ -7,20 +7,25 @@ using System.Threading.Tasks;
 
 namespace Common.Message
 {
-    class Utf8StringWriter: StringWriter
+    public class Utf8StringWriter : StringWriter
     {
-        public Utf8StringWriter(StringBuilder stringBuilder): base(stringBuilder)
+        public Utf8StringWriter(StringBuilder sb) : base(sb)
         {
+                
         }
-        
-        
-        // Use UTF8 encoding but write no BOM to the wire
+
         public override Encoding Encoding
         {
-            get { return new UTF8Encoding(false); } // in real code I'll cache this encoding.
+            get { return new UTF8Encoding(false); }
         }
+    }
 
+    public class Utf8StringReader : StringReader
+    {
+        public Utf8StringReader(string s) : base(s)
+        {
 
+        }
 
     }
 }

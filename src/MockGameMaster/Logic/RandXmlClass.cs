@@ -16,7 +16,7 @@ namespace MockGameMaster.Logic
         public static object GetXmlClass()
         {
             object obj = new object();
-            int rand = rng.Next(0, 25);
+            int rand = rng.Next(30, 35);
 
             //DONT LOOK BELLOW DIS LINE
             switch (rand)
@@ -35,9 +35,6 @@ namespace MockGameMaster.Logic
                     break;
                 case 4:
                     obj = new Piece();
-                    break;
-                case 5:
-                    obj = new GameFinished();
                     break;
                 case 6:
                     obj = new GameInfo();
@@ -98,6 +95,14 @@ namespace MockGameMaster.Logic
                     break;
                 case 25:
                     obj = new RegisterGame();
+                    break;
+                default:
+                    RegisterGame rg = new RegisterGame();
+                    rg.NewGameInfo = new GameInfo();
+                    rg.NewGameInfo.blueTeamPlayers = 42;
+                    rg.NewGameInfo.redTeamPlayers = 24;
+                    rg.NewGameInfo.gameName = "test";
+                    obj = rg;
                     break;
             }
 

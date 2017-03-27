@@ -7,7 +7,6 @@ using Common.Connection;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;
-using Common.Xml;
 
 namespace Common.IO.Net
 {
@@ -62,13 +61,13 @@ namespace Common.IO.Net
             //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
             //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
 
-            var socket = eventArgs.Handler as Socket;
+            //var socket = eventArgs.Handler as Socket;
 
-            GameFinished gf = new GameFinished();
-            gf.gameId = 123;
+            //GameFinished gf = new GameFinished();
+            //gf.gameId = 123;
 
-            string xmlMessage = XmlMessageConverter.ToXml(gf);
-            connection.SendFromClient(socket, xmlMessage);
+            //string xmlMessage = XmlMessageConverter.ToXml(gf);
+            //connection.SendFromClient(socket, xmlMessage);
 
 
         }
