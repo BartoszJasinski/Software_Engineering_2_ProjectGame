@@ -18,7 +18,7 @@ namespace Server.Connection
             if (request == null)
                 return;
 
-            Game.Game g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.name,
+            Game.Game g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
                 bluePlayers: request.NewGameInfo.blueTeamPlayers,
                 redPlayers: request.NewGameInfo.redTeamPlayers
                 );
@@ -46,7 +46,7 @@ namespace Server.Connection
                 {
                     blueTeamPlayers = game.BlueTeamPlayersCount,
                     redTeamPlayers = game.RedTeamPlayersCount,
-                    name = game.Name
+                    gameName = game.Name
                 });
             }
             var rg = new RegisteredGames() {GameInfo = gi.ToArray()};
