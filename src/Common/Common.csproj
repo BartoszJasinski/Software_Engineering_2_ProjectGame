@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugUtils\BoardPrinter.cs" />
+    <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantBoard.cs" />
+    <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantField.cs" />
+    <Compile Include="SchemaWrapper\Implementation\AddressableBoard.cs" />
     <Compile Include="Connection\Connection.cs" />
     <Compile Include="Connection\IConnection.cs" />
     <Compile Include="Connection\StateObject.cs" />
