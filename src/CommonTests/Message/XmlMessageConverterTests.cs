@@ -88,7 +88,7 @@ namespace CommonTests.Message
                                     "xmlns=\"https://se2.mini.pw.edu.pl/17-results/\"\r\n" +
             "/>";
             var obj = XmlMessageConverter.ToObject(xmlNoGameId);
-            Assert.IsTrue(obj is ConfirmGameRegistration);
+            Assert.IsNull(obj);
         }
 
         [TestMethod]

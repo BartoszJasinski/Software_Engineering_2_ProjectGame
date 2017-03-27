@@ -21,10 +21,15 @@ namespace Common.Message
         //3. Properties -> Resources -> Add Existing file (down arrow near Add Resource) ->  add Jesus.txt
         //IMPORTANT
 
+        /// <summary>
+        /// Xml validation
+        /// </summary>
+        /// <param name="message">message</param>
+        /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>
         public static void Validate(string message)
         {
-            try
-            {
+         //   try
+         //   {
                 //Sweet Windows Magic
                 var dir = Resources.Jesus;
                 dir = dir.Replace(@"\\", @"\");
@@ -48,16 +53,13 @@ namespace Common.Message
 
 
              //   Console.WriteLine("\n\n\n\n It works \n\n\n\n");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
         }
-        private static string CleanFileName(string fileName)
-        {
-            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
-        }
+
 
         static void ValidationEventHandler(object sender, ValidationEventArgs e)
         {
@@ -67,9 +69,11 @@ namespace Common.Message
             {
                 case XmlSeverityType.Error:
                     Console.WriteLine("Error: {0}", e.Message);
+                    throw new  XmlException();
                     break;
                 case XmlSeverityType.Warning:
                     Console.WriteLine("Warning {0}", e.Message);
+                    throw new XmlException();
                     break;
             }
 
