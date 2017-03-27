@@ -53,7 +53,7 @@ namespace Server.Connection
             server.ConnectionEndpoint.SendFromServer(handler, XmlMessageConverter.ToXml(rg));
         }
 
-        public static void React(object message, CommunicationServer server)
+        public static void React(object message, CommunicationServer server, Socket handler)
         {
             Console.WriteLine("Unknown type");
 
