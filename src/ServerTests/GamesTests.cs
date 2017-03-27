@@ -33,7 +33,7 @@ namespace ServerTests
 
             ((MockEndpoint)MockServer.ConnectionEndpoint).Receive(XmlMessageConverter.ToXml(new RegisterGame(){NewGameInfo = new GameInfo()
             {
-                blueTeamPlayers = 4, name = "dasd", redTeamPlayers = 2
+                blueTeamPlayers = 4, gameName = "dasd", redTeamPlayers = 2
             }}));
 
 

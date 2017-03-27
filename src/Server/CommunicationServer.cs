@@ -14,7 +14,6 @@ using Common.Schema;
 using Server.Connection;
 using Common.Message;
 using Server.Game;
-using Common.Schema;
 
 namespace Server
 {
@@ -63,7 +62,7 @@ namespace Server
                 if (request == null)
                     return;
 
-            Game.Game g = new Game.Game(gameId: RegisteredGames.NextGameId(), name: request.NewGameInfo.name,
+            Game.Game g = new Game.Game(gameId: RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
                 bluePlayers: request.NewGameInfo.blueTeamPlayers,
                 redPlayers: request.NewGameInfo.redTeamPlayers
                 );
