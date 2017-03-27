@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommandLine;
 using Common.Connection;
 using Common.IO.Console;
-using Common.IO.Net;
 using Common.Message;
 using Common.Schema;
 using MockPlayer.Net;

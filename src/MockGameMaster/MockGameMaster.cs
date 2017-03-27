@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Connection;
 using Common.IO.Console; 
-using Common.IO.Net;
 using GameMaster.Net;
 
 namespace GameMaster
