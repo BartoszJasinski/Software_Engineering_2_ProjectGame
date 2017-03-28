@@ -51,7 +51,6 @@ namespace Server
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
             BehaviorChooser.React((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
                 eventArgs.Handler);
-            //ConnectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
             
         }
 
