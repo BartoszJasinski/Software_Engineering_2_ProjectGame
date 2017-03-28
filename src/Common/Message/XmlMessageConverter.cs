@@ -27,6 +27,7 @@ namespace Common.Message
             XmlDocument xd = new XmlDocument();
             try
             {
+                //TODO when XmlValidation.Validate(xmlString) is uncommented few unit tests fail 
                 XmlValidation.Validate(xmlString);
                 xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));

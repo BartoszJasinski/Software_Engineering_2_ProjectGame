@@ -24,7 +24,7 @@ namespace Common.Message
         /// <summary>
         /// Xml validation
         /// </summary>
-        /// <param name="message">message</param>
+        /// <param name="message">XML message</param>
         /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>
         public static void Validate(string message)
         {
