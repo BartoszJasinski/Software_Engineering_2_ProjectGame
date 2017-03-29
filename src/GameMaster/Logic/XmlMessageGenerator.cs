@@ -74,7 +74,7 @@ namespace GameMaster.Logic
                     {
                         blueTeamPlayers = 3,
                         redTeamPlayers = 2,
-                        gameName = "gameName"
+                        gameName = "gamename"
                     };
                     break;
                 case 7:
@@ -209,7 +209,7 @@ namespace GameMaster.Logic
                 case 23:
                     obj = new JoinGame()
                     {
-                        gameName = "gameName",
+                        gameName = "gamename",
                         preferredRole = PlayerType.leader,
                         preferredTeam = TeamColour.red
                     };
@@ -217,13 +217,13 @@ namespace GameMaster.Logic
                 case 24:
                     obj = new RegisteredGames()
                     {
-                        GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 } }
+                        GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 } }
                     };
                     break;
                 case 25:
                     obj = new RegisterGame()
                     {
-                        NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 }
+                        NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 }
                     };
                     break;
                 default:
@@ -293,7 +293,7 @@ namespace GameMaster.Logic
             {
                 blueTeamPlayers = 3,
                 redTeamPlayers = 2,
-                gameName = "gameName"
+                gameName = "gamename"
             });
 
             xmlMessages.Add("AuthorizeKnowledgeExchange", new AuthorizeKnowledgeExchange()
@@ -410,18 +410,18 @@ namespace GameMaster.Logic
             xmlMessages.Add("GetGames", new GetGames());
             xmlMessages.Add("JoinGame", new JoinGame()
             {
-                gameName = "gameName",
+                gameName = "gamename",
                 preferredRole = PlayerType.leader,
                 preferredTeam = TeamColour.red
             });
 
             xmlMessages.Add("RegisteredGames", new RegisteredGames()
             {
-                GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 } }
+                GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 } }
             });
             xmlMessages.Add("RegisterGame", new RegisterGame()
             {
-                NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 }
+                NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 }
             });
             
             return xmlMessages[message];

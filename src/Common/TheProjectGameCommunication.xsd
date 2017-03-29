@@ -91,19 +91,19 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:complexType name="PlayerMessage">
+  <xs:complexType name="PlayerGood">
     <xs:attribute name="playerId" type="xs:unsignedLong"  use="required" />
   </xs:complexType>
 
-  <xs:complexType name="BetweenPlayersMessage" abstract="true">
+  <xs:complexType name="BetweenPlayersGood" abstract="true">
     <xs:complexContent>
-      <xs:extension base="PlayerMessage">
+      <xs:extension base="PlayerGood">
         <xs:attribute name="senderPlayerId" type="xs:unsignedLong"  use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="GameMessage" abstract="true">
+  <xs:complexType name="GameGood" abstract="true">
     <xs:attribute name="playerGuid" type="guid" use="required" />
     <xs:attribute name="gameId" type="xs:unsignedLong"  use="required" />
   </xs:complexType>
@@ -124,7 +124,7 @@
   <xs:element name="Data">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="PlayerMessage">
+        <xs:extension base="PlayerGood">
           <xs:sequence>
             <xs:element name="TaskFields" minOccurs="0">
               <xs:annotation>
@@ -171,21 +171,21 @@
   <xs:element name="TestPiece">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="GameMessage" />
+        <xs:extension base="GameGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
   <xs:element name="PlacePiece">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="GameMessage" />
+        <xs:extension base="GameGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
   <xs:element name="PickUpPiece">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="GameMessage" />
+        <xs:extension base="GameGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
@@ -193,7 +193,7 @@
   <xs:element name="Move">
     <xs:complexType>
     <xs:complexContent>
-      <xs:extension base="GameMessage">
+      <xs:extension base="GameGood">
         <xs:attribute name="direction" type="MoveType" />
       </xs:extension>
     </xs:complexContent>
@@ -203,7 +203,7 @@
   <xs:element name="Discover">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="GameMessage" />
+        <xs:extension base="GameGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
@@ -211,7 +211,7 @@
   <xs:element name="AuthorizeKnowledgeExchange">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="GameMessage">
+        <xs:extension base="GameGood">
           <xs:attribute name="withPlayerId" type="xs:unsignedLong" use="required" />
         </xs:extension>
       </xs:complexContent>
@@ -221,7 +221,7 @@
   <xs:element name="KnowledgeExchangeRequest">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="BetweenPlayersMessage" />
+        <xs:extension base="BetweenPlayersGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
@@ -229,7 +229,7 @@
   <xs:element name="AcceptExchangeRequest">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="BetweenPlayersMessage" />
+        <xs:extension base="BetweenPlayersGood" />
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
@@ -237,7 +237,7 @@
   <xs:element name="RejectKnowledgeExchange">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="BetweenPlayersMessage">
+        <xs:extension base="BetweenPlayersGood">
           <xs:attribute name="permanent" type="xs:boolean" use="required" />
         </xs:extension>
       </xs:complexContent>
@@ -248,7 +248,7 @@
   <xs:element name="Game">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="PlayerMessage">
+        <xs:extension base="PlayerGood">
           <xs:sequence>
             <xs:element name="Players">
               <xs:complexType>
@@ -349,7 +349,7 @@
   <xs:element name="ConfirmJoiningGame">
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="PlayerMessage">
+        <xs:extension base="PlayerGood">
           <xs:sequence>
             <xs:element name="PlayerDefinition" type="Player" />
           </xs:sequence>
@@ -369,7 +369,7 @@
     </xs:annotation>
     <xs:complexType>
       <xs:complexContent>
-        <xs:extension base="PlayerMessage">
+        <xs:extension base="PlayerGood">
           <xs:attribute name="gameName" type="GameName" use="required" />
         </xs:extension>
       </xs:complexContent>

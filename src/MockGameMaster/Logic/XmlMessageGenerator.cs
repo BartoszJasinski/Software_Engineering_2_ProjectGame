@@ -77,7 +77,7 @@ namespace MockGameMaster.Logic
                     {
                         blueTeamPlayers = 3,
                         redTeamPlayers = 2,
-                        gameName = "gameName"
+                        gameName = "gamename"
                     };
                     break;
                 case 7:
@@ -212,7 +212,7 @@ namespace MockGameMaster.Logic
                 case 23:
                     obj = new JoinGame()
                     {
-                        gameName = "gameName",
+                        gameName = "gamename",
                         preferredRole = PlayerType.leader,
                         preferredTeam = TeamColour.red
                     };
@@ -220,13 +220,13 @@ namespace MockGameMaster.Logic
                 case 24:
                     obj = new RegisteredGames()
                     {
-                        GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 } }
+                        GameInfo = new GameInfo[] { new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 } }
                     };
                     break;
                 case 25:
                     obj = new RegisterGame()
                     {
-                        NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gameName", redTeamPlayers = 3 }
+                        NewGameInfo = new GameInfo() { blueTeamPlayers = 3, gameName = "gamename", redTeamPlayers = 3 }
                     };
                     break;
                 default:

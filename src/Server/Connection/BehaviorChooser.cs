@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 
@@ -54,7 +55,7 @@ namespace Server.Connection
 
         public static void HandleMessage(object message, CommunicationServer server, Socket handler)
         {
-            Console.WriteLine("Unknown type");
+            ConsoleDebug.Warning("Unknown type");
 
         }
     }

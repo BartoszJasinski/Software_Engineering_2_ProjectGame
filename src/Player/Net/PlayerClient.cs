@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
+using Common.DebugUtils;
 using Common.Message;
 using Player.Logic;
 
@@ -34,7 +35,7 @@ namespace Player.Net
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
             var address = eventArgs.Handler.GetRemoteAddress();
-            System.Console.WriteLine("Successful connection with address {0}", address.ToString());
+            ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
@@ -46,12 +47,9 @@ namespace Player.Net
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
             var socket = eventArgs.Handler as Socket;
 
-            System.Console.WriteLine("New message from: {0} \n {1}", socket.GetRemoteAddress(), eventArgs.Message);
+            ConsoleDebug.Ordinary("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 

@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
+using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using GameMaster.Logic;
@@ -38,20 +39,11 @@ namespace GameMaster.Net
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
             var address = eventArgs.Handler.GetRemoteAddress();
-            System.Console.WriteLine("Successful connection with address {0}", address.ToString());
+            ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            ////TEST game registration
-            GameInfo gameInfo = new GameInfo();
-            gameInfo.gameName = "testgame";
-            gameInfo.blueTeamPlayers = 42;
-            gameInfo.redTeamPlayers = 24;
-            RegisterGame registerGame = new RegisterGame();
-            registerGame.NewGameInfo = gameInfo;
-            ////TEST
 
-
-            string registerGameMessage = XmlMessageConverter.ToXml(registerGame);
+            string registerGameMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage("RegisterGame"));
             connection.SendFromClient(socket, registerGameMessage);
             
         }
@@ -60,13 +52,13 @@ namespace GameMaster.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
+            ConsoleDebug.Ordinary("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
             
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 
-          //  connection.SendFromClient(socket, xmlMessage);
+            connection.SendFromClient(socket, xmlMessage);
 
 
         }

@@ -58,7 +58,7 @@ namespace Common.Connection
                 connectDone.WaitOne();
 
                 //// Send test data to the remote device.
-                //Send(client, "Message" + (char)0x23);
+                //Send(client, "Good" + (char)0x23);
                 //sendDone.WaitOne();
 
                 disconnectDone.WaitOne();

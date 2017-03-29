@@ -51,7 +51,7 @@ namespace MockPlayer.Net
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
             //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
+            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Good);
 
             var socket = eventArgs.Handler as Socket;
 
