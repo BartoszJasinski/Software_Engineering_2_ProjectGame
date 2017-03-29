@@ -64,6 +64,7 @@ namespace Common.Message
         static void ValidationEventHandler(object sender, ValidationEventArgs e)
         {
            
+            Console.WriteLine("\n ERROR IN VALIDATION\n ");
 
             switch (e.Severity)
             {

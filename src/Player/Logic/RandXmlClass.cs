@@ -13,7 +13,6 @@ namespace Player.Logic
             object obj = new object();
             int rand = rng.Next(0, 25);
 
-            //DONT LOOK BELLOW DIS LINE
             switch (rand)
             {
                 case 0:
@@ -226,6 +225,17 @@ namespace Player.Logic
                             redTeamPlayers = 9,
                             gameName = "game"
                             }
+                        }
+                    };
+                    break;
+                default:
+                    obj = new RegisterGame()
+                    {
+                        NewGameInfo = new GameInfo()
+                        {
+                            blueTeamPlayers = 42,
+                            redTeamPlayers = 24,
+                            gameName = "defaultgame"
                         }
                     };
                     break;

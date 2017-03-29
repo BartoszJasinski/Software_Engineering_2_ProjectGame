@@ -14,7 +14,6 @@ namespace GameMaster.Net
     public class GameMasterClient
     {
         private IConnection connection;
-        
 
 
         public GameMasterClient(IConnection connection)
@@ -44,7 +43,7 @@ namespace GameMaster.Net
 
             ////TEST game registration
             GameInfo gameInfo = new GameInfo();
-            gameInfo.gameName = "Test Game";
+            gameInfo.gameName = "testgame";
             gameInfo.blueTeamPlayers = 42;
             gameInfo.redTeamPlayers = 24;
             RegisterGame registerGame = new RegisterGame();

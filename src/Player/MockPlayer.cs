@@ -10,7 +10,7 @@ namespace Player
         {
             AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
-            MockPlayerClient client = new MockPlayerClient(new Connection(options.Address, options.Port));
+            PlayerClient client = new PlayerClient(new Connection(options.Address, options.Port));
             client.Connect();
             client.Disconnect();
 

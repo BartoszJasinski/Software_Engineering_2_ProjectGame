@@ -50,7 +50,7 @@
   <ItemGroup>
     <Compile Include="Logic\RandXmlClass.cs" />
     <Compile Include="MockPlayer.cs" />
-    <Compile Include="Net\MockPlayerClient.cs" />
+    <Compile Include="Net\PlayerClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
