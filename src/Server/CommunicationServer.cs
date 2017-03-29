@@ -76,6 +76,32 @@ namespace Server
             ConnectionEndpoint.SendFromServer(eventArgs.Handler, response);
             }
 
+        public void OnJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
+        {
+            JoinGame request = (JoinGame)XmlMessageConverter.ToObject(eventArgs.Message);
+
+            if (request == null)
+                return;
+
+            Game.IGame g = RegisteredGames.GetGameByName(request.gameName);
+
+            var response = XmlMessageConverter.ToXml(request);
+            ConnectionEndpoint.SendFromServer(g.GameMaster, response);
+        }
+
+        //public void OnConfirmJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
+        //{
+        //    ConfirmJoiningGame request = (ConfirmJoiningGame)XmlMessageConverter.ToObject(eventArgs.Message);
+
+        //    if (request == null)
+        //        return;
+
+        //    Game.IGame g = RegisteredGames.GetGameById((int)request.gameId);
+
+        //    var response = XmlMessageConverter.ToXml(request);
+
+        //}
+
         //private static string Serialize<T>(T gameRegistration)
         //{
         //    XmlSerializer ser = new XmlSerializer(typeof(T));
