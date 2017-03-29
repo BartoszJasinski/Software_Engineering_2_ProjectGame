@@ -49,7 +49,7 @@ namespace Server
             var address = eventArgs.Handler.GetRemoteAddress();
             if (address != null)
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
-            BehaviorChooser.React((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
+            BehaviorChooser.HandleMessage((object) (GetGames) (dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
                 eventArgs.Handler);
 
             ConnectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);

@@ -63,7 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\RandXmlClass.cs" />
+    <Compile Include="Logic\XmlMessageGenerator.cs" />
     <Compile Include="Net\MockGameMasterClient.cs" />
     <Compile Include="MockGameMaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

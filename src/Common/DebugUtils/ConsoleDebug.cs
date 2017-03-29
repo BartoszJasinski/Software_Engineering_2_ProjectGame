@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.DebugUtils
 {
-    public class ConsoleDebug
+    public static class ConsoleDebug
     {
         public static void Ordinary(string consoleMessage)
         {
@@ -26,6 +26,14 @@ namespace Common.DebugUtils
             Console.WriteLine(consoleMessage);
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+        public static void Warning(string consoleMessage)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(consoleMessage);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
 
     }
 }

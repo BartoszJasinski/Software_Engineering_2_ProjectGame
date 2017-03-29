@@ -58,28 +58,15 @@ namespace GameMaster.Net
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
             var socket = eventArgs.Handler as Socket;
 
             System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
 
-            ////TEST game registation
-            dynamic recivedMessage = XmlMessageConverter.ToObject(eventArgs.Message);
-
-            if (recivedMessage is ConfirmGameRegistration)
-                Console.WriteLine(((ConfirmGameRegistration)recivedMessage).gameId);
-            ////TEST
+            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
             
+            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 
-
-            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
-
-        //    connection.SendFromClient(socket, xmlMessage);
+          //  connection.SendFromClient(socket, xmlMessage);
 
 
         }

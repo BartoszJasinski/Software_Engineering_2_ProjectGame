@@ -40,7 +40,7 @@ namespace GameMaster.Net
             System.Console.WriteLine("Successful connection with address {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
+            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlClass());
 
             connection.SendFromClient(socket, xmlMessage);
 
@@ -59,7 +59,7 @@ namespace GameMaster.Net
 
             System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
 
-            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
+            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlClass());
 
             connection.SendFromClient(socket, xmlMessage);
 

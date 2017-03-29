@@ -11,9 +11,8 @@ namespace Server.Connection
 {
     public static class BehaviorChooser
     {
-        public static void React(RegisterGame request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(RegisterGame request, CommunicationServer server, Socket handler)
         {
-            
 
             if (request == null)
                 return;
@@ -37,7 +36,7 @@ namespace Server.Connection
             server.ConnectionEndpoint.SendFromServer(handler, response);
         }
 
-        public static void React(GetGames request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(GetGames request, CommunicationServer server, Socket handler)
         {
             List<GameInfo> gi = new List<GameInfo>();
             foreach (var game in server.RegisteredGames)
@@ -53,7 +52,7 @@ namespace Server.Connection
             server.ConnectionEndpoint.SendFromServer(handler, XmlMessageConverter.ToXml(rg));
         }
 
-        public static void React(object message, CommunicationServer server, Socket handler)
+        public static void HandleMessage(object message, CommunicationServer server, Socket handler)
         {
             Console.WriteLine("Unknown type");
 
