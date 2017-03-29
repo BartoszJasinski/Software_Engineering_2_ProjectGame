@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
+using Common.DebugUtils;
 using Common.Properties;
 
 namespace Common.Message
@@ -26,7 +27,7 @@ namespace Common.Message
         /// </summary>
         /// <param name="message">XML message</param>
         /// 
-      /*  /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>*/
+        /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>
         public static void Validate(string message)
         {
             try
@@ -56,8 +57,8 @@ namespace Common.Message
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(ex.Message);
+                ConsoleDebug.Error(ex.Message);
+                throw new XmlSchemaValidationException(ex.Message);
             }
         }
 
