@@ -79,7 +79,7 @@ namespace GameMaster.Net
 
             string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
 
-            connection.SendFromClient(socket, xmlMessage);
+        //    connection.SendFromClient(socket, xmlMessage);
 
 
         }

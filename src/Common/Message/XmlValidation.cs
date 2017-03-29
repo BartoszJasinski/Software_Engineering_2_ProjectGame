@@ -25,11 +25,12 @@ namespace Common.Message
         /// Xml validation
         /// </summary>
         /// <param name="message">XML message</param>
-        /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>
+        /// 
+      /*  /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>*/
         public static void Validate(string message)
         {
-         //   try
-         //   {
+            try
+            {
                 //Sweet Windows Magic
                 var dir = Resources.Jesus;
                 dir = dir.Replace(@"\\", @"\");
@@ -52,12 +53,12 @@ namespace Common.Message
                 document.Validate(eventHandler);
 
 
-             //   Console.WriteLine("\n\n\n\n It works \n\n\n\n");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.Message);
+            }
         }
 
 
