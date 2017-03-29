@@ -52,13 +52,13 @@ namespace GameMaster.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Ordinary("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
             
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 
-            connection.SendFromClient(socket, xmlMessage);
+           // connection.SendFromClient(socket, xmlMessage);
 
 
         }

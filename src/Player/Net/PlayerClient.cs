@@ -49,7 +49,7 @@ namespace Player.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Ordinary("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 

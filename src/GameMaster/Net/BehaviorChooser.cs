@@ -10,13 +10,13 @@ using Common.Schema;
 
 namespace GameMaster.Net
 {
-    class BehaviorChooser/*: IMessageHandler<ConfirmGameRegistration>*/
+    static class BehaviorChooser/*: IMessageHandler<ConfirmGameRegistration>*/
     {
         
 
         public static void HandleMessage(ConfirmGameRegistration message)
         {
-            ConsoleDebug.Warning("BehaviorChooser.ConfirmGameRegistation Here IMPLEMENTE ME");
+            ConsoleDebug.Good("I get gameId = " + message.gameId);
         }
 
 

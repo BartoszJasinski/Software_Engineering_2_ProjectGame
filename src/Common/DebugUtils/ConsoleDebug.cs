@@ -10,11 +10,17 @@ namespace Common.DebugUtils
     {
         public static void Good(string consoleMessage)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(consoleMessage);
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public static void Message(string consoleMessage)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine(consoleMessage);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
 
         public static void Ordinary(string consoleMessage)
         {
