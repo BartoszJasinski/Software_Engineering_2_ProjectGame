@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Configuration.cs">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Config\Configuration.Partial.cs" />
     <Compile Include="DebugUtils\BoardPrinter.cs" />
     <Compile Include="DebugUtils\ConsoleDebug.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantBoard.cs" />
@@ -78,6 +82,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Config\Configuration.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="TheProjectGameCommunication.xsd">
       <SubType>Designer</SubType>

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Connection;
-using Common.IO.Console; 
+using Common.IO.Console;
 using GameMaster.Net;
+using Common.Config;
 
 namespace GameMaster
 {
@@ -16,7 +17,8 @@ namespace GameMaster
         {
             AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
-            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port));
+            GameMasterSettings settings = Configuration.FromFile<GameMasterSettings>(options.Conf);
+            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port), settings);
             client.Connect();
             client.Disconnect();
         }

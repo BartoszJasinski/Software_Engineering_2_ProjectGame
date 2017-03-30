@@ -1,4 +1,5 @@
-﻿using Common.Connection;
+﻿using Common.Config;
+using Common.Connection;
 using Common.IO.Console;
 using Player.Net;
 
@@ -10,7 +11,9 @@ namespace Player
         {
             AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
-            PlayerClient client = new PlayerClient(new Connection(options.Address, options.Port));
+            PlayerSettings settings = Configuration.FromFile<PlayerSettings>(options.Conf);
+
+            PlayerClient client = new PlayerClient(new Connection(options.Address, options.Port), settings);
             client.Connect();
             client.Disconnect();
 
