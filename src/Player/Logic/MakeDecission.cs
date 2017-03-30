@@ -12,18 +12,20 @@ namespace Player.Logic
     //imho we should have basic message handling in BehaviourChooser and pass handled data to specific classes in Logic packages
     class MakeDecission
     {
-        void RegisteredGames(RegisteredGames registeredGames, PlayerData playerData)
+        void RegisteredGames(RegisteredGames registeredGames, string gameName, string preferredTeam, string preferredColor)
         {
-            foreach (var game in registeredGames.GameInfo)
-            {
-                if (playerData.prefferedTeam == "blue")
-                    if (game.blueTeamPlayers > 0)
-                        //TODO how we should send this JoinGame message?
-                        //send JoinGame
-                        ;
-                    else ;
-                else ;//.....
-            }
+//            JoinGame joinGame = new JoinGame();
+//            joinGame.
+//            foreach (var game in registeredGames.GameInfo)
+//            {
+//                if (prefferedTeam == "blue")
+//                    if (game.blueTeamPlayers > 0)
+//                        //TODO how we should send this JoinGame message?
+//                        //send JoinGame
+//                        ;
+//                    else ;
+//                else ;//.....
+//            }
 
 
         }
