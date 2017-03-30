@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+    elementFormDefault="qualified"
+    targetNamespace="https://se2.mini.pw.edu.pl/17-pl-19/17-pl-19/"
+    xmlns="https://se2.mini.pw.edu.pl/17-pl-19/17-pl-19/">
+
+  <xs:complexType name="Configuration">
+    <xs:attribute name="KeepAliveInterval" type="xs:unsignedInt" default="30000"/>
+  </xs:complexType>
+
+  <xs:complexType name="Location">
+    <xs:attribute name="x" type="xs:unsignedInt" use="required" />
+    <xs:attribute name="y" type="xs:unsignedInt" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="Field" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="Location">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="TeamColour">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="red" />
+      <xs:enumeration value="blue" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GoalFieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="goal" />
+      <xs:enumeration value="non-goal" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="GoalField">
+    <xs:complexContent>
+      <xs:extension base="Field">
+        <xs:attribute name="type" type="GoalFieldType" use="required" />
+        <xs:attribute name="team" type="TeamColour" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="PlayerSettings">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Configuration">
+          <xs:attribute name="RetryJoinGameInterval" type="xs:unsignedInt" default="5000"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GameMasterSettings">
+    <xs:annotation>
+      <xs:documentation>
+        All timespans are given in milliseconds
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Configuration">
+          <xs:sequence>
+            <xs:element name="GameDefinition">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Goals" type="GoalField" maxOccurs="unbounded" minOccurs="1" ></xs:element>
+                  <xs:element name="ShamProbability" default="0.1">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:double">
+                        <xs:minInclusive value="0.0"/>
+                        <xs:maxInclusive value="1.0"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="PlacingNewPiecesFrequency" type="xs:unsignedInt" default="1000" />
+                  <xs:element name="InitialNumberOfPieces" type="xs:unsignedInt" default="4" />
+                  <xs:element name="BoardWidth" type="xs:nonNegativeInteger" default="5" />
+                  <xs:element name="TaskAreaLength" type="xs:nonNegativeInteger" default="7" />
+                  <xs:element name="GoalAreaLength" type="xs:nonNegativeInteger" default="3" />
+                  <xs:element name="NumberOfPlayersPerTeam" type="xs:nonNegativeInteger" default="4" />
+                  <xs:element name="GameName" type="xs:string" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ActionCosts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="MoveDelay" type="xs:unsignedInt" default="100" />
+                  <xs:element name="DiscoverDelay" type="xs:unsignedInt" default="450" />
+                  <xs:element name="TestDelay" type="xs:unsignedInt" default="500" />
+                  <xs:element name="PickUpDelay" type="xs:unsignedInt" default="100" />
+                  <xs:element name="PlacingDelay" type="xs:unsignedInt" default="100" />
+                  <xs:element name="KnowledgeExchangeDelay" type="xs:unsignedInt" default="1200" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="RetryRegisterGameInterval" type="xs:unsignedInt" default="5000"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CommunicationServerSettings">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Configuration">
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
