@@ -20,6 +20,7 @@ namespace CommonTests.Message
             AuthorizeKnowledgeExchange message = new AuthorizeKnowledgeExchange();
 
             message.withPlayerId = 4;
+            message.playerGuid = "c094cab7-da7b-457f-89e5-a5c51756035f";
 
             string xml = XmlMessageConverter.ToXml(message);
             AuthorizeKnowledgeExchange result = (AuthorizeKnowledgeExchange)XmlMessageConverter.ToObject(xml);
@@ -33,7 +34,7 @@ namespace CommonTests.Message
             Move message = new Move();
 
             message.direction = MoveType.down;
-
+            message.playerGuid = "c094cab7-da7b-457f-89e5-a5c51756035f";
             message.directionSpecified = true;
 
             string xml = XmlMessageConverter.ToXml(message);

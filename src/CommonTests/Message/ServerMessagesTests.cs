@@ -16,14 +16,14 @@ namespace CommonTests.Message
         public void JoinGameTest()
         {
             JoinGame joinGame = new JoinGame();
-            joinGame.gameName = "testGameName";
+            joinGame.gameName = "testgamename";
             joinGame.preferredRole = PlayerType.leader;
             joinGame.preferredTeam = TeamColour.red;
 
             string xml = XmlMessageConverter.ToXml(joinGame);
             JoinGame result = (JoinGame)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual("testGameName", result.gameName);
+            Assert.AreEqual("testgamename", result.gameName);
             Assert.AreEqual(PlayerType.leader, result.preferredRole);
             Assert.AreEqual(TeamColour.red, result.preferredTeam);
         }
@@ -33,14 +33,14 @@ namespace CommonTests.Message
         {
             RegisteredGames registeredGames = new RegisteredGames();
             GameInfo[] gameInfoTab = new GameInfo[3];
-            gameInfoTab[0] = new GameInfo() { gameName = "testName" };
+            gameInfoTab[0] = new GameInfo() { gameName = "testname" };
             registeredGames.GameInfo = gameInfoTab;
 
 
             string xml = XmlMessageConverter.ToXml(registeredGames);
             RegisteredGames result = (RegisteredGames)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual("testName", result.GameInfo[0].gameName);
+            Assert.AreEqual("testname", result.GameInfo[0].gameName);
         }
 
 
@@ -49,14 +49,14 @@ namespace CommonTests.Message
         {
             RegisterGame registerGame = new RegisterGame();
             GameInfo gameInfo = new GameInfo();
-            gameInfo = new GameInfo() { gameName = "testName" };
+            gameInfo = new GameInfo() { gameName = "testname" };
             registerGame.NewGameInfo = gameInfo;
 
 
             string xml = XmlMessageConverter.ToXml(registerGame);
             RegisterGame result = (RegisterGame)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual("testName", result.NewGameInfo.gameName);
+            Assert.AreEqual("testname", result.NewGameInfo.gameName);
         }
 
 

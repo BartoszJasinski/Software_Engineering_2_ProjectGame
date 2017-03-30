@@ -24,11 +24,11 @@ namespace Common.Message
         /// </returns>   
         public static object ToObject(string xmlString, string ns = "Common.Schema.")
         {
-            XmlDocument xd = new XmlDocument();
             try
             {
+                XmlDocument xd = new XmlDocument();
                 //TODO when XmlValidation.Validate(xmlString) is uncommented few unit tests fail 
-                XmlValidation.Validate(xmlString);
+                XmlValidation.Instance.Validate(xmlString);
                 xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
                 using (var s = new StringReader(xmlString))
@@ -36,15 +36,15 @@ namespace Common.Message
                     return xs.Deserialize(s);
                 }
             }
-            catch (ArgumentNullException)
+            catch(XmlSchemaValidationException e)
             {
                 return null;
             }
-            catch (XmlException)
+            catch (XmlException e)
             {
                 return null;
             }
-            catch (XmlSchemaValidationException)
+            catch(ArgumentNullException e)
             {
                 return null;
             }

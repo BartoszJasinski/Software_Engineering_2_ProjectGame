@@ -21,7 +21,7 @@ namespace CommonTests.Message
 
             message.gameId = 1;
 
-            message.privateGuid = "testPrivateGuid";
+            message.privateGuid = "c094cab7-da7b-457f-89e5-a5c51756035f";
 
             message.PlayerDefinition = new Player() { id = 2 };
 
@@ -30,7 +30,7 @@ namespace CommonTests.Message
 
             Assert.AreEqual((ulong)3, result.playerId);
             Assert.AreEqual((ulong)1, result.gameId);
-            Assert.AreEqual("testPrivateGuid", result.privateGuid);
+            Assert.AreEqual("c094cab7-da7b-457f-89e5-a5c51756035f", result.privateGuid);
             Assert.AreEqual((ulong)2, result.PlayerDefinition.id);
         }
 
