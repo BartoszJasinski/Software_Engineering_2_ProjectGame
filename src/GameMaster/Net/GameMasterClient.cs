@@ -21,6 +21,7 @@ namespace GameMaster.Net
         GameMasterSettings settings;
 
 
+
         public GameMasterClient(IConnection connection, GameMasterSettings settings)
         {
             this.connection = connection;
@@ -48,9 +49,22 @@ namespace GameMaster.Net
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
+            //at the beginning both teams have same number of open player slots
+            ulong noOfPlayersPerTeam = ulong.Parse(settings.GameDefinition.NumberOfPlayersPerTeam);
 
-            string registerGameMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage("RegisterGame"));
-            connection.SendFromClient(socket, registerGameMessage);
+            RegisterGame registerGameMessage = new RegisterGame()
+            {
+                NewGameInfo = new GameInfo()
+                {
+                    gameName = settings.GameDefinition.GameName,
+                    blueTeamPlayers = noOfPlayersPerTeam,
+                    redTeamPlayers = noOfPlayersPerTeam
+                }
+            };
+
+
+            string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
+            connection.SendFromClient(socket, registerGameString);
             
         }
 
