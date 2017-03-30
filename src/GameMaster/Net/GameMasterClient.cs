@@ -8,6 +8,7 @@ using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using GameMaster.Logic;
+using Common.Config;
 
 namespace GameMaster.Net
 {
@@ -16,10 +17,15 @@ namespace GameMaster.Net
     {
         private IConnection connection;
 
+        //Contents of configuration file
+        GameMasterSettings settings;
 
-        public GameMasterClient(IConnection connection)
+
+        public GameMasterClient(IConnection connection, GameMasterSettings settings)
         {
             this.connection = connection;
+            this.settings = settings;
+
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
