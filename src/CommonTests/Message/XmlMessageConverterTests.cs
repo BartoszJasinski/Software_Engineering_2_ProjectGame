@@ -28,7 +28,7 @@ namespace CommonTests.Message
             msg.direction = MoveType.down;
             msg.directionSpecified = true;
             msg.gameId = 21321;
-            msg.playerGuid = "asdasdsad";
+            msg.playerGuid = "c094cab7-da7b-457f-89e5-a5c51756035f";
             var s1 = XmlMessageConverter.ToXml(msg);
             var s2 = XmlMessageConverter.ToXml(XmlMessageConverter.ToObject(s1));
             Assert.AreEqual(s1,s2);

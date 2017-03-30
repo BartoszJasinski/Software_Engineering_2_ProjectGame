@@ -54,7 +54,7 @@ namespace Server
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
                 eventArgs.Handler);
 
-            ConnectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
+            //ConnectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
 
         }
 

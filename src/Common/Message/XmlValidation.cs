@@ -28,38 +28,70 @@ namespace Common.Message
         /// <param name="message">XML message</param>
         /// 
         /// <exception cref="XmlSchemaValidationException">Is thrown when wrong xml</exception>
-        public static void Validate(string message)
+        //public static void Validate(string message)
+        //{
+        //    try
+        //    {
+        //        //Sweet Windows Magic
+        //        var dir = Resources.Jesus;
+        //        dir = dir.Replace(@"\\", @"\");
+        //        dir = dir.Substring(0, dir.Length - 3);
+        //        //Console.WriteLine(@dir + @"TheProjectGameCommunication.xsd");
+        //        //End of Sweet Windows Magic
+
+
+        //        XmlReaderSettings settings = new XmlReaderSettings();
+        //        settings.Schemas.Add("https://se2.mini.pw.edu.pl/17-results/", @dir + @"TheProjectGameCommunication.xsd");
+        //        settings.ValidationType = ValidationType.Schema;
+
+
+        //        XmlReader reader = XmlReader.Create(new StringReader(message), settings);
+        //        XmlDocument document = new XmlDocument();
+        //        document.Load(reader);
+
+        //        ValidationEventHandler eventHandler =
+        //            new ValidationEventHandler(ValidationEventHandler);
+        //        document.Validate(eventHandler);
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ConsoleDebug.Error(ex.Message);
+        //        throw new XmlSchemaValidationException(ex.Message);
+        //    }
+        //}
+
+        static XmlValidation instance;
+        XmlReaderSettings settings;
+
+        private XmlValidation()
         {
-            try
+            settings = new XmlReaderSettings();
+            settings.Schemas.Add("https://se2.mini.pw.edu.pl/17-results/", "TheProjectGameCommunication.xsd");
+            settings.ValidationType = ValidationType.Schema;
+        }
+
+        public static XmlValidation Instance
+        {
+            get
             {
-                //Sweet Windows Magic
-                var dir = Resources.Jesus;
-                dir = dir.Replace(@"\\", @"\");
-                dir = dir.Substring(0, dir.Length - 3);
-                //Console.WriteLine(@dir + @"TheProjectGameCommunication.xsd");
-                //End of Sweet Windows Magic
-
-
-                XmlReaderSettings settings = new XmlReaderSettings();
-                settings.Schemas.Add("https://se2.mini.pw.edu.pl/17-results/", @dir + @"TheProjectGameCommunication.xsd");
-                settings.ValidationType = ValidationType.Schema;
-
-
-                XmlReader reader = XmlReader.Create(new StringReader(message), settings);
-                XmlDocument document = new XmlDocument();
-                document.Load(reader);
-
-                ValidationEventHandler eventHandler =
-                    new ValidationEventHandler(ValidationEventHandler);
-                document.Validate(eventHandler);
-
-
+                if (instance == null)
+                    instance = new XmlValidation();
+                return instance;
             }
-            catch (Exception ex)
-            {
-                ConsoleDebug.Error(ex.Message);
-                throw new XmlSchemaValidationException(ex.Message);
-            }
+        }
+
+        public void Validate(string message)
+        {
+            XmlReader reader = XmlReader.Create(new StringReader(message), settings);
+            XmlDocument document = new XmlDocument();
+            document.Load(reader);
+
+            ValidationEventHandler eventHandler =
+                new ValidationEventHandler(ValidationEventHandler);
+            document.Validate(eventHandler);
+
         }
 
 
