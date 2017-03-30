@@ -115,9 +115,11 @@ namespace Server
             if (freeIdList.Count == 0)
                 id = (ulong)clients.Count;
 
-           id = freeIdList[freeIdList.Count - 1];
+            else
+            { 
+            id = freeIdList[freeIdList.Count - 1];
             freeIdList.RemoveAt(freeIdList.Count - 1);
-
+            }
             return id;
         }
         private static string Serialize<T>(T gameRegistration)
