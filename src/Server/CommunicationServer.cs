@@ -14,6 +14,7 @@ using Common.Schema;
 using Server.Connection;
 using Common.Message;
 using Server.Game;
+using Common.Config;
 
 namespace Server
 {
@@ -23,10 +24,14 @@ namespace Server
         public IConnectionEndpoint ConnectionEndpoint;
         public IGamesContainer RegisteredGames;
 
-        public CommunicationServer(IConnectionEndpoint connectionEndpoint)
+        private CommunicationServerSettings settings;
+
+        public CommunicationServer(IConnectionEndpoint connectionEndpoint, CommunicationServerSettings settings)
         {
             this.ConnectionEndpoint = connectionEndpoint;
             RegisteredGames = new GamesContainer();
+            this.settings = settings;
+
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
         }

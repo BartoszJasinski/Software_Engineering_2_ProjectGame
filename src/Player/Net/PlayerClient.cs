@@ -6,16 +6,20 @@ using Common.Connection.EventArg;
 using Common.DebugUtils;
 using Common.Message;
 using Player.Logic;
+using Common.Config;
 
 namespace Player.Net
 {
     public class PlayerClient
     {
         private IConnection connection;
+        private PlayerSettings settings;
 
-        public PlayerClient(IConnection connection)
+        public PlayerClient(IConnection connection, PlayerSettings settings)
         {
             this.connection = connection;
+            this.settings = settings;
+
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
