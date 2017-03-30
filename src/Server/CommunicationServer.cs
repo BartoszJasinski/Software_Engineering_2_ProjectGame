@@ -22,6 +22,7 @@ namespace Server
     {
         public IConnectionEndpoint ConnectionEndpoint;
         public IGamesContainer RegisteredGames;
+        private Dictionary<ulong, Socket> clients;
 
         public CommunicationServer(IConnectionEndpoint connectionEndpoint)
         {
@@ -29,6 +30,7 @@ namespace Server
             RegisteredGames = new GamesContainer();
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
+            clients = new Dictionary<ulong, Socket>();
         }
 
         public void Start()
@@ -85,33 +87,35 @@ namespace Server
 
             Game.IGame g = RegisteredGames.GetGameByName(request.gameName);
 
+            request.playerId = (ulong)clients.Count;
+            clients.Add((ulong)clients.Count, eventArgs.Handler);
+
             var response = XmlMessageConverter.ToXml(request);
             ConnectionEndpoint.SendFromServer(g.GameMaster, response);
         }
 
-        //public void OnConfirmJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
-        //{
-        //    ConfirmJoiningGame request = (ConfirmJoiningGame)XmlMessageConverter.ToObject(eventArgs.Message);
+        public void OnConfirmJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
+        {
+            ConfirmJoiningGame request = (ConfirmJoiningGame)XmlMessageConverter.ToObject(eventArgs.Message);
 
-        //    if (request == null)
-        //        return;
+            if (request == null)
+                return;
 
-        //    Game.IGame g = RegisteredGames.GetGameById((int)request.gameId);
+            Game.IGame g = RegisteredGames.GetGameById((int)request.gameId);
+            var response = XmlMessageConverter.ToXml(request);
+            ConnectionEndpoint.SendFromServer(clients[request.playerId], response);
+        }
 
-        //    var response = XmlMessageConverter.ToXml(request);
-
-        //}
-
-        //private static string Serialize<T>(T gameRegistration)
-        //{
-        //    XmlSerializer ser = new XmlSerializer(typeof(T));
-        //    string response;
-        //    using (TextWriter writer = new StringWriter())
-        //    {
-        //        ser.Serialize(writer, gameRegistration);
-        //        response = writer.ToString();
-        //    }
-        //    return response;
-        //}
+        private static string Serialize<T>(T gameRegistration)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(T));
+            string response;
+            using (TextWriter writer = new StringWriter())
+            {
+                ser.Serialize(writer, gameRegistration);
+                response = writer.ToString();
+            }
+            return response;
+        }
     }
 }
