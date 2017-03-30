@@ -20,7 +20,7 @@ namespace Server.Connection
 
             Game.Game g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
                 bluePlayers: request.NewGameInfo.blueTeamPlayers,
-                redPlayers: request.NewGameInfo.redTeamPlayers
+                redPlayers: request.NewGameInfo.redTeamPlayers, gameMaster: handler
                 );
             try
             {
@@ -64,7 +64,9 @@ namespace Server.Connection
             server.Clients.Add(request.playerId, handler);
 
             var response = XmlMessageConverter.ToXml(request);
-            server.ConnectionEndpoint.SendFromServer(g.GameMaster, response);
+
+                server.ConnectionEndpoint.SendFromServer(g.GameMaster, response);
+                return;
         }
 
         public static void HandleMessage(ConfirmJoiningGame request, CommunicationServer server, Socket handler)
