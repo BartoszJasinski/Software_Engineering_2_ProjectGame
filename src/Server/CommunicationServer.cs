@@ -23,6 +23,7 @@ namespace Server
         public IConnectionEndpoint ConnectionEndpoint;
         public IGamesContainer RegisteredGames;
         private Dictionary<ulong, Socket> clients;
+        private List<ulong> freeIdList;
 
         public CommunicationServer(IConnectionEndpoint connectionEndpoint)
         {
@@ -31,6 +32,7 @@ namespace Server
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
             clients = new Dictionary<ulong, Socket>();
+            freeIdList = new List<ulong>();
         }
 
         public void Start()
@@ -87,8 +89,8 @@ namespace Server
 
             Game.IGame g = RegisteredGames.GetGameByName(request.gameName);
 
-            request.playerId = (ulong)clients.Count;
-            clients.Add((ulong)clients.Count, eventArgs.Handler);
+            request.playerId = IdForNewClient();
+            clients.Add(request.playerId, eventArgs.Handler);
 
             var response = XmlMessageConverter.ToXml(request);
             ConnectionEndpoint.SendFromServer(g.GameMaster, response);
@@ -106,6 +108,18 @@ namespace Server
             ConnectionEndpoint.SendFromServer(clients[request.playerId], response);
         }
 
+        private  ulong IdForNewClient()
+        {
+            ulong id;
+
+            if (freeIdList.Count == 0)
+                id = (ulong)clients.Count;
+
+           id = freeIdList[freeIdList.Count - 1];
+            freeIdList.RemoveAt(freeIdList.Count - 1);
+
+            return id;
+        }
         private static string Serialize<T>(T gameRegistration)
         {
             XmlSerializer ser = new XmlSerializer(typeof(T));
