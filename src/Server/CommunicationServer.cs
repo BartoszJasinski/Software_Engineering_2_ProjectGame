@@ -22,7 +22,7 @@ namespace Server
     {
         public IConnectionEndpoint ConnectionEndpoint;
         public IGamesContainer RegisteredGames;
-        private Dictionary<ulong, Socket> clients;
+        public Dictionary<ulong, Socket> Clients;
         private List<ulong> freeIdList;
 
         public CommunicationServer(IConnectionEndpoint connectionEndpoint)
@@ -31,7 +31,7 @@ namespace Server
             RegisteredGames = new GamesContainer();
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
-            clients = new Dictionary<ulong, Socket>();
+            Clients = new Dictionary<ulong, Socket>();
             freeIdList = new List<ulong>();
         }
 
@@ -60,65 +60,19 @@ namespace Server
 
         }
 
-        public void OnRegisterGame(object sender, MessageRecieveEventArgs eventArgs)
-                {
-            RegisterGame request = (RegisterGame) XmlMessageConverter.ToObject(eventArgs.Message);
 
-                if (request == null)
-                    return;
-
-            Game.Game g = new Game.Game(gameId: RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
-                bluePlayers: request.NewGameInfo.blueTeamPlayers,
-                redPlayers: request.NewGameInfo.redTeamPlayers
-                );
-
-            RegisteredGames.RegisterGame(g);
-
-            ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() {gameId = (ulong) g.Id};
-
-            var response = XmlMessageConverter.ToXml(gameRegistration);
-            ConnectionEndpoint.SendFromServer(eventArgs.Handler, response);
-            }
-
-        public void OnJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
-        {
-            JoinGame request = (JoinGame)XmlMessageConverter.ToObject(eventArgs.Message);
-
-            if (request == null)
-                return;
-
-            Game.IGame g = RegisteredGames.GetGameByName(request.gameName);
-
-            request.playerId = IdForNewClient();
-            clients.Add(request.playerId, eventArgs.Handler);
-
-            var response = XmlMessageConverter.ToXml(request);
-            ConnectionEndpoint.SendFromServer(g.GameMaster, response);
-        }
-
-        public void OnConfirmJoiningGame(object sender, MessageRecieveEventArgs eventArgs)
-        {
-            ConfirmJoiningGame request = (ConfirmJoiningGame)XmlMessageConverter.ToObject(eventArgs.Message);
-
-            if (request == null)
-                return;
-
-            Game.IGame g = RegisteredGames.GetGameById((int)request.gameId);
-            var response = XmlMessageConverter.ToXml(request);
-            ConnectionEndpoint.SendFromServer(clients[request.playerId], response);
-        }
-
-        private  ulong IdForNewClient()
+        public  ulong IdForNewClient()
         {
             ulong id;
 
             if (freeIdList.Count == 0)
-                id = (ulong)clients.Count;
-
+            {
+                id = (ulong)Clients.Count;
+            }
             else
-            { 
-            id = freeIdList[freeIdList.Count - 1];
-            freeIdList.RemoveAt(freeIdList.Count - 1);
+            {
+                id = freeIdList[freeIdList.Count - 1];
+                freeIdList.RemoveAt(freeIdList.Count - 1);
             }
             return id;
         }
