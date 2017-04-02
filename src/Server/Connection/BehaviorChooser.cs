@@ -59,7 +59,11 @@ namespace Server.Connection
                 return;
 
             Game.IGame g = server.RegisteredGames.GetGameByName(request.gameName);
-
+            if (g == null)
+            {
+                ConsoleDebug.Error("Game with specified name not found");
+                return;
+            }
             request.playerId = server.IdForNewClient();
             server.Clients.Add(request.playerId, handler);
 

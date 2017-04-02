@@ -7,6 +7,7 @@ using Common.DebugUtils;
 using Common.Message;
 using Player.Logic;
 using Common.Config;
+using Common.IO.Console;
 using Common.Schema;
 
 namespace Player.Net
@@ -15,12 +16,13 @@ namespace Player.Net
     {
         private IConnection connection;
         private PlayerSettings settings;
+        private AgentCommandLineOptions options;
 
-        public PlayerClient(IConnection connection, PlayerSettings settings)
+        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
             this.connection = connection;
             this.settings = settings;
-
+            this.options = options;
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
@@ -46,8 +48,6 @@ namespace Player.Net
             string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
             connection.SendFromClient(socket, xmlMessage);
-
-
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -56,10 +56,8 @@ namespace Player.Net
 
             ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), 
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings));
-
-
+            BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
+                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options));
         }
 
 
@@ -68,9 +66,6 @@ namespace Player.Net
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             System.Console.WriteLine("New message sent to {0}", address.ToString());
             //var socket = eventArgs.Handler as Socket;
-
         }
-
-
-    }//class
-}//namespace
+    } //class
+} //namespace

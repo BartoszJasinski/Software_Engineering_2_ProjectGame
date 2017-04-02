@@ -56,6 +56,11 @@ namespace Server.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>Null if no game found</returns>
         public IGame GetGameByName(string name)
         {
             try
