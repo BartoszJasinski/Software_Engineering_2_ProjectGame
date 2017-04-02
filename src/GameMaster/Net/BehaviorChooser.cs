@@ -19,6 +19,11 @@ namespace GameMaster.Net
             ConsoleDebug.Good("I get gameId = " + message.gameId);
         }
 
+        public static void HandleMessage(JoinGame message)
+        {
+
+        }
+
 
 
         public static void HandleMessage(object message)
