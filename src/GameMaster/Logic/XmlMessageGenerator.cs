@@ -134,7 +134,7 @@ namespace GameMaster.Logic
                     {
                         gameId = 3,
                         playerId = 2,
-                        PlayerDefinition = new Player() { id = 3, team = TeamColour.red, type = PlayerType.leader },
+                        PlayerDefinition = new Common.Schema.Player() { id = 3, team = TeamColour.red, type = PlayerType.leader },
                         privateGuid = "c094cab7-da7b-457f-89e5-a5c51756035f"
                     };
                     break;
@@ -165,7 +165,7 @@ namespace GameMaster.Logic
                         Board = new GameBoard() { goalsHeight = 3, tasksHeight = 4, width = 7 },
                         playerId = 3,
                         PlayerLocation = new Location() { x = 3, y = 2 },
-                        Players = new Player[] { new Player { id = 3, team = TeamColour.red, type = PlayerType.leader } }
+                        Players = new Common.Schema.Player[] { new Common.Schema.Player() { id = 3, team = TeamColour.red, type = PlayerType.leader } }
                     };
                     break;
                 case 17:
@@ -190,7 +190,7 @@ namespace GameMaster.Logic
                     };
                     break;
                 case 20:
-                    obj = new Player()
+                    obj = new Common.Schema.Player()
                     {
                         id = 3,
                         type = PlayerType.leader,
@@ -345,7 +345,7 @@ namespace GameMaster.Logic
             {
                 gameId = 3,
                 playerId = 2,
-                PlayerDefinition = new Player() { id = 3, team = TeamColour.red, type = PlayerType.leader },
+                PlayerDefinition = new Common.Schema.Player() { id = 3, team = TeamColour.red, type = PlayerType.leader },
                 privateGuid = "c094cab7-da7b-457f-89e5-a5c51756035f"
             });
 
@@ -374,7 +374,7 @@ namespace GameMaster.Logic
                 Board = new GameBoard() { goalsHeight = 3, tasksHeight = 4, width = 7 },
                 playerId = 3,
                 PlayerLocation = new Location() { x = 3, y = 2 },
-                Players = new Player[] { new Player { id = 3, team = TeamColour.red, type = PlayerType.leader } }
+                Players = new Common.Schema.Player[] { new Common.Schema.Player { id = 3, team = TeamColour.red, type = PlayerType.leader } }
             });
 
             xmlMessages.Add("KnowledgeExchangeRequest", new KnowledgeExchangeRequest()
@@ -395,7 +395,7 @@ namespace GameMaster.Logic
                 playerId = 3
             });
 
-            xmlMessages.Add("Player", new Player()
+            xmlMessages.Add("Player", new Common.Schema.Player()
             {
                 id = 3,
                 type = PlayerType.leader,

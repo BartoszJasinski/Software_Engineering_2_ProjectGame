@@ -24,8 +24,6 @@ namespace Common.Message
         /// </returns>   
         public static object ToObject(string xmlString, string ns = "Common.Schema.")
         {
-            try
-            {
                 XmlDocument xd = new XmlDocument();
                 //TODO when XmlValidation.Validate(xmlString) is uncommented few unit tests fail 
                 XmlValidation.Instance.Validate(xmlString);
@@ -35,19 +33,6 @@ namespace Common.Message
                 {
                     return xs.Deserialize(s);
                 }
-            }
-            catch(XmlSchemaValidationException e)
-            {
-                return null;
-            }
-            catch (XmlException e)
-            {
-                return null;
-            }
-            catch(ArgumentNullException e)
-            {
-                return null;
-            }
         }
 
         public static string ToXml(object msg)

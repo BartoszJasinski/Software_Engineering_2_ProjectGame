@@ -37,13 +37,16 @@ namespace GameMaster.Net
                     role = PlayerType.member;
             }
 
+            var guid = Utils.GenerateGuid();
+
             if (role == PlayerType.leader)
-                selectedTeam.AddLeader(new Logic.Leader(message.playerId, Utils.GenerateGuid(),selectedTeam));
+                selectedTeam.AddLeader(new Logic.Leader(message.playerId, guid, selectedTeam));
             else
-                selectedTeam.Players.Add(new Logic.Player(message.playerId, Utils.GenerateGuid(), selectedTeam));
+                selectedTeam.Players.Add(new Logic.Player(message.playerId, guid, selectedTeam));
 
             var answer = new ConfirmJoiningGame();
             answer.playerId = message.playerId;
+            answer.privateGuid = guid;
             answer.gameId = gameMaster.Id;
             answer.PlayerDefinition = new Player()
             {

@@ -15,6 +15,7 @@ using Server.Connection;
 using Common.Message;
 using Server.Game;
 using Common.Config;
+using Common.DebugUtils;
 
 namespace Server
 {
@@ -64,8 +65,15 @@ namespace Server
             var address = eventArgs.Handler.GetRemoteAddress();
             if (address != null)
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
-            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
-                eventArgs.Handler);
+            try
+            {
+                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
+                    eventArgs.Handler);
+            }
+            catch(Exception e)
+            {
+                ConsoleDebug.Error(e.Message);
+            }
 
             //ConnectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
 

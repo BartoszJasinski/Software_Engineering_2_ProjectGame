@@ -17,7 +17,7 @@ namespace Common.IO.Console
         [Option('n', "game", Required = false, HelpText = "name of game to join")]
         public string GameName { get; set; }
 
-        [Option('k', "team", Required = false, HelpText = "preferred color")]
+        [Option('t', "team", Required = false, HelpText = "preferred color")]
         public string PreferredColor { get; set; }
 
         [Option('r', "role", Required = false, HelpText = "preferred role")]

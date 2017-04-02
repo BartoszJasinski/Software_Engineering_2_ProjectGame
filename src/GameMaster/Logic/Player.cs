@@ -29,6 +29,7 @@ namespace GameMaster.Logic
             Id = id;
             Guid = guid;
             Team = team;
+            Location = new Location();
             X = x;
             Y = y;
         }

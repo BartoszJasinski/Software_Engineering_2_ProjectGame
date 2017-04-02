@@ -12,9 +12,11 @@ namespace GameMaster
 
         public static string GenerateGuid()
         {
-            string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string alphabet = "abcdefABCDEF0123456789";
             StringBuilder sb = new StringBuilder();
             generatePart(sb, 8, alphabet);
+            sb.Append("-");
+            generatePart(sb, 4, alphabet);
             sb.Append("-");
             generatePart(sb, 4, alphabet);
             sb.Append("-");
