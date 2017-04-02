@@ -51,6 +51,7 @@
     <Compile Include="Logic\MakeDecission.cs" />
     <Compile Include="Logic\PlayerData.cs" />
     <Compile Include="Logic\XmlMessageGenerator.cs" />
+    <Compile Include="Net\PlayerMessageHandleArgs.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Net\BehaviorChooser.cs" />
     <Compile Include="Net\PlayerClient.cs" />
