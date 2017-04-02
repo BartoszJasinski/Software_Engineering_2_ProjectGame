@@ -9,12 +9,12 @@ namespace GameMaster.Logic
 {
     public class Leader : Player
     {
-        public Leader(int id, Team team, uint x = 0, uint y = 0) : base(id, team, x, y)
+        public Leader(ulong id, string guid, Team team, uint x = 0, uint y = 0) : base(id, guid, team, x, y)
         {
 
         }
 
-        public Leader(int id, Team team, Location location) : base(id, team, location)
+        public Leader(ulong id, string guid,Team team, Location location) : base(id, guid, team, location)
         {
 
         }

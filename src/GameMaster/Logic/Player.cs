@@ -9,22 +9,8 @@ namespace GameMaster.Logic
 {
     public class Player
     {
-        public Player(int id, Team team, uint x = 0, uint y = 0)
-        {
-            Id = id;
-            Team = team;
-            X = x;
-            Y = y;
-        }
-
-        public Player(int id, Team team, Location location)
-        {
-            Id = id;
-            Team = team;
-            Location = location;
-        }
-
-        public int Id { get; set; }
+        public ulong Id { get; set; }
+        public string Guid { get; }
         public Team Team { get; set; }
         public Location Location { get; set; }
         public uint X
@@ -36,6 +22,23 @@ namespace GameMaster.Logic
         {
             get { return Location.y; }
             set { Location.y = value;  }
+        }
+
+        public Player(ulong id, string guid, Team team, uint x = 0, uint y = 0)
+        {
+            Id = id;
+            Guid = guid;
+            Team = team;
+            X = x;
+            Y = y;
+        }
+
+        public Player(ulong id, string guid, Team team, Location location)
+        {
+            Id = id;
+            Guid = guid;
+            Team = team;
+            Location = location;
         }
     }
 }

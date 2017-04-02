@@ -8,38 +8,46 @@ using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using GameMaster.Logic;
-using Common.Config;
 
 namespace GameMaster.Net
 {
     
     public class GameMasterClient
     {
-        private IConnection connection;
+        public IConnection Connection { get; }
 
         //Contents of configuration file
-        GameMasterSettings settings;
+        Common.Config.GameMasterSettings settings;
+
+        //The two teams
+        public Team TeamRed{ get; set; }
+        public Team TeamBlue { get; set; }
+
+        public ulong Id { get; set; }
 
 
 
-        public GameMasterClient(IConnection connection, GameMasterSettings settings)
+        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
         {
-            this.connection = connection;
+            this.Connection = connection;
             this.settings = settings;
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
+
+            TeamRed = new Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         public void Connect()
         {
-            connection.StartClient();
+            Connection.StartClient();
         }
 
         public void Disconnect()
         {
-            connection.StopClient();
+            Connection.StopClient();
         }
 
 
@@ -64,7 +72,7 @@ namespace GameMaster.Net
 
 
             string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
-            connection.SendFromClient(socket, registerGameString);
+            Connection.SendFromClient(socket, registerGameString);
             
         }
 
@@ -74,7 +82,7 @@ namespace GameMaster.Net
 
             ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
+            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
             
             string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 
@@ -82,7 +90,6 @@ namespace GameMaster.Net
 
 
         }
-
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
