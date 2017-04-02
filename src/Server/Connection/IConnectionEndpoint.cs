@@ -15,6 +15,7 @@ namespace Server.Connection
         void SendFromServer(Socket handler, string message);
         event EventHandler<ConnectEventArgs> OnConnect;
         event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        event EventHandler<ConnectEventArgs> OnDisconnected;
         //TODO add send event maybe
     }
 }

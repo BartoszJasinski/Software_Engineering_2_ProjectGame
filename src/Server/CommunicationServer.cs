@@ -36,8 +36,14 @@ namespace Server
 
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
+            connectionEndpoint.OnDisconnected += OnDisconnect;
             Clients = new Dictionary<ulong, Socket>();
             freeIdList = new List<ulong>();
+        }
+
+        private void OnDisconnect(object sender, ConnectEventArgs e)
+        {
+            RegisteredGames.RemoveGameMastersGames(e.Handler);
         }
 
         public void Start()

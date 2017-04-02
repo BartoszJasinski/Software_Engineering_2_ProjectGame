@@ -7,6 +7,7 @@ using Common.DebugUtils;
 using Common.Message;
 using Player.Logic;
 using Common.Config;
+using Common.Schema;
 
 namespace Player.Net
 {
@@ -42,7 +43,7 @@ namespace Player.Net
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
+            string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
             connection.SendFromClient(socket, xmlMessage);
 
@@ -55,9 +56,8 @@ namespace Player.Net
 
             ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
-
-            connection.SendFromClient(socket, xmlMessage);
+            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), 
+                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings));
 
 
         }

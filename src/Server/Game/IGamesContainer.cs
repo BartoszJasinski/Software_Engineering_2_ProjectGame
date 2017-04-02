@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Server.Game
 {
@@ -11,5 +12,6 @@ namespace Server.Game
         IGame GetGameByName(string name);
         void RemoveGame(IGame game);
         int NextGameId();
+        void RemoveGameMastersGames(Socket gmSocket);
     }
 }

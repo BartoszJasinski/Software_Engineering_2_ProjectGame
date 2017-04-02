@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using Common.Schema;
 
 namespace Server.Game
 {
@@ -78,6 +80,13 @@ namespace Server.Game
         {
 
             return games.Count>0? games.Values.Max(game => game.Id) + 1 : 0;
+        }
+
+        public void RemoveGameMastersGames(Socket gmSocket)
+        {
+            games = games.Where(pair => !pair.Value.GameMaster.Equals(gmSocket))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
         }
     }
 
