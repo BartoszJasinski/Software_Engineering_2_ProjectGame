@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Common.Schema;
 using Common.Message;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace CommonTests.Message
 {
@@ -81,6 +83,7 @@ namespace CommonTests.Message
 
 
         [TestMethod]
+        [ExpectedException(typeof(XmlSchemaValidationException))]
         public void WrongMoveMessageTest()
         {
             string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
@@ -92,6 +95,7 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void NotExistigMessageType()
         {
             string xml= "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
@@ -103,6 +107,7 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
+        [ExpectedException(typeof(XmlException))]
         public void BullshitParseTest()
         {
             string xml = "sadasdsad";
@@ -111,6 +116,7 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
+        [ExpectedException(typeof(XmlException))]
         public void BrokenXmlTest()
         {
             string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
