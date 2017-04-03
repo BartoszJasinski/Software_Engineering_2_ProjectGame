@@ -14,15 +14,16 @@ namespace Player.Net
 {
     public class PlayerClient
     {
-        private IConnection connection;
-        private PlayerSettings settings;
-        private AgentCommandLineOptions options;
+        public IConnection Connection { get; set; }
+        public PlayerSettings Settings { get; set; }
+        public AgentCommandLineOptions Options { get; set; }
+        public ulong Id {get; set;}
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
-            this.connection = connection;
-            this.settings = settings;
-            this.options = options;
+            this.Connection = connection;
+            this.Settings = settings;
+            this.Options = options;
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
@@ -30,12 +31,12 @@ namespace Player.Net
 
         public void Connect()
         {
-            connection.StartClient();
+            Connection.StartClient();
         }
 
         public void Disconnect()
         {
-            connection.StopClient();
+            Connection.StopClient();
         }
 
 
@@ -47,7 +48,7 @@ namespace Player.Net
 
             string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
-            connection.SendFromClient(socket, xmlMessage);
+            Connection.SendFromClient(socket, xmlMessage);
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -57,7 +58,7 @@ namespace Player.Net
             ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options));
+                this, socket);
         }
 
 
