@@ -16,12 +16,24 @@ namespace GameMaster.Logic
         public uint X
         {
             get { return Location.x; }
-            set { Location.x = value;  }
+            set { Location.x = value; }
         }
         public uint Y
         {
             get { return Location.y; }
-            set { Location.y = value;  }
+            set { Location.y = value; }
+        }
+        public virtual Common.Schema.Player SchemaPlayer
+        {
+            get
+            {
+                return new Common.Schema.Player()
+                {
+                    id = Id,
+                    team = Team.Color,
+                    type = PlayerType.member
+                };
+            }
         }
 
         public Player(ulong id, string guid, Team team, uint x = 0, uint y = 0)
