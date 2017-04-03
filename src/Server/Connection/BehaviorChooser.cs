@@ -74,14 +74,22 @@ namespace Server.Connection
                 return;
         }
 
-        public static void HandleMessage(ConfirmJoiningGame request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(PlayerMessage request, CommunicationServer server, Socket handler)
         {
             if (request == null)
                 return;
 
-            Game.IGame g = server.RegisteredGames.GetGameById((int)request.gameId);
             var response = XmlMessageConverter.ToXml(request);
             server.ConnectionEndpoint.SendFromServer(server.Clients[request.playerId], response);
+        }
+
+        public static void HandleMessage(GameMessage request, CommunicationServer server, Socket handler)
+        {
+            if (request == null)
+                return;
+
+            var response = XmlMessageConverter.ToXml(request);
+            server.ConnectionEndpoint.SendFromServer(server.RegisteredGames.GetGameById(request.gameId).GameMaster, response);
         }
 
         public static void HandleMessage(object message, CommunicationServer server, Socket handler)
