@@ -9,6 +9,7 @@ using Common.Message;
 using Common.Schema;
 using Logic = GameMaster.Logic;
 using System.Net.Sockets;
+using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
 {
@@ -64,6 +65,21 @@ namespace GameMaster.Net
 
             var answerString = XmlMessageConverter.ToXml(answer);
             gameMaster.Connection.SendFromClient(handler, answerString);
+
+            if(gameMaster.IsReady)
+            {
+                //TODO Load Board from config file
+                var boardGenerator = new RandomGoalBoardGenerator(5, 5, 3, 123);
+                var board = boardGenerator.CreateBoard().SchemaBoard;
+                var players = gameMaster.Players.Select(p => p.SchemaPlayer).ToArray();
+                foreach (var player in gameMaster.Players)
+                {
+                    var startGame = new Game() { Board = board, playerId = player.Id, PlayerLocation = new Location() { x = 0, y = 0 }, Players = players };
+                    var gameString = XmlMessageConverter.ToXml(startGame);
+                    //ConsoleDebug.Message(gameString);
+                    gameMaster.Connection.SendFromClient(handler, gameString);
+                }
+            }
         }
 
 

@@ -8,6 +8,8 @@ using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using GameMaster.Logic;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GameMaster.Net
 {
@@ -23,7 +25,17 @@ namespace GameMaster.Net
         public Team TeamRed{ get; set; }
         public Team TeamBlue { get; set; }
 
+        public IEnumerable<Logic.Player> Players
+        {
+            get
+            {
+                return TeamRed.Players.Concat(TeamBlue.Players);
+            }
+        }
+
         public ulong Id { get; set; }
+
+        public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
 
 
 
@@ -94,8 +106,8 @@ namespace GameMaster.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            //System.Console.WriteLine("New message sent to {0}", address.ToString());
-            //var socket = eventArgs.Handler as Socket;
+            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            var socket = eventArgs.Handler as Socket;
 
         }
 
