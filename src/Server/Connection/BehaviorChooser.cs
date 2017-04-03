@@ -65,6 +65,7 @@ namespace Server.Connection
                 return;
             }
             request.playerId = server.IdForNewClient();
+            request.playerIdSpecified = true;
             server.Clients.Add(request.playerId, handler);
 
             var response = XmlMessageConverter.ToXml(request);

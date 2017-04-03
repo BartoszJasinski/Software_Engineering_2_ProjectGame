@@ -30,6 +30,13 @@ namespace GameMaster.Net
             if (selectedTeam.IsFull)
                 selectedTeam = otherTeam;
 
+            //both teams are full
+            if(selectedTeam.IsFull)
+            {
+                gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(new RejectJoiningGame() {gameName = message.gameName, playerId = message.playerId }));
+                return;
+            }
+
             var role = message.preferredRole;
             if(role == PlayerType.leader)
             {

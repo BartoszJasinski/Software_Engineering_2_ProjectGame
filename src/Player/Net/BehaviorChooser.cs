@@ -42,6 +42,11 @@ namespace Player.Net
             }
         }
 
+        public static void HandleMessage(ConfirmJoiningGame message, PlayerMessageHandleArgs args)
+        {
+
+        }
+
 
         public static void HandleMessage(object message, PlayerMessageHandleArgs args)
         {
