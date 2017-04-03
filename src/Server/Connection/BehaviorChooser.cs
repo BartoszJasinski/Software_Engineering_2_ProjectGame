@@ -89,7 +89,7 @@ namespace Server.Connection
                 return;
 
             var response = XmlMessageConverter.ToXml(request);
-            server.ConnectionEndpoint.SendFromServer(server.RegisteredGames.GetGameById(request.gameId).GameMaster, response);
+            server.ConnectionEndpoint.SendFromServer(server.RegisteredGames.GetGameById((int)request.gameId).GameMaster, response);
         }
 
         public static void HandleMessage(object message, CommunicationServer server, Socket handler)
