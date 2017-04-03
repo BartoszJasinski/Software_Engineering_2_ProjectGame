@@ -17,6 +17,7 @@ namespace Player.Net
         private IConnection connection;
         private PlayerSettings settings;
         private AgentCommandLineOptions options;
+        public ulong Id { get; set; }
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
@@ -57,7 +58,7 @@ namespace Player.Net
             ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options));
+                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
         }
 
 

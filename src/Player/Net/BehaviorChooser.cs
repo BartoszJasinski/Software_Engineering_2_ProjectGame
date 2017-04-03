@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
+using System.Net.Sockets;
 
 namespace Player.Net
 {
@@ -40,6 +41,16 @@ namespace Player.Net
                     args.Connection.SendFromClient(args.Socket, xmlMessage);
                 }
             }
+        }
+
+        public static void HandleMessage(ConfirmJoiningGame message, PlayerMessageHandleArgs args)
+        {
+            if (message == null)
+                return;
+
+            args.PlayerClient.Id = message.playerId;
+
+            return;
         }
 
 

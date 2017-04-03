@@ -122,11 +122,13 @@ namespace Server.Connection
                     content = state.StringBuilder.ToString();
                     //messages end with <ETB> (0x23)
                     int etbIndex = content.IndexOf((char)23);
-                    if (etbIndex > -1)
+                    while (etbIndex > -1)
                     {
                         //inform that a new message was received
                         OnMessageRecieve(this, new MessageRecieveEventArgs(content.Substring(0, etbIndex), handler));
                         state.StringBuilder.Remove(0, etbIndex + 1);
+                        content = state.StringBuilder.ToString();
+                        etbIndex = content.IndexOf((char)23);
                     }
                 }
 
