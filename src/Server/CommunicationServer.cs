@@ -14,6 +14,8 @@ using Common.Schema;
 using Server.Connection;
 using Common.Message;
 using Server.Game;
+using Common.Config;
+using Common.DebugUtils;
 
 namespace Server
 {
@@ -22,13 +24,27 @@ namespace Server
     {
         public IConnectionEndpoint ConnectionEndpoint;
         public IGamesContainer RegisteredGames;
+        public Dictionary<ulong, Socket> Clients;
+        private List<ulong> freeIdList;
 
-        public CommunicationServer(IConnectionEndpoint connectionEndpoint)
+        private CommunicationServerSettings settings;
+
+        public CommunicationServer(IConnectionEndpoint connectionEndpoint, CommunicationServerSettings settings)
         {
             this.ConnectionEndpoint = connectionEndpoint;
             RegisteredGames = new GamesContainer();
+            this.settings = settings;
+
             connectionEndpoint.OnConnect += OnClientConnect;
             connectionEndpoint.OnMessageRecieve += OnMessage;
+            connectionEndpoint.OnDisconnected += OnDisconnect;
+            Clients = new Dictionary<ulong, Socket>();
+            freeIdList = new List<ulong>();
+        }
+
+        private void OnDisconnect(object sender, ConnectEventArgs e)
+        {
+            RegisteredGames.RemoveGameMastersGames(e.Handler);
         }
 
         public void Start()
@@ -47,44 +63,48 @@ namespace Server
         {
 
             var address = eventArgs.Handler.GetRemoteAddress();
-            if (address!=null)
+            if (address != null)
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
-            BehaviorChooser.React((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
-                eventArgs.Handler);
-            //ConnectionEndpoint.SendFromServer(eventArgs.Handler, "Answer!");
-            
-        }
-
-        public void OnRegisterGame(object sender, MessageRecieveEventArgs eventArgs)
-                {
-            RegisterGame request = (RegisterGame) XmlMessageConverter.ToObject(eventArgs.Message);
-
-                if (request == null)
-                    return;
-
-            Game.Game g = new Game.Game(gameId: RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
-                bluePlayers: request.NewGameInfo.blueTeamPlayers,
-                redPlayers: request.NewGameInfo.redTeamPlayers
-                );
-
-            RegisteredGames.RegisterGame(g);
-
-            ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() {gameId = (ulong) g.Id};
-
-            var response = XmlMessageConverter.ToXml(gameRegistration);
-            ConnectionEndpoint.SendFromServer(eventArgs.Handler, response);
+            try
+            {
+                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
+                    eventArgs.Handler);
+            }
+            catch(Exception e)
+            {
+                ConsoleDebug.Error(e.Message);
             }
 
-        //private static string Serialize<T>(T gameRegistration)
-        //{
-        //    XmlSerializer ser = new XmlSerializer(typeof(T));
-        //    string response;
-        //    using (TextWriter writer = new StringWriter())
-        //    {
-        //        ser.Serialize(writer, gameRegistration);
-        //        response = writer.ToString();
-        //    }
-        //    return response;
-        //}
+            //ConnectionEndpoint.SendFromServer(eventArgs.Handler, eventArgs.Message);
+
+        }
+
+
+        public  ulong IdForNewClient()
+        {
+            ulong id;
+
+            if (freeIdList.Count == 0)
+            {
+                id = (ulong)Clients.Count;
+            }
+            else
+            {
+                id = freeIdList[freeIdList.Count - 1];
+                freeIdList.RemoveAt(freeIdList.Count - 1);
+            }
+            return id;
+        }
+        private static string Serialize<T>(T gameRegistration)
+        {
+            XmlSerializer ser = new XmlSerializer(typeof(T));
+            string response;
+            using (TextWriter writer = new StringWriter())
+            {
+                ser.Serialize(writer, gameRegistration);
+                response = writer.ToString();
+            }
+            return response;
+        }
     }
 }

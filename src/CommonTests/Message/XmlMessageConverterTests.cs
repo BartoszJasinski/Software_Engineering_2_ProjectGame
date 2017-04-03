@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Common.Schema;
 using Common.Message;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace CommonTests.Message
 {
@@ -28,7 +30,7 @@ namespace CommonTests.Message
             msg.direction = MoveType.down;
             msg.directionSpecified = true;
             msg.gameId = 21321;
-            msg.playerGuid = "asdasdsad";
+            msg.playerGuid = "c094cab7-da7b-457f-89e5-a5c51756035f";
             var s1 = XmlMessageConverter.ToXml(msg);
             var s2 = XmlMessageConverter.ToXml(XmlMessageConverter.ToObject(s1));
             Assert.AreEqual(s1,s2);
@@ -81,6 +83,7 @@ namespace CommonTests.Message
 
 
         [TestMethod]
+        [ExpectedException(typeof(XmlSchemaValidationException))]
         public void WrongMoveMessageTest()
         {
             string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
@@ -88,10 +91,11 @@ namespace CommonTests.Message
                                     "xmlns=\"https://se2.mini.pw.edu.pl/17-results/\"\r\n" +
             "/>";
             var obj = XmlMessageConverter.ToObject(xmlNoGameId);
-            Assert.IsTrue(obj is ConfirmGameRegistration);
+            Assert.IsNull(obj);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void NotExistigMessageType()
         {
             string xml= "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +
@@ -103,6 +107,7 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
+        [ExpectedException(typeof(XmlException))]
         public void BullshitParseTest()
         {
             string xml = "sadasdsad";
@@ -111,6 +116,7 @@ namespace CommonTests.Message
         }
 
         [TestMethod]
+        [ExpectedException(typeof(XmlException))]
         public void BrokenXmlTest()
         {
             string xmlNoGameId = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n" +

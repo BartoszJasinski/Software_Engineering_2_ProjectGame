@@ -45,7 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Configuration.cs">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Config\Configuration.Partial.cs" />
     <Compile Include="DebugUtils\BoardPrinter.cs" />
+    <Compile Include="DebugUtils\ConsoleDebug.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantBoard.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantField.cs" />
     <Compile Include="SchemaWrapper\Implementation\AddressableBoard.cs" />
@@ -59,7 +64,6 @@
     <Compile Include="IO\Console\CommandLineParser.cs" />
     <Compile Include="IO\Console\ICommandLineOptions.cs" />
     <Compile Include="IO\Console\ServerCommandLineOptions.cs" />
-    <Compile Include="IO\Net\AsynchronousClient.cs" />
     <Compile Include="Message\IMessageHandler.cs" />
     <Compile Include="Message\KeepAliveCutter.cs" />
     <Compile Include="Message\Utf8StringWriter.cs" />
@@ -74,25 +78,26 @@
     <Compile Include="SocketExtensions.cs" />
     <Compile Include="TheProjectGameCommunication.cs">
       <DependentUpon>TheProjectGameCommunication.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Config\Configuration.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="TheProjectGameCommunication.xsd">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EventArg\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Jesus.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

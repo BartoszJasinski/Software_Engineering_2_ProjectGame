@@ -21,6 +21,8 @@ namespace Server.Connection
 
         public event EventHandler<ConnectEventArgs> OnConnect;
         public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        public event EventHandler<ConnectEventArgs> OnDisconnected;
+
 
         public ConnectionEndpoint(int port)
         {
@@ -133,6 +135,7 @@ namespace Server.Connection
             catch(SocketException e)
             {
                 Console.WriteLine("Client {0} disconnected", handler.GetRemoteAddress().ToString());
+                OnDisconnected(this, new ConnectEventArgs(handler));
             }
         }
 
@@ -165,5 +168,7 @@ namespace Server.Connection
                 Console.WriteLine(e.ToString());
             }
         }
+
+        
     }
 }

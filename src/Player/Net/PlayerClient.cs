@@ -3,21 +3,26 @@ using System.Net.Sockets;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
+using Common.DebugUtils;
 using Common.Message;
 using Player.Logic;
+using Common.Config;
+using Common.IO.Console;
+using Common.Schema;
 
 namespace Player.Net
 {
-    public class MockPlayerClient
+    public class PlayerClient
     {
         private IConnection connection;
+        private PlayerSettings settings;
+        private AgentCommandLineOptions options;
 
-        //TESTING ONLY maybe we should change Iconnection a bit 
-        //private Socket client;
-
-        public MockPlayerClient(IConnection connection)
+        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
             this.connection = connection;
+            this.settings = settings;
+            this.options = options;
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
@@ -33,40 +38,26 @@ namespace Player.Net
             connection.StopClient();
         }
 
-//        public void Send(string message)
-//        {
-//            connection.Send(client, message);
-//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            //some copy-pasta happened here, i feel
             var address = eventArgs.Handler.GetRemoteAddress();
-            System.Console.WriteLine("Successful connection with address {0}", address.ToString());
+            ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            //TESTING ONLY maybe we should change Iconnection a bit 
-       //     client = socket;
+            string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
-            connection.SendFromClient(socket, "Welcome message");
-
-
+            connection.SendFromClient(socket, xmlMessage);
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
             var socket = eventArgs.Handler as Socket;
 
-            System.Console.WriteLine("New message from: {0} \n {1}", socket.GetRemoteAddress(), eventArgs.Message);
+            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
-
-            connection.SendFromClient(socket, xmlMessage);
-
-
+            BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
+                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options));
         }
 
 
@@ -75,9 +66,6 @@ namespace Player.Net
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             System.Console.WriteLine("New message sent to {0}", address.ToString());
             //var socket = eventArgs.Handler as Socket;
-
         }
-
-
-    }//class
-}//namespace
+    } //class
+} //namespace

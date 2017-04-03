@@ -48,9 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\RandXmlClass.cs" />
-    <Compile Include="MockPlayer.cs" />
-    <Compile Include="Net\MockPlayerClient.cs" />
+    <Compile Include="Logic\MakeDecission.cs" />
+    <Compile Include="Logic\PlayerData.cs" />
+    <Compile Include="Logic\XmlMessageGenerator.cs" />
+    <Compile Include="Net\PlayerMessageHandleArgs.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Net\BehaviorChooser.cs" />
+    <Compile Include="Net\PlayerClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +66,12 @@
       <Project>{9BBFC02C-89F0-4387-8FF1-EAC1B06B662C}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Config\PlayerSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,7 +22,7 @@ namespace ServerTests
         {
             gc.RegisterGame(new Game());
             gc.RegisterGame(new Game(name:"g1", gameId:1, bluePlayers:2, redPlayers:2));
-            MockServer = new CommunicationServer(new MockEndpoint());
+            MockServer = new CommunicationServer(new MockEndpoint(), null);
         }
 
         [TestMethod]
@@ -98,5 +98,6 @@ namespace ServerTests
 
         public event EventHandler<ConnectEventArgs> OnConnect;
         public event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
+        public event EventHandler<ConnectEventArgs> OnDisconnected;
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Common.Message
@@ -24,22 +25,20 @@ namespace Common.Message
         public static object ToObject(string xmlString, string ns = "Common.Schema.")
         {
             XmlDocument xd = new XmlDocument();
+            //TODO when XmlValidation.Validate(xmlString) is uncommented few unit tests fail 
+            XmlValidation.Instance.Validate(xmlString);
+            xd.LoadXml(xmlString);
             try
             {
-                xd.LoadXml(xmlString);
                 XmlSerializer xs = new XmlSerializer(Type.GetType(ns + xd.LastChild.Name));
                 using (var s = new StringReader(xmlString))
                 {
                     return xs.Deserialize(s);
                 }
             }
-            catch (ArgumentNullException)
+            catch(ArgumentNullException e)
             {
-                return null;
-            }
-            catch (XmlException)
-            {
-                return null;
+                throw new ArgumentException("The given message type does not exist.");
             }
         }
 

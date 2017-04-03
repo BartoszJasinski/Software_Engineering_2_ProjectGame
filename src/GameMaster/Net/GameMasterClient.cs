@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using Common;
 using Common.Connection;
 using Common.Connection.EventArg;
+using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using GameMaster.Logic;
@@ -13,86 +14,82 @@ namespace GameMaster.Net
     
     public class GameMasterClient
     {
-        private IConnection connection;
-        
-        //TESTING ONLY maybe we should change Iconnection a bit 
-    //    private Socket client;
+        public IConnection Connection { get; }
 
-        public GameMasterClient(IConnection connection)
+        //Contents of configuration file
+        Common.Config.GameMasterSettings settings;
+
+        //The two teams
+        public Team TeamRed{ get; set; }
+        public Team TeamBlue { get; set; }
+
+        public ulong Id { get; set; }
+
+
+
+        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
         {
-            this.connection = connection;
+            this.Connection = connection;
+            this.settings = settings;
+
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
+
+            TeamRed = new Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         public void Connect()
         {
-            connection.StartClient();
+            Connection.StartClient();
         }
 
         public void Disconnect()
         {
-            connection.StopClient();
+            Connection.StopClient();
         }
 
-//        public void Send(string message)
-//        {
-//            connection.Send(client, message);
-//        }
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
             var address = eventArgs.Handler.GetRemoteAddress();
-            System.Console.WriteLine("Successful connection with address {0}", address.ToString());
+            ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
-            //TESTING ONLY maybe we should change Iconnection a bit 
-            //         client = socket;
+            //at the beginning both teams have same number of open player slots
+            ulong noOfPlayersPerTeam = ulong.Parse(settings.GameDefinition.NumberOfPlayersPerTeam);
 
-            ////TEST
-            GameInfo gameInfo = new GameInfo();
-            gameInfo.gameName = "Test Game";
-            gameInfo.blueTeamPlayers = 42;
-            gameInfo.redTeamPlayers = 24;
-            RegisterGame registerGame = new RegisterGame();
-            registerGame.NewGameInfo = gameInfo;
-            ////TEST
+            RegisterGame registerGameMessage = new RegisterGame()
+            {
+                NewGameInfo = new GameInfo()
+                {
+                    gameName = settings.GameDefinition.GameName,
+                    blueTeamPlayers = noOfPlayersPerTeam,
+                    redTeamPlayers = noOfPlayersPerTeam
+                }
+            };
 
 
-            string registerGameMessage = XmlMessageConverter.ToXml(registerGame);
-            connection.SendFromClient(socket, registerGameMessage);
+            string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
+            Connection.SendFromClient(socket, registerGameString);
             
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
-            //            var address = eventArgs.Handler.GetRemoteEndPointAddress();
-            //            System.Console.WriteLine("New message received from {0}: {1}", address.ToString(), eventArgs.Message);
-
             var socket = eventArgs.Handler as Socket;
 
-            System.Console.WriteLine("New message from: {0} \n {1}",socket.GetRemoteAddress(),eventArgs.Message);
+            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            ////TEST
-            dynamic recivedMessage = XmlMessageConverter.ToObject(eventArgs.Message);
-
-            if (recivedMessage is ConfirmGameRegistration)
-                Console.WriteLine(((ConfirmGameRegistration)recivedMessage).gameId);
-            ////TEST
+            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
             
+            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
 
-
-            string xmlMessage = XmlMessageConverter.ToXml(RandXmlClass.GetXmlClass());
-
-            connection.SendFromClient(socket, xmlMessage);
+           // connection.SendFromClient(socket, xmlMessage);
 
 
         }
-
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {

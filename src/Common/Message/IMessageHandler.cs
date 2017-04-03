@@ -9,7 +9,7 @@ namespace Common.Message
     /// <summary>
     /// Interface for message handlers
     /// </summary>
-    /// <typeparam name="T">Message type</typeparam>
+    /// <typeparam name="T">Good type</typeparam>
     public interface IMessageHandler<T>
     {
         void HandleMessage(T msg);
