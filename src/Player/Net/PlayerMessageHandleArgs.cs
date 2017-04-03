@@ -11,14 +11,16 @@ namespace Player.Net
         public Socket Socket;
         public PlayerSettings Settings;
         public AgentCommandLineOptions Options;
+        public PlayerClient PlayerClient;
 
         public PlayerMessageHandleArgs(IConnection connection = null, Socket socket = null,
-            PlayerSettings settings = null, AgentCommandLineOptions options = null)
+            PlayerSettings settings = null, AgentCommandLineOptions options = null, PlayerClient playerClient =  null)
         {
             Options = options;
             Connection = connection;
             Socket = socket;
             Settings = settings;
+            PlayerClient = playerClient;
         }
     }
 }
