@@ -58,7 +58,7 @@ namespace Player.Net
             ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options));
+                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
         }
 
 
