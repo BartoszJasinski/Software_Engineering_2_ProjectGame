@@ -74,6 +74,7 @@ namespace Player.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
+            
             var address = eventArgs.Handler.GetRemoteAddress();
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;

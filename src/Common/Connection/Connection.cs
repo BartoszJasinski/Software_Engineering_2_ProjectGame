@@ -77,6 +77,7 @@ namespace Common.Connection
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+
             }
         }
 
@@ -110,6 +111,11 @@ namespace Common.Connection
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ipString), port);
+                Socket client = (Socket)ar.AsyncState;
+                client.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), client);
+                connectDone.WaitOne();
             }
         }
 
