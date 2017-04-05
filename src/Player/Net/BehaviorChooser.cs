@@ -54,15 +54,32 @@ namespace Player.Net
             return;
         }
 
+        public static void HandleMessage(RejectJoiningGame message, PlayerMessageHandleArgs args)
+        {
+            if (message == null)
+                return;
+            //try to connect again
+            args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(new GetGames()));
+            
+            return;
+        }
+
         public static void HandleMessage(Game message, PlayerMessageHandleArgs args)
         {
             args.PlayerClient.Players = message.Players;
             args.PlayerClient.Board = message.Board;
             args.PlayerClient.Location = message.PlayerLocation;
             ConsoleDebug.Good("Game started");
-            return;
+            args.PlayerClient.Play();
+            
         }
 
+        public static void HandleMessage(Data message, PlayerMessageHandleArgs args)
+        {
+            args.PlayerClient.Location = message.PlayerLocation;
+            ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
+            args.PlayerClient.Play();
+        }
 
         public static void HandleMessage(object message, PlayerMessageHandleArgs args)
         {
