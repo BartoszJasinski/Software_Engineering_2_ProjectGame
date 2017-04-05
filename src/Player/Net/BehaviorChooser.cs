@@ -49,7 +49,17 @@ namespace Player.Net
                 return;
 
             args.PlayerClient.Id = message.playerId;
+            args.PlayerClient.GameId = message.gameId;
+            args.PlayerClient.Guid = message.privateGuid;
+            return;
+        }
 
+        public static void HandleMessage(Game message, PlayerMessageHandleArgs args)
+        {
+            args.PlayerClient.Players = message.Players;
+            args.PlayerClient.Board = message.Board;
+            args.PlayerClient.Location = message.PlayerLocation;
+            ConsoleDebug.Good("Game started");
             return;
         }
 
