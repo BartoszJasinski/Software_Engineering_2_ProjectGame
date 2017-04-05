@@ -19,12 +19,11 @@ namespace GameMaster.Net
         public IConnection Connection { get; }
 
         //Contents of configuration file
-        Common.Config.GameMasterSettings settings;
+        public Common.Config.GameMasterSettings Settings;
 
         //The two teams
         public Team TeamRed{ get; set; }
         public Team TeamBlue { get; set; }
-
         public IEnumerable<Logic.Player> Players
         {
             get
@@ -36,13 +35,13 @@ namespace GameMaster.Net
         public ulong Id { get; set; }
 
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
-
+        public GameBoard Board { get; set; }
 
 
         public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
         {
             this.Connection = connection;
-            this.settings = settings;
+            this.Settings = settings;
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
@@ -70,13 +69,13 @@ namespace GameMaster.Net
             var socket = eventArgs.Handler as Socket;
 
             //at the beginning both teams have same number of open player slots
-            ulong noOfPlayersPerTeam = ulong.Parse(settings.GameDefinition.NumberOfPlayersPerTeam);
+            ulong noOfPlayersPerTeam = ulong.Parse(Settings.GameDefinition.NumberOfPlayersPerTeam);
 
             RegisterGame registerGameMessage = new RegisterGame()
             {
                 NewGameInfo = new GameInfo()
                 {
-                    gameName = settings.GameDefinition.GameName,
+                    gameName = Settings.GameDefinition.GameName,
                     blueTeamPlayers = noOfPlayersPerTeam,
                     redTeamPlayers = noOfPlayersPerTeam
                 }

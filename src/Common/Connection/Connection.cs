@@ -157,7 +157,9 @@ namespace Common.Connection
                         //inform that a new message was received
                         OnMessageRecieve(this, new MessageRecieveEventArgs(content.Substring(0, etbIndex), client));
                         state.sb.Remove(0, etbIndex + 1);
+                        content = state.sb.ToString();
                         receiveDone.Set();
+                        etbIndex = content.IndexOf((char)23);
                     }
 
                 }
