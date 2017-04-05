@@ -8,7 +8,7 @@ using Common.SchemaWrapper.Abstraction;
 
 namespace Common.SchemaWrapper
 {
-    public class AddressableBoard : ISchemaCompliantBoard
+    public class AddressableBoard: ISchemaCompliantBoard
     {
         private GameBoard board;
 

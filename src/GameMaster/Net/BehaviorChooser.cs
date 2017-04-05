@@ -9,13 +9,13 @@ using Common.Message;
 using Common.Schema;
 using Logic = GameMaster.Logic;
 using System.Net.Sockets;
+using Common.SchemaWrapper;
 using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
 {
-    static class BehaviorChooser/*: IMessageHandler<ConfirmGameRegistration>*/
+    static class BehaviorChooser
     {
-        
 
         public static void HandleMessage(ConfirmGameRegistration message, GameMasterClient gameMaster, Socket handler)
         {
@@ -89,6 +89,21 @@ namespace GameMaster.Net
             ConsoleDebug.Warning("Unknown Type");
         }
 
-        
+
+        //JUST TRYIN SOME API PROBABLY WILL GO TO TRASH
+//        public static void HandleMessage()
+//        {
+//            RandomGoalBoardGenerator randomGoalBoardGenerator = new RandomGoalBoardGenerator(10, 10, 10, 10);
+//            AddressableBoard ab = randomGoalBoardGenerator.CreateBoard();
+//
+//            foreach (Field field in ab.Fields)
+//            {
+//                if((field as GoalField) != null)
+//                    ((GoalField)field).type
+//                field.     
+//            }
+//        }
+
+
     }
 }

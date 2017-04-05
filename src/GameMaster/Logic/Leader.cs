@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GameMaster.Logic
 {
-    public class Leader : Player
+    public class Leader: Player
     {
         public override Common.Schema.Player SchemaPlayer
         {
@@ -21,12 +21,12 @@ namespace GameMaster.Logic
                 };
             }
         }
-        public Leader(ulong id, string guid, Team team, uint x = 0, uint y = 0) : base(id, guid, team, x, y)
+        public Leader(ulong id, string guid, Team team, uint x = 0, uint y = 0): base(id, guid, team, x, y)
         {
 
         }
 
-        public Leader(ulong id, string guid,Team team, Location location) : base(id, guid, team, location)
+        public Leader(ulong id, string guid,Team team, Location location): base(id, guid, team, location)
         {
 
         }
