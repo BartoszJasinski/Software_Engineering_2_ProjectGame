@@ -10,6 +10,7 @@ using Common.Schema;
 using GameMaster.Logic;
 using System.Collections.Generic;
 using System.Linq;
+using GameMaster.Log;
 
 namespace GameMaster.Net
 {
@@ -35,6 +36,8 @@ namespace GameMaster.Net
 
         public ulong Id { get; set; }
 
+        public ILogger Logger { get; set; }
+
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
 
 
@@ -50,6 +53,8 @@ namespace GameMaster.Net
 
             TeamRed = new Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
             TeamBlue = new Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+
+            Logger = new Logger();
         }
 
         public void Connect()

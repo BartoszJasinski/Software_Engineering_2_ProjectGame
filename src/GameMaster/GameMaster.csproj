@@ -56,6 +56,7 @@
     <Compile Include="Logic\Team.cs" />
     <Compile Include="Logic\XmlMessageGenerator.cs" />
     <Compile Include="GameMaster.cs" />
+    <Compile Include="Log\ILogger.cs" />
     <Compile Include="Net\BehaviorChooser.cs" />
     <Compile Include="Net\GameMasterClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
