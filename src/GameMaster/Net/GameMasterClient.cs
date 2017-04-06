@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GameMaster.Log;
 
+
 namespace GameMaster.Net
 {
     
@@ -47,7 +48,7 @@ namespace GameMaster.Net
         {
             this.Connection = connection;
             this.Settings = settings;
-            Logger=new Logger();
+            Logger = new Logger();
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
@@ -146,9 +147,6 @@ namespace GameMaster.Net
                 PlaceNewPieces(1);
             }
         }
-
-
-
 
 
     }//class
