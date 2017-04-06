@@ -145,7 +145,9 @@ namespace GameMaster.Net
                 }
                 field.PieceId = newPiece.Id;
                 newPiece.Location = new Location() { x = field.X, y = field.Y };
-                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+
+                var typeString = pieceType == PieceType.normal ? "normal" : "sham";
+                ConsoleDebug.Good($"Placed new {typeString} Piece at: ({ field.X }, {field.Y})");
             }
         }
 
