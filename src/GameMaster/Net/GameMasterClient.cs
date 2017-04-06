@@ -110,6 +110,24 @@ namespace GameMaster.Net
 
         }
 
+        //returns null if both teams are full
+        public Team selectTeamForPlayer(TeamColour preferredTeam)
+        {
+            var selectedTeam = preferredTeam == TeamColour.blue ? TeamBlue : TeamRed;
+            var otherTeam = preferredTeam == TeamColour.blue ? TeamRed : TeamBlue;
+
+            if (selectedTeam.IsFull)
+                selectedTeam = otherTeam;
+
+            //both teams are full
+            if (selectedTeam.IsFull)
+            {
+                return null;
+            }
+
+            return selectedTeam;
+        }
+
 
 
 

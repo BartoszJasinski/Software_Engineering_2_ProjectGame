@@ -24,14 +24,10 @@ namespace GameMaster.Net
 
         public static void HandleMessage(JoinGame message, GameMasterClient gameMaster, Socket handler)
         {
-            var selectedTeam = message.preferredTeam == TeamColour.blue ? gameMaster.TeamBlue : gameMaster.TeamRed;
-            var otherTeam = message.preferredTeam == TeamColour.blue ? gameMaster.TeamRed : gameMaster.TeamBlue;
 
-            if (selectedTeam.IsFull)
-                selectedTeam = otherTeam;
-
+            var selectedTeam = gameMaster.selectTeamForPlayer(message.preferredTeam);
             //both teams are full
-            if (selectedTeam.IsFull)
+            if (selectedTeam == null)
             {
                 gameMaster.Connection.SendFromClient(handler,
                     XmlMessageConverter.ToXml(new RejectJoiningGame()

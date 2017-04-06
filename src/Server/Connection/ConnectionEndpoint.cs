@@ -162,7 +162,7 @@ namespace Server.Connection
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+                //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
             }
             catch (Exception e)

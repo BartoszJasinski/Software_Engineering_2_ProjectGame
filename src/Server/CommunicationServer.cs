@@ -63,8 +63,10 @@ namespace Server
         {
 
             var address = eventArgs.Handler.GetRemoteAddress();
-            if (address != null)
-                Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
+            //if (address != null)
+            //    Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
             try
             {
                 BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
