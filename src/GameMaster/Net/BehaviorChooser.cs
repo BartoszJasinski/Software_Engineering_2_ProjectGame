@@ -97,15 +97,17 @@ namespace GameMaster.Net
         {
             int dx, dy;
             Data resp = new Data();
-
+            
             Task.Delay(new TimeSpan(0,0,0,0, (int) gameMaster.Settings.ActionCosts.MoveDelay)).ContinueWith(_ =>
             {
                 Wrapper.Player player = gameMaster.Players.First(p => message.playerGuid == p.Guid);
+                gameMaster.Logger.Log(message, player);
                 resp.playerId = player.Id;
                 dx = message.direction == MoveType.right ? 1 : (message.direction == MoveType.left ? -1 : 0);
                 dy = message.direction == MoveType.up ? 1 : (message.direction == MoveType.down ? -1 : 0);
                 //if moving behind borders, dont move
                 //also don't move where another player is
+                //well, that escalated quickly  
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.width) ||
                     (player.Location.y + dy < 0 ||

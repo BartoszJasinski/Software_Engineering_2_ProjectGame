@@ -11,6 +11,7 @@ using Wrapper = Common.SchemaWrapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GameMaster.Log;
 
 namespace GameMaster.Net
 {
@@ -21,6 +22,8 @@ namespace GameMaster.Net
 
         //Contents of configuration file
         public Common.Config.GameMasterSettings Settings;
+
+        public ILogger Logger { get; set; }
 
         //The two teams
         public Wrapper.Team TeamRed { get; set; }
@@ -44,6 +47,7 @@ namespace GameMaster.Net
         {
             this.Connection = connection;
             this.Settings = settings;
+            Logger=new Logger();
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
