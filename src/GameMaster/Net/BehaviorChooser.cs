@@ -25,7 +25,7 @@ namespace GameMaster.Net
         public static void HandleMessage(JoinGame message, GameMasterClient gameMaster, Socket handler)
         {
 
-            var selectedTeam = gameMaster.selectTeamForPlayer(message.preferredTeam);
+            var selectedTeam = gameMaster.SelectTeamForPlayer(message.preferredTeam);
             //both teams are full
             if (selectedTeam == null)
             {
@@ -101,10 +101,12 @@ namespace GameMaster.Net
                 dx = message.direction == MoveType.right ? 1 : (message.direction == MoveType.left ? -1 : 0);
                 dy = message.direction == MoveType.up ? 1 : (message.direction == MoveType.down ? -1 : 0);
                 //if moving behind borders, dont move
+                //also don't move where another player is
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.width) ||
                     (player.Location.y + dy < 0 ||
-                     player.Location.y + dy >= gameMaster.Board.tasksHeight * 2 + gameMaster.Board.goalsHeight))
+                     player.Location.y + dy >= gameMaster.Board.tasksHeight * 2 + gameMaster.Board.goalsHeight)
+                     || gameMaster.Players.Where(p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy).Any())
                 {
                     resp.PlayerLocation = player.Location;
                     gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));

@@ -36,6 +36,7 @@ namespace GameMaster.Net
 
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public GameBoard Board { get; set; }
+        public IList<Piece> Pieces = new List<Piece>();
 
 
         public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
@@ -111,7 +112,7 @@ namespace GameMaster.Net
         }
 
         //returns null if both teams are full
-        public Team selectTeamForPlayer(TeamColour preferredTeam)
+        public Team SelectTeamForPlayer(TeamColour preferredTeam)
         {
             var selectedTeam = preferredTeam == TeamColour.blue ? TeamBlue : TeamRed;
             var otherTeam = preferredTeam == TeamColour.blue ? TeamRed : TeamBlue;
@@ -126,6 +127,14 @@ namespace GameMaster.Net
             }
 
             return selectedTeam;
+        }
+
+        public void PlaceNewPieces(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                var newPiece = new Piece();
+            }
         }
 
 
