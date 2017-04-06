@@ -1,5 +1,4 @@
 ﻿using System;
-using Common.Schema;
 using Common.SchemaWrapper;
 
 namespace GameMaster.Logic.Board
@@ -36,23 +35,23 @@ namespace GameMaster.Logic.Board
                 {
                     board.Fields[x, y] = new GoalField()
                     {
-                        x = (uint)x,
-                        y = (uint)y,
-                        playerIdSpecified = false,
-                        timestamp = timestamp,
-                        team = TeamColour.red,
-                        type = goalLayout[x,y] ? GoalFieldType.goal : GoalFieldType.nongoal
+                        X = (uint)x,
+                        Y = (uint)y,
+                        PlayerId = null,
+                        Timestamp = timestamp,
+                        Team = Common.Schema.TeamColour.red,
+                        Type = goalLayout[x,y] ? Common.Schema.GoalFieldType.goal : Common.Schema.GoalFieldType.nongoal
                     };
                     var xLocal = board.Width - x - 1;
                     var yLocal = board.GoalsHeight - y - 1 + goalsOffset;
                     board.Fields[xLocal, yLocal] = new GoalField()
                     {
-                        x = (uint)xLocal,
-                        y = (uint)yLocal,
-                        playerIdSpecified = false,
-                        timestamp = timestamp,
-                        team = TeamColour.blue,
-                        type = goalLayout[x, y] ? GoalFieldType.goal : GoalFieldType.nongoal
+                        X = (uint)xLocal,
+                        Y = (uint)yLocal,
+                        PlayerId = null,
+                        Timestamp = timestamp,
+                        Team = Common.Schema.TeamColour.blue,
+                        Type = goalLayout[x, y] ? Common.Schema.GoalFieldType.goal : Common.Schema.GoalFieldType.nongoal
                     };
                 }
             }
@@ -63,11 +62,11 @@ namespace GameMaster.Logic.Board
                 {
                     board.Fields[x,y] = new TaskField()
                     {
-                        pieceIdSpecified = false,
-                        playerIdSpecified = false,
-                        x = (uint)x,
-                        y = y,
-                        timestamp = timestamp
+                        PieceId = null,
+                        PlayerId = null,
+                        X = (uint)x,
+                        Y = y,
+                        Timestamp = timestamp
                     };
                 }
             }

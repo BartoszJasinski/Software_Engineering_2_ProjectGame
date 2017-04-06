@@ -70,14 +70,14 @@ namespace GameMaster.Net
             {
                 //TODO Load Board from config file
                 var boardGenerator = new RandomGoalBoardGenerator(5, 5, 3, 123);
-                var board = boardGenerator.CreateBoard().SchemaBoard;
+                var board = boardGenerator.CreateBoard();
                 gameMaster.Board = board;
                 var players = gameMaster.Players.Select(p => p.SchemaPlayer).ToArray();
                 foreach (var player in gameMaster.Players)
                 {
                     var startGame = new Game()
                     {
-                        Board = board,
+                        Board = board.SchemaBoard,
                         playerId = player.Id,
                         PlayerLocation = new Location() {x = (uint)player.Id, y = 0},
                         Players = players
@@ -109,9 +109,9 @@ namespace GameMaster.Net
                 //also don't move where another player is
                 //well, that escalated quickly  
                 if (!message.directionSpecified ||
-                    (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.width) ||
+                    (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.Width) ||
                     (player.Location.y + dy < 0 ||
-                     player.Location.y + dy >= gameMaster.Board.tasksHeight * 2 + gameMaster.Board.goalsHeight)
+                     player.Location.y + dy >= gameMaster.Board.TasksHeight * 2 + gameMaster.Board.GoalsHeight)
                      || gameMaster.Players.Where(p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy).Any())
                 {
                     resp.PlayerLocation = player.Location;
