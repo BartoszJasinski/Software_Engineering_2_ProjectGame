@@ -79,7 +79,7 @@ namespace GameMaster.Net
                     {
                         Board = board,
                         playerId = player.Id,
-                        PlayerLocation = new Location() {x = 0, y = 0},
+                        PlayerLocation = new Location() {x = (uint)player.Id, y = 0},
                         Players = players
                     };
                     var gameString = XmlMessageConverter.ToXml(startGame);
@@ -93,7 +93,6 @@ namespace GameMaster.Net
         {
             int dx, dy;
             Data resp = new Data();
-            ;
 
             Task.Delay(new TimeSpan(0,0,0,0, (int) gameMaster.Settings.ActionCosts.MoveDelay)).ContinueWith(_ =>
             {
@@ -105,13 +104,14 @@ namespace GameMaster.Net
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.width) ||
                     (player.Location.y + dy < 0 ||
-                     player.Location.y + dy >= gameMaster.Board.tasksHeight * 2 + gameMaster.Board.tasksHeight))
+                     player.Location.y + dy >= gameMaster.Board.tasksHeight * 2 + gameMaster.Board.goalsHeight))
                 {
                     resp.PlayerLocation = player.Location;
                     gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
                     return;
                 }
                 resp.PlayerLocation = new Location(){x=(uint) (player.Location.x+dx),y=(uint) (player.Location.y+dy)};
+                player.Location = resp.PlayerLocation;
                 gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
             });
         }

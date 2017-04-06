@@ -108,7 +108,6 @@ namespace Player.Net
             Random random = new Random();
             MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
             Move(randomMove);
-
         }
 
         private void Move(MoveType direction)
