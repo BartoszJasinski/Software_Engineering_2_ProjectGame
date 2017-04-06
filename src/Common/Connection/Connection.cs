@@ -77,6 +77,7 @@ namespace Common.Connection
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+
             }
         }
 
@@ -110,6 +111,11 @@ namespace Common.Connection
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ipString), port);
+                Socket client = (Socket)ar.AsyncState;
+                client.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), client);
+                connectDone.WaitOne();
             }
         }
 
@@ -152,12 +158,14 @@ namespace Common.Connection
 
                     //messages end with <ETB> (0x23)
                     int etbIndex = content.IndexOf((char)23);
-                    if (etbIndex > -1)
+                    while (etbIndex > -1)
                     {
                         //inform that a new message was received
                         OnMessageRecieve(this, new MessageRecieveEventArgs(content.Substring(0, etbIndex), client));
                         state.sb.Remove(0, etbIndex + 1);
+                        content = state.sb.ToString();
                         receiveDone.Set();
+                        etbIndex = content.IndexOf((char)23);
                     }
 
                 }

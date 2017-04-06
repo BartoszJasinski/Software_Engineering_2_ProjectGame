@@ -63,8 +63,10 @@ namespace Server
         {
 
             var address = eventArgs.Handler.GetRemoteAddress();
-            if (address != null)
-                Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
+            //if (address != null)
+            //    Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
             try
             {
                 BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
@@ -87,6 +89,7 @@ namespace Server
             if (freeIdList.Count == 0)
             {
                 id = (ulong)Clients.Count;
+                Console.WriteLine(id);
             }
             else
             {

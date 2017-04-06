@@ -51,9 +51,6 @@
     <Compile Include="Logic\Board\IBoardGenerator.cs" />
     <Compile Include="Logic\Board\RandomGoalBoardGenerator.cs" />
     <Compile Include="Logic\Board\SimpleBoardGenerator.cs" />
-    <Compile Include="Logic\Leader.cs" />
-    <Compile Include="Logic\Player.cs" />
-    <Compile Include="Logic\Team.cs" />
     <Compile Include="Logic\XmlMessageGenerator.cs" />
     <Compile Include="GameMaster.cs" />
     <Compile Include="Log\ILogger.cs" />

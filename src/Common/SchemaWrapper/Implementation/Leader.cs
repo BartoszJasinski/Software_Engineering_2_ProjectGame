@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameMaster.Logic
+namespace Common.SchemaWrapper
 {
     public class Leader : Player
     {

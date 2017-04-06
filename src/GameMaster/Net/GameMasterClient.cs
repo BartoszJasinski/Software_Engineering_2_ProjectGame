@@ -7,10 +7,10 @@ using Common.Connection.EventArg;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
-using GameMaster.Logic;
+using Wrapper = Common.SchemaWrapper;
 using System.Collections.Generic;
 using System.Linq;
-using GameMaster.Log;
+using System.Threading.Tasks;
 
 namespace GameMaster.Net
 {
@@ -20,13 +20,12 @@ namespace GameMaster.Net
         public IConnection Connection { get; }
 
         //Contents of configuration file
-        Common.Config.GameMasterSettings settings;
+        public Common.Config.GameMasterSettings Settings;
 
         //The two teams
-        public Team TeamRed{ get; set; }
-        public Team TeamBlue { get; set; }
-
-        public IEnumerable<Logic.Player> Players
+        public Wrapper.Team TeamRed { get; set; }
+        public Wrapper.Team TeamBlue { get; set; }
+        public IEnumerable<Wrapper.Player> Players
         {
             get
             {
@@ -36,25 +35,22 @@ namespace GameMaster.Net
 
         public ulong Id { get; set; }
 
-        public ILogger Logger { get; set; }
-
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
-
+        public GameBoard Board { get; set; }
+        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();
 
 
         public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
         {
             this.Connection = connection;
-            this.settings = settings;
+            this.Settings = settings;
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
 
-            TeamRed = new Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
-            TeamBlue = new Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
-
-            Logger = new Logger();
+            TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         public void Connect()
@@ -75,13 +71,13 @@ namespace GameMaster.Net
             var socket = eventArgs.Handler as Socket;
 
             //at the beginning both teams have same number of open player slots
-            ulong noOfPlayersPerTeam = ulong.Parse(settings.GameDefinition.NumberOfPlayersPerTeam);
+            ulong noOfPlayersPerTeam = ulong.Parse(Settings.GameDefinition.NumberOfPlayersPerTeam);
 
             RegisterGame registerGameMessage = new RegisterGame()
             {
                 NewGameInfo = new GameInfo()
                 {
-                    gameName = settings.GameDefinition.GameName,
+                    gameName = Settings.GameDefinition.GameName,
                     blueTeamPlayers = noOfPlayersPerTeam,
                     redTeamPlayers = noOfPlayersPerTeam
                 }
@@ -97,23 +93,53 @@ namespace GameMaster.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            //ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
-            
-            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
-
-           // connection.SendFromClient(socket, xmlMessage);
-
-
         }
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            //System.Console.WriteLine("New message sent to {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
+        }
+
+        //returns null if both teams are full
+        public Wrapper.Team SelectTeamForPlayer(TeamColour preferredTeam)
+        {
+            var selectedTeam = preferredTeam == TeamColour.blue ? TeamBlue : TeamRed;
+            var otherTeam = preferredTeam == TeamColour.blue ? TeamRed : TeamBlue;
+
+            if (selectedTeam.IsFull)
+                selectedTeam = otherTeam;
+
+            //both teams are full
+            if (selectedTeam.IsFull)
+            {
+                return null;
+            }
+
+            return selectedTeam;
+        }
+
+        public void PlaceNewPieces(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                Pieces.Add(new Wrapper.Piece((ulong)i, PieceType.normal, DateTime.Now));
+                ConsoleDebug.Good($"Placed new Piece, time: { DateTime.Now.ToLongTimeString()}");
+            }
+        }
+
+        public async Task GeneratePieces()
+        {
+            while(true)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
+                PlaceNewPieces(1);
+            }
         }
 
 

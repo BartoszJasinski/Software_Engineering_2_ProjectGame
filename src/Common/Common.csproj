@@ -75,6 +75,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SchemaWrapper\Implementation\Leader.cs" />
+    <Compile Include="SchemaWrapper\Implementation\Piece.cs" />
+    <Compile Include="SchemaWrapper\Implementation\Player.cs" />
+    <Compile Include="SchemaWrapper\Implementation\Team.cs" />
     <Compile Include="SocketExtensions.cs" />
     <Compile Include="TheProjectGameCommunication.cs">
       <DependentUpon>TheProjectGameCommunication.xsd</DependentUpon>

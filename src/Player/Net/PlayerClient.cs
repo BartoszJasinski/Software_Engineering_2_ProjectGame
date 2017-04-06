@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using Common;
 using Common.Connection;
@@ -73,6 +74,7 @@ namespace Player.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
+            
             var address = eventArgs.Handler.GetRemoteAddress();
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
@@ -98,6 +100,14 @@ namespace Player.Net
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
             System.Console.WriteLine("New message sent to {0}", address.ToString());
             //var socket = eventArgs.Handler as Socket;
+        }
+
+        public void Play()
+        {
+            Array values = Enum.GetValues(typeof(MoveType));
+            Random random = new Random();
+            MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
+            Move(randomMove);
         }
 
         private void Move(MoveType direction)
