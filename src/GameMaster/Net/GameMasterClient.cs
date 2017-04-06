@@ -64,6 +64,7 @@ namespace GameMaster.Net
 
         public void Disconnect()
         {
+            Logger.Dispose();
             Connection.StopClient();
         }
 
