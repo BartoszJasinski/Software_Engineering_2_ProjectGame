@@ -10,7 +10,7 @@ namespace GameMaster.Log
     {
         static ReaderWriterLock locker = new ReaderWriterLock();
         private StreamWriter writer;
-        public Logger(string filename="gamemaster.log")
+        public Logger(string filename = "gamemaster.log")
         {
 
             writer = new StreamWriter(filename, true);
@@ -52,7 +52,7 @@ namespace GameMaster.Log
                 p.Id.ToString(),
                 msg.playerGuid,
                 p.Team.Color.ToString(),
-                p.Team.Leader?.Guid==msg.playerGuid?"leader":"member"
+                p.Team.Leader?.Guid == msg.playerGuid?"leader":"member"
             };
             Log(s);
         }

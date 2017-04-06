@@ -47,7 +47,7 @@ namespace GameMaster.Net
         {
             this.Connection = connection;
             this.Settings = settings;
-            Logger=new Logger();
+            Logger = new Logger();
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
