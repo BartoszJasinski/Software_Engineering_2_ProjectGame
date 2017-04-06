@@ -76,6 +76,7 @@ namespace Player.Net
 
         public static void HandleMessage(Data message, PlayerMessageHandleArgs args)
         {
+            
             args.PlayerClient.Location = message.PlayerLocation;
             ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
             args.PlayerClient.Play();

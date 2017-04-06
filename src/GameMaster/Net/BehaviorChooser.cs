@@ -89,9 +89,7 @@ namespace GameMaster.Net
                 //place first pieces
                 gameMaster.PlaceNewPieces((int)gameMaster.Settings.GameDefinition.InitialNumberOfPieces);
                 //start infinite Piece place loop
-#pragma warning disable 4014
                 gameMaster.GeneratePieces();
-#pragma warning restore 4014
             }
         }
 
