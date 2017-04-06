@@ -42,6 +42,8 @@ namespace GameMaster.Net
         public Wrapper.AddressableBoard Board { get; set; }
         public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();
 
+        private Random rng = new Random();
+
 
         public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
         {
@@ -133,7 +135,8 @@ namespace GameMaster.Net
         {
             for (int i = 0; i < amount; i++)
             {
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, PieceType.normal, DateTime.Now);
+                var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
                 var field = Board.GetRandomEmptyFieldInTaskArea();
                 if(field == null)
                 {
