@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
 
-namespace GameMaster.Logic
+namespace Common.SchemaWrapper
 {
     public class Team
     {

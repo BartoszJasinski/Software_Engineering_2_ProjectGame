@@ -7,7 +7,7 @@ using Common.Connection.EventArg;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
-using GameMaster.Logic;
+using Common.SchemaWrapper;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +24,7 @@ namespace GameMaster.Net
         //The two teams
         public Team TeamRed{ get; set; }
         public Team TeamBlue { get; set; }
-        public IEnumerable<Logic.Player> Players
+        public IEnumerable<Common.SchemaWrapper.Player> Players
         {
             get
             {
@@ -95,12 +95,6 @@ namespace GameMaster.Net
             ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
-            
-            string xmlMessage = XmlMessageConverter.ToXml(XmlMessageGenerator.GetXmlMessage());
-
-           // connection.SendFromClient(socket, xmlMessage);
-
-
         }
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)

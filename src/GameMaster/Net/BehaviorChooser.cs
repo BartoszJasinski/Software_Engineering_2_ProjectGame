@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
-using Logic = GameMaster.Logic;
+using Wrapper = Common.SchemaWrapper;
 using System.Net.Sockets;
 using System.Threading;
 using GameMaster.Logic.Board;
@@ -48,9 +48,9 @@ namespace GameMaster.Net
             var guid = Utils.GenerateGuid();
 
             if (role == PlayerType.leader)
-                selectedTeam.AddLeader(new Logic.Leader(message.playerId, guid, selectedTeam));
+                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam));
             else
-                selectedTeam.Players.Add(new Logic.Player(message.playerId, guid, selectedTeam));
+                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam));
 
             var answer = new ConfirmJoiningGame();
             answer.playerId = message.playerId;
@@ -96,7 +96,7 @@ namespace GameMaster.Net
 
             Task.Delay(new TimeSpan(0,0,0,0, (int) gameMaster.Settings.ActionCosts.MoveDelay)).ContinueWith(_ =>
             {
-                Logic.Player player = gameMaster.Players.First(p => message.playerGuid == p.Guid);
+                Wrapper.Player player = gameMaster.Players.First(p => message.playerGuid == p.Guid);
                 resp.playerId = player.Id;
                 dx = message.direction == MoveType.right ? 1 : (message.direction == MoveType.left ? -1 : 0);
                 dy = message.direction == MoveType.up ? 1 : (message.direction == MoveType.down ? -1 : 0);
