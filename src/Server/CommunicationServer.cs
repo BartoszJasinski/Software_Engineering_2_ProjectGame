@@ -87,6 +87,7 @@ namespace Server
             if (freeIdList.Count == 0)
             {
                 id = (ulong)Clients.Count;
+                Console.WriteLine(id);
             }
             else
             {
