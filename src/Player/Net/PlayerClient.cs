@@ -24,6 +24,8 @@ namespace Player.Net
         private string _guid;
         private Common.Schema.Player[] _players;
         private GameBoard _board;
+        private TaskField[,] _taskFields;
+        private Common.Schema.GoalField[,] _goalFields;
 
         public ulong GameId
         {
@@ -36,6 +38,18 @@ namespace Player.Net
         public Common.Schema.Player[] Players
         {
             set { _players = value; }
+        }
+
+        public TaskField[,] TaskFields
+        {
+            set { _taskFields = value; }
+            get { return _taskFields; }
+        }
+
+        public Common.Schema.GoalField[,] GoalFields
+        {
+            set { _goalFields = value; }
+            get { return _goalFields; }
         }
 
         public GameBoard Board

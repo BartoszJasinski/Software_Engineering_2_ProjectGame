@@ -76,15 +76,35 @@ namespace Player.Net
 
         public static void HandleMessage(Data message, PlayerMessageHandleArgs args)
         {
-            
-            args.PlayerClient.Location = message.PlayerLocation;
-            ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
+            if (message.PlayerLocation != null)
+            {
+                args.PlayerClient.Location = message.PlayerLocation;
+                ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
+            }
+            if(message.TaskFields != null)
+            {
+                FieldsUpdater(args.PlayerClient.TaskFields, message.TaskFields);
+            }
+            if(message.GoalFields != null)
+            {
+                FieldsUpdater(args.PlayerClient.GoalFields, message.GoalFields);
+            }
+
+
             args.PlayerClient.Play();
         }
 
         public static void HandleMessage(object message, PlayerMessageHandleArgs args)
         {
             ConsoleDebug.Warning("Unknown Type");
+        }
+
+        private static void FieldsUpdater(Field[,] oldTaskFields, Field[] newTaskFields )
+        {
+            foreach(Field taskField in newTaskFields)
+            {
+                oldTaskFields[taskField.x, taskField.y] = taskField;
+            }
         }
     }
 }
