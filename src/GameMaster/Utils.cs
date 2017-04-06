@@ -33,5 +33,6 @@ namespace GameMaster
                 sb.Append(alphabet[rng.Next(alphabet.Length)]);
             }
         }
+
     }
 }

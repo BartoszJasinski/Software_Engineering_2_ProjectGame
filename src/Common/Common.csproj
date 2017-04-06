@@ -51,6 +51,7 @@
     <Compile Include="Config\Configuration.Partial.cs" />
     <Compile Include="DebugUtils\BoardPrinter.cs" />
     <Compile Include="DebugUtils\ConsoleDebug.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantBoard.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantField.cs" />
     <Compile Include="SchemaWrapper\Implementation\AddressableBoard.cs" />
@@ -75,9 +76,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SchemaWrapper\Implementation\Field.cs" />
+    <Compile Include="SchemaWrapper\Implementation\GoalField.cs" />
     <Compile Include="SchemaWrapper\Implementation\Leader.cs" />
     <Compile Include="SchemaWrapper\Implementation\Piece.cs" />
     <Compile Include="SchemaWrapper\Implementation\Player.cs" />
+    <Compile Include="SchemaWrapper\Implementation\TaskField.cs" />
     <Compile Include="SchemaWrapper\Implementation\Team.cs" />
     <Compile Include="SocketExtensions.cs" />
     <Compile Include="TheProjectGameCommunication.cs">

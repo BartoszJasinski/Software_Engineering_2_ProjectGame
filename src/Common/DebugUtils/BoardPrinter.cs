@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Common.Schema;
 using Common.SchemaWrapper;
 
 namespace Common.DebugUtils
@@ -34,30 +33,30 @@ namespace Common.DebugUtils
             if(field is GoalField)
             {
                 var f = field as GoalField;
-                switch(f.team)
+                switch(f.Team)
                 {
-                    case TeamColour.red:
+                    case Schema.TeamColour.red:
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         break;
-                    case TeamColour.blue:
+                    case Schema.TeamColour.blue:
                         Console.ForegroundColor = ConsoleColor.DarkBlue;
                         break;
                 }
-                switch(f.type)
+                switch(f.Type)
                 {
-                    case GoalFieldType.goal:
+                    case Schema.GoalFieldType.goal:
                         {
                             Console.BackgroundColor = ConsoleColor.Yellow;
                             Console.Write(" ");
                             break;
                         }
-                    case GoalFieldType.nongoal:
+                    case Schema.GoalFieldType.nongoal:
                         {
                             Console.BackgroundColor = ConsoleColor.DarkYellow;
                             Console.Write(" ");
                             break;
                         }
-                    case GoalFieldType.unknown:
+                    case Schema.GoalFieldType.unknown:
                         {
                             Console.BackgroundColor = ConsoleColor.Gray;
                             Console.Write(" ");
@@ -71,7 +70,7 @@ namespace Common.DebugUtils
                 var f = field as TaskField;
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
                 
-                if(f.pieceIdSpecified)
+                if(f.PieceId.HasValue)
                 {
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.Write("P");
