@@ -7,9 +7,10 @@ using Common.Connection.EventArg;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
-using Common.SchemaWrapper;
+using Wrapper = Common.SchemaWrapper;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GameMaster.Net
 {
@@ -22,9 +23,9 @@ namespace GameMaster.Net
         public Common.Config.GameMasterSettings Settings;
 
         //The two teams
-        public Team TeamRed{ get; set; }
-        public Team TeamBlue { get; set; }
-        public IEnumerable<Common.SchemaWrapper.Player> Players
+        public Wrapper.Team TeamRed { get; set; }
+        public Wrapper.Team TeamBlue { get; set; }
+        public IEnumerable<Wrapper.Player> Players
         {
             get
             {
@@ -36,7 +37,7 @@ namespace GameMaster.Net
 
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public GameBoard Board { get; set; }
-        public IList<Piece> Pieces = new List<Piece>();
+        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();
 
 
         public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
@@ -48,8 +49,8 @@ namespace GameMaster.Net
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
 
-            TeamRed = new Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
-            TeamBlue = new Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         public void Connect()
@@ -92,7 +93,7 @@ namespace GameMaster.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            //ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
         }
@@ -100,13 +101,13 @@ namespace GameMaster.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            //System.Console.WriteLine("New message sent to {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
         }
 
         //returns null if both teams are full
-        public Team SelectTeamForPlayer(TeamColour preferredTeam)
+        public Wrapper.Team SelectTeamForPlayer(TeamColour preferredTeam)
         {
             var selectedTeam = preferredTeam == TeamColour.blue ? TeamBlue : TeamRed;
             var otherTeam = preferredTeam == TeamColour.blue ? TeamRed : TeamBlue;
@@ -127,7 +128,17 @@ namespace GameMaster.Net
         {
             for (int i = 0; i < amount; i++)
             {
-                var newPiece = new Piece();
+                Pieces.Add(new Wrapper.Piece((ulong)i, PieceType.normal, DateTime.Now));
+                ConsoleDebug.Good($"Placed new Piece, time: { DateTime.Now.ToLongTimeString()}");
+            }
+        }
+
+        public async Task GeneratePieces()
+        {
+            while(true)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
+                PlaceNewPieces(1);
             }
         }
 

@@ -5,15 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
 
-namespace Common.SchemaWrapper.Implementation
+namespace Common.SchemaWrapper
 {
-    class Piece
+    public class Piece
     {
         private Schema.Piece schemaPiece;
 
-        public Piece(Schema.Piece schemaPiece)
+        public Piece()
         {
-            this.SchemaPiece = schemaPiece;
+            this.SchemaPiece = new Schema.Piece();
+        }
+
+        public Piece(ulong id, PieceType type, DateTime timeStamp)
+        {
+            this.SchemaPiece = new Schema.Piece();
+            Id = id;
+            Type = type;
+            TimeStamp = timeStamp;
         }
 
         public Schema.Piece SchemaPiece
