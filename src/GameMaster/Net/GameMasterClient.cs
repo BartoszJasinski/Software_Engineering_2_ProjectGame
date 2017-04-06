@@ -39,7 +39,7 @@ namespace GameMaster.Net
         public ulong Id { get; set; }
 
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
-        public GameBoard Board { get; set; }
+        public Wrapper.AddressableBoard Board { get; set; }
         public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();
 
 
@@ -133,8 +133,16 @@ namespace GameMaster.Net
         {
             for (int i = 0; i < amount; i++)
             {
-                Pieces.Add(new Wrapper.Piece((ulong)i, PieceType.normal, DateTime.Now));
-                ConsoleDebug.Good($"Placed new Piece, time: { DateTime.Now.ToLongTimeString()}");
+                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, PieceType.normal, DateTime.Now);
+                var field = Board.GetRandomEmptyFieldInTaskArea();
+                if(field == null)
+                {
+                    ConsoleDebug.Warning("There are no empty places for a new Piece!");
+                    continue;
+                }
+                field.PieceId = newPiece.Id;
+                newPiece.Location = new Location() { x = field.X, y = field.Y };
+                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
             }
         }
 
