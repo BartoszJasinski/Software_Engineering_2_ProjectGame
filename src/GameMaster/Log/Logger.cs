@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Common.Schema;
 
 namespace GameMaster.Log
 {
     class Logger : ILogger
     {
+        static ReaderWriterLock locker = new ReaderWriterLock();
         private StreamWriter writer;
         public Logger(string filename="gamemaster.log")
         {
@@ -27,8 +29,16 @@ namespace GameMaster.Log
 
         public void Log(params string[] s)
         {
-            writer.WriteLine(String.Join(",",s));
-            writer.Flush();
+            try
+            {
+                locker.AcquireWriterLock(int.MaxValue);
+                writer.WriteLine(String.Join(",", s));
+                writer.Flush();
+            }
+            finally 
+            {
+                locker.ReleaseWriterLock();
+            }
         }
 
         public void Log(GameMessage msg,  Common.SchemaWrapper.Player p)
