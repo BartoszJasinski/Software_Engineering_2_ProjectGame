@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
 
-namespace Common.SchemaWrapper.Implementation
+namespace Common.SchemaWrapper
 {
     public class TaskField : Field
     {

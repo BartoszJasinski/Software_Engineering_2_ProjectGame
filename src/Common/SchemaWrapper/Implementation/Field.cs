@@ -24,7 +24,7 @@ namespace Common.SchemaWrapper
             set { SchemaField.y = value; }
         }
 
-        public DateTime TimeStamp
+        public DateTime Timestamp
         {
             get { return SchemaField.timestamp; }
             set { SchemaField.timestamp = value; }

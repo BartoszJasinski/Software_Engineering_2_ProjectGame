@@ -11,7 +11,7 @@ namespace Common.SchemaWrapper
     {
         private Schema.GoalField goalSchemaField;
 
-        public GoalField() : base()
+        public GoalField()
         {
             goalSchemaField = new Schema.GoalField();
         }
