@@ -206,9 +206,10 @@ namespace GameMaster.Net
                 {
                     piece.PlayerId = currentPlayer.Id;
                     var taskField = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.TaskField;
-                    if (taskField != null)
+                    if (taskField != null) //update taskField
                     {
                         taskField.PieceId = null;
+                        //clocest neighbour to piece + 1
                         taskField.DistanceToPiece = new[]
                         {
                             (gameMaster.Board.Fields[currentPlayer.X + 1, currentPlayer.Y] as Wrapper.TaskField)
@@ -283,6 +284,7 @@ namespace GameMaster.Net
                     return;
                 }
                 Wrapper.GoalField gf = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.GoalField;
+                // remove piece and goal
                 if (gf.Type == GoalFieldType.goal)
                 {
                     gameMaster.Pieces.Remove(carriedPiece);
