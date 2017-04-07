@@ -24,6 +24,8 @@ namespace Player.Net
         private string _guid;
         private Common.Schema.Player[] _players;
         private GameBoard _board;
+        private Common.SchemaWrapper.TaskField[,] _taskFields;
+        private Common.SchemaWrapper.GoalField[,] _goalFields;
 
         public ulong GameId
         {
@@ -36,6 +38,18 @@ namespace Player.Net
         public Common.Schema.Player[] Players
         {
             set { _players = value; }
+        }
+
+        public Common.SchemaWrapper.TaskField[,] TaskFields
+        {
+            set { _taskFields = value; }
+            get { return _taskFields; }
+        }
+
+        public Common.SchemaWrapper.GoalField[,] GoalFields
+        {
+            set { _goalFields = value; }
+            get { return _goalFields; }
         }
 
         public GameBoard Board
@@ -88,7 +102,7 @@ namespace Player.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            //ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
                 new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
