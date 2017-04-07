@@ -7,6 +7,7 @@ namespace Common.SchemaWrapper
 
         public abstract Schema.Field SchemaField { get; }
 
+
         public uint X
         {
             get { return SchemaField.x; }

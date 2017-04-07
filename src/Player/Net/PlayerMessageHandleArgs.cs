@@ -5,7 +5,7 @@ using Common.IO.Console;
 
 namespace Player.Net
 {
-    internal class PlayerMessageHandleArgs
+    public class PlayerMessageHandleArgs
     {
         public IConnection Connection;
         public Socket Socket;
