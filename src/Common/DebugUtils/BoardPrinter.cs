@@ -77,8 +77,8 @@ namespace Common.DebugUtils
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(" ");
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write(f.DistanceToPiece);
                 }
                 
             }
