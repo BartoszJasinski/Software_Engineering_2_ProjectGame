@@ -139,6 +139,7 @@ namespace GameMaster.Net
                 //var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
                 //sham status gets set when testing
                 var newPiece = new Wrapper.Piece((ulong)Pieces.Count, PieceType.unknown, DateTime.Now);
+                newPiece.Id = (ulong)Pieces.Count;
                 var field = Board.GetRandomEmptyFieldInTaskArea();
                 if(field == null)
                 {
@@ -147,6 +148,7 @@ namespace GameMaster.Net
                 }
                 field.PieceId = newPiece.Id;
                 newPiece.Location = new Location() { x = field.X, y = field.Y };
+                Pieces.Add(newPiece);
                 ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
             }
         }
