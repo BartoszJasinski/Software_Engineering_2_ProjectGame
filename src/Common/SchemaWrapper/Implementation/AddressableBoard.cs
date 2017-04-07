@@ -19,6 +19,8 @@ namespace Common.SchemaWrapper
             set { board.width = value; }
         }
 
+        public uint Height => TasksHeight + 2 * GoalsHeight;
+
         public uint TasksHeight
         {
             get { return board.tasksHeight; }
