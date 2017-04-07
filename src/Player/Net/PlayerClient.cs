@@ -24,8 +24,7 @@ namespace Player.Net
         private string _guid;
         private Common.Schema.Player[] _players;
         private GameBoard _board;
-        private Common.SchemaWrapper.TaskField[,] _taskFields;
-        private Common.SchemaWrapper.GoalField[,] _goalFields;
+        private Common.SchemaWrapper.Field[,] _fields;
 
         public ulong GameId
         {
@@ -40,17 +39,14 @@ namespace Player.Net
             set { _players = value; }
         }
 
-        public Common.SchemaWrapper.TaskField[,] TaskFields
+        public Common.SchemaWrapper.Field[,] Fields
         {
-            set { _taskFields = value; }
-            get { return _taskFields; }
+            set { _fields = value; }
+            get { return _fields; }
         }
 
-        public Common.SchemaWrapper.GoalField[,] GoalFields
-        {
-            set { _goalFields = value; }
-            get { return _goalFields; }
-        }
+
+
 
         public GameBoard Board
         {
@@ -64,6 +60,8 @@ namespace Player.Net
         }
 
         public Location Location { get; set; }
+
+   
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
