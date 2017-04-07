@@ -263,6 +263,41 @@ namespace GameMaster.Net
             });
         }
 
+        public static void HandleMessage(PlacePiece message, GameMasterClient gameMaster, Socket handler)
+        {
+            string resp = "";
+            Task.Delay((int) gameMaster.Settings.ActionCosts.PlacingDelay).ContinueWith(_ =>
+            {
+                Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
+                Wrapper.Piece carriedPiece =
+                    gameMaster.Pieces.SingleOrDefault(
+                        pc =>
+                            pc.PlayerId == currentPlayer.Id);
+                if (carriedPiece == null || !gameMaster.IsPlayerInGoalArea(currentPlayer) || carriedPiece.Type==PieceType.sham)
+                {
+                    //send empty piece collection
+                    resp = new DataMessageBuilder(currentPlayer.Id)
+                        .SetGoalFields(new GoalField[0])
+                        .GetXml();
+                    gameMaster.Connection.SendFromClient(handler, resp);
+                    return;
+                }
+                Wrapper.GoalField gf = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.GoalField;
+                if (gf.Type == GoalFieldType.goal)
+                {
+                    gameMaster.Pieces.Remove(carriedPiece);
+                    gf.Type = GoalFieldType.nongoal;
+                }
+
+                resp = new DataMessageBuilder(currentPlayer.Id)
+                    .AddGoalField(gf.SchemaField as GoalField)
+                    .GetXml();
+
+                gameMaster.Connection.SendFromClient(handler, resp);
+            });
+        }
+
+
         public static void HandleMessage(object message, GameMasterClient gameMaster, Socket handler)
         {
             ConsoleDebug.Warning("Unknown Type");

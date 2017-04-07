@@ -155,6 +155,13 @@ namespace GameMaster.Net
             }
         }
 
+        public bool IsPlayerInGoalArea(Wrapper.Player p)
+        {
+            if (p.Team.Color == TeamColour.blue && p.Y < Board.GoalsHeight)
+                return true;
+            return p.Team.Color == TeamColour.red && p.Y >= Board.Height - Board.GoalsHeight;
+        }
+
         public async Task GeneratePieces()
         {
             while(true)
