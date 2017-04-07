@@ -69,8 +69,7 @@ namespace Player.Net
             args.PlayerClient.Players = message.Players;
             args.PlayerClient.Board = message.Board;
             args.PlayerClient.Location = message.PlayerLocation;
-            args.PlayerClient.TaskFields = new Common.SchemaWrapper.TaskField[message.Board.width, message.Board.tasksHeight];
-            args.PlayerClient.GoalFields = new Common.SchemaWrapper.GoalField[message.Board.width, message.Board.goalsHeight];
+            args.PlayerClient.Fields = new Common.SchemaWrapper.Field[message.Board.width, 2*message.Board.goalsHeight + message.Board.tasksHeight];
             ConsoleDebug.Good("Game started");
             args.PlayerClient.Play();
             
@@ -88,23 +87,23 @@ namespace Player.Net
                 Common.SchemaWrapper.TaskField[] taskFields = new Common.SchemaWrapper.TaskField[message.TaskFields.Length];
                 for (int i = 0; i < taskFields.Length; i++)
                     taskFields[i] = new Common.SchemaWrapper.TaskField(message.TaskFields[i]);
-                FieldsUpdater(args.PlayerClient.TaskFields, taskFields); ;
+                FieldsUpdater(args.PlayerClient.Fields, taskFields); ;
             }
             if (message.GoalFields != null)
             {
                 Common.SchemaWrapper.GoalField[] goalFields = new Common.SchemaWrapper.GoalField[message.GoalFields.Length];
                 for (int i = 0; i < goalFields.Length; i++)
                     goalFields[i] = new Common.SchemaWrapper.GoalField(message.GoalFields[i]);
-                FieldsUpdater(args.PlayerClient.GoalFields, goalFields);
+                FieldsUpdater(args.PlayerClient.Fields, goalFields);
             }
             if (message.Pieces != null)
             {
                 foreach (Piece piece in message.Pieces)
                 {
-                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].PieceId = piece.id;
-                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].Timestamp = piece.timestamp;
-                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].PlayerId = piece.playerId;
-                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].DistanceToPiece = 0;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
                 }
             }
             if (message.gameFinished == true)
