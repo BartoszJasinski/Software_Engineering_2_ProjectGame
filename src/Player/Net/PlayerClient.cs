@@ -136,5 +136,20 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(m));
         }
 
+        private void RegisterForNextGameAfterGameEnd()
+        {
+            JoinGame joinGame = new JoinGame()
+            {
+                preferredTeam = options.PreferredTeam == "blue"
+                    ? Common.Schema.TeamColour.blue
+                    : Common.Schema.TeamColour.red,
+                preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
+                gameName = options.GameName,
+                playerIdSpecified = false
+            };
+
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
+        }
+
     } //class
 } //namespace

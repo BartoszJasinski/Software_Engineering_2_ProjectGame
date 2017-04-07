@@ -14,11 +14,11 @@ namespace Player.Logic
     {
         void RegisteredGames(RegisteredGames registeredGames, string gameName, string preferredTeam, string preferredColor)
         {
-//            JoinGame joinGame = new JoinGame();
+            JoinGame joinGame = new JoinGame();
 //            joinGame.
 //            foreach (var game in registeredGames.GameInfo)
 //            {
-//                if (prefferedTeam == "blue")
+//                if (preferredTeam == "blue")
 //                    if (game.blueTeamPlayers > 0)
 //                        //TODO how we should send this JoinGame message?
 //                        //send JoinGame
