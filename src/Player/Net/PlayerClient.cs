@@ -100,7 +100,7 @@ namespace Player.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            //ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
                 new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
@@ -138,7 +138,7 @@ namespace Player.Net
         {
             JoinGame joinGame = new JoinGame()
             {
-                preferredTeam = options.PreferredTeam == "blue"
+                teamColour = options.PreferredTeam == "blue"
                     ? Common.Schema.TeamColour.blue
                     : Common.Schema.TeamColour.red,
                 preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,

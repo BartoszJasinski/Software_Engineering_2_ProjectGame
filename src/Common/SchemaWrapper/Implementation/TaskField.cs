@@ -1,5 +1,9 @@
 ﻿
 
+using System;
+using System.Collections.Generic;
+using Common.Schema;
+
 namespace Common.SchemaWrapper
 {
     public class TaskField : Field
@@ -39,6 +43,11 @@ namespace Common.SchemaWrapper
         public TaskField()
         {
             schemaTaskField = new Schema.TaskField();
+        }
+
+        public override void AddFieldData(List<Schema.TaskField> taskFields, List<Schema.GoalField> goalFields)
+        {
+            taskFields.Add(schemaTaskField);
         }
         public TaskField(Schema.TaskField schemaTaskField)
         {

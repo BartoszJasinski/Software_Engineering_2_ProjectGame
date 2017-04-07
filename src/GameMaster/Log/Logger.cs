@@ -41,7 +41,7 @@ namespace GameMaster.Log
             }
         }
 
-        public void Log(GameMessage msg,  Common.SchemaWrapper.Player p)
+        public void Log(GameGood msg,  Common.SchemaWrapper.Player p)
         {
             
             string[] s = new[]

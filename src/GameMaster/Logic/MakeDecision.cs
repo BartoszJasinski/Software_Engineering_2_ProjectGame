@@ -16,7 +16,7 @@ namespace GameMaster.Logic
                 endGame = true;
         }
 
-        public void FillGameFinished(GameMessage message)
+        public void FillGameFinished(GameGood message)
         {
             //TODO we should make something simmilar to BehoviourChooser if we want to use this function to fill game finished field in 
             

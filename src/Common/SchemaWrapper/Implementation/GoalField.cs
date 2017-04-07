@@ -1,4 +1,6 @@
-﻿using Common.Schema;
+﻿using System;
+using Common.Schema;
+using System.Collections.Generic;
 
 namespace Common.SchemaWrapper
 {
@@ -34,6 +36,11 @@ namespace Common.SchemaWrapper
         {
             get { return goalSchemaField.team; }
             set { goalSchemaField.team = value; }
+        }
+
+        public override void AddFieldData(List<Schema.TaskField> taskFields, List<Schema.GoalField> goalFields)
+        {
+            goalFields.Add(goalSchemaField);
         }
     }
 }

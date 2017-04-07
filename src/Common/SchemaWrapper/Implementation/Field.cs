@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Common.SchemaWrapper
 {
@@ -40,6 +41,8 @@ namespace Common.SchemaWrapper
                     SchemaField.playerIdSpecified = false;
             }
         }
+
+        public abstract void AddFieldData(List<Schema.TaskField> taskFields, List<Schema.GoalField> goalFields);
 
     }
 }

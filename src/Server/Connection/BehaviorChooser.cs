@@ -81,7 +81,7 @@ namespace Server.Connection
                 return;
         }
 
-        public static void HandleMessage(PlayerMessage request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(PlayerGood request, CommunicationServer server, Socket handler)
         {
             if (request == null)
                 return;
@@ -90,7 +90,7 @@ namespace Server.Connection
             server.ConnectionEndpoint.SendFromServer(server.Clients[request.playerId], response);
         }
 
-        public static void HandleMessage(GameMessage request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(GameGood request, CommunicationServer server, Socket handler)
         {
             if (request == null)
                 return;

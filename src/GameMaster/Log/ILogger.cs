@@ -9,6 +9,6 @@ namespace GameMaster.Log
     public interface ILogger : IDisposable
     {
         void Log(params string[] s);
-        void Log(GameMessage msg, Wrapper.Player p);
+        void Log(GameGood msg, Wrapper.Player p);
     }
 }

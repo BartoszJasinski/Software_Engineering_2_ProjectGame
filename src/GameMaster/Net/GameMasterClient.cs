@@ -136,8 +136,10 @@ namespace GameMaster.Net
         {
             for (int i = 0; i < amount; i++)
             {
-                var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+                //var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+                //sham status gets set when testing
+                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, PieceType.unknown, DateTime.Now);
+                newPiece.Id = (ulong)Pieces.Count;
                 var field = Board.GetRandomEmptyFieldInTaskArea();
                 if(field == null)
                 {
@@ -146,9 +148,10 @@ namespace GameMaster.Net
                 }
                 field.PieceId = newPiece.Id;
                 newPiece.Location = new Location() { x = field.X, y = field.Y };
-
-                var typeString = pieceType == PieceType.normal ? "normal" : "sham";
-                ConsoleDebug.Good($"Placed new {typeString} Piece at: ({ field.X }, {field.Y})");
+                Pieces.Add(newPiece);
+                Board.UpdateDistanceToPiece(Pieces);
+                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+                BoardPrinter.Print(Board);
             }
         }
 
