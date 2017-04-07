@@ -83,13 +83,32 @@ namespace Player.Net
             }
             if(message.TaskFields != null)
             {
-                FieldsUpdater(args.PlayerClient.TaskFields, message.TaskFields);
+                Common.SchemaWrapper.TaskField[] taskFields = new Common.SchemaWrapper.TaskField[message.GoalFields.Length];
+                for (int i = 0; i < taskFields.Length; i++)
+                    taskFields[i] = new Common.SchemaWrapper.TaskField(message.TaskFields[i]);
+                FieldsUpdater(args.PlayerClient.GoalFields, taskFields); ;
             }
             if(message.GoalFields != null)
             {
-                FieldsUpdater(args.PlayerClient.GoalFields, message.GoalFields);
+                Common.SchemaWrapper.GoalField[] goalFields = new Common.SchemaWrapper.GoalField[message.GoalFields.Length];
+                for (int i = 0; i < goalFields.Length; i++)
+                    goalFields[i] = new Common.SchemaWrapper.GoalField(message.GoalFields[i]);
+                FieldsUpdater(args.PlayerClient.GoalFields,goalFields );
             }
-
+            if(message.Pieces != null)
+            {
+                foreach(Piece piece in message.Pieces)
+                {
+                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].PieceId = piece.id;
+                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].Timestamp = piece.timestamp;
+                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].PlayerId = piece.playerId;
+                    args.PlayerClient.TaskFields[args.PlayerClient.Location.x, args.PlayerClient.Location.y].DistanceToPiece = 0;
+                }
+            }
+            if(message.gameFinished == true)
+            {
+                args.PlayerClient.Disconnect();
+            }
 
             args.PlayerClient.Play();
         }
@@ -99,12 +118,13 @@ namespace Player.Net
             ConsoleDebug.Warning("Unknown Type");
         }
 
-        private static void FieldsUpdater(Field[,] oldTaskFields, Field[] newTaskFields )
+        private static void FieldsUpdater(Common.SchemaWrapper.Field[,] oldTaskFields, Common.SchemaWrapper.Field[] newTaskFields)
         {
-            foreach(Field taskField in newTaskFields)
+            foreach (Common.SchemaWrapper.Field taskField in newTaskFields)
             {
-                oldTaskFields[taskField.x, taskField.y] = taskField;
+                oldTaskFields[taskField.X, taskField.Y] = taskField;
             }
         }
+
     }
 }
