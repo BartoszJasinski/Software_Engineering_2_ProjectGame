@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Schema;
 using Common.SchemaWrapper.Abstraction;
+using Common.DebugUtils;
 
 namespace Common.SchemaWrapper
 {
@@ -10,6 +11,8 @@ namespace Common.SchemaWrapper
     {
         private GameBoard board;
         private Random rng = new Random();
+
+        private const uint NO_PIECE = uint.MaxValue;
 
         public Field[,] Fields { get; set; }
 
@@ -56,10 +59,18 @@ namespace Common.SchemaWrapper
 
         public void UpdateDistanceToPiece(IList<Piece> pieces)
         {
-            foreach(var field in Fields.Cast<Field>().Where(f => f is TaskField))
+            foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
             {
-                var distance = pieces.Select(p => Math.Abs(p.Location.x - field.X) + Math.Abs(p.Location.y - field.Y)).Min();
-                (field as TaskField).DistanceToPiece = (uint)distance;
+                if (pieces.Count == 0)
+                {
+                    (field as TaskField).DistanceToPiece = NO_PIECE;
+                }
+                else
+                {
+                    //you need to cast to long, otherwise uint can wrap around -.-
+                    var distance = pieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    (field as TaskField).DistanceToPiece = (uint)distance;
+                }
             }
         }
 
