@@ -12,6 +12,10 @@ namespace Common.SchemaWrapper
         {
             goalSchemaField = new Schema.GoalField();
         }
+        public GoalField(Schema.GoalField goalSchemaField)
+        {
+            this.goalSchemaField = goalSchemaField;
+        }
 
         public override Schema.Field SchemaField
         {

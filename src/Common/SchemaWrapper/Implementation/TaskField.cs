@@ -49,5 +49,9 @@ namespace Common.SchemaWrapper
         {
             taskFields.Add(schemaTaskField);
         }
+        public TaskField(Schema.TaskField schemaTaskField)
+        {
+            this.schemaTaskField = schemaTaskField;
+        }
     }
 }

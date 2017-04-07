@@ -8,7 +8,7 @@ using System.Net.Sockets;
 
 namespace Player.Net
 {
-    static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
+    public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
     {
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)
         {
@@ -69,6 +69,7 @@ namespace Player.Net
             args.PlayerClient.Players = message.Players;
             args.PlayerClient.Board = message.Board;
             args.PlayerClient.Location = message.PlayerLocation;
+            args.PlayerClient.Fields = new Common.SchemaWrapper.Field[message.Board.width, 2*message.Board.goalsHeight + message.Board.tasksHeight];
             ConsoleDebug.Good("Game started");
             args.PlayerClient.Play();
             
@@ -76,9 +77,40 @@ namespace Player.Net
 
         public static void HandleMessage(Data message, PlayerMessageHandleArgs args)
         {
-            
-            args.PlayerClient.Location = message.PlayerLocation;
-            ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
+            if (message.PlayerLocation != null)
+            {
+                args.PlayerClient.Location = message.PlayerLocation;
+                ConsoleDebug.Message($"My location: ({message.PlayerLocation.x}, {message.PlayerLocation.y})");
+            }
+            if (message.TaskFields != null)
+            {
+                Common.SchemaWrapper.TaskField[] taskFields = new Common.SchemaWrapper.TaskField[message.TaskFields.Length];
+                for (int i = 0; i < taskFields.Length; i++)
+                    taskFields[i] = new Common.SchemaWrapper.TaskField(message.TaskFields[i]);
+                FieldsUpdater(args.PlayerClient.Fields, taskFields); ;
+            }
+            if (message.GoalFields != null)
+            {
+                Common.SchemaWrapper.GoalField[] goalFields = new Common.SchemaWrapper.GoalField[message.GoalFields.Length];
+                for (int i = 0; i < goalFields.Length; i++)
+                    goalFields[i] = new Common.SchemaWrapper.GoalField(message.GoalFields[i]);
+                FieldsUpdater(args.PlayerClient.Fields, goalFields);
+            }
+            if (message.Pieces != null)
+            {
+                foreach (Piece piece in message.Pieces)
+                {
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
+                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
+                }
+            }
+            if (message.gameFinished == true)
+            {
+                args.PlayerClient.Disconnect();
+            }
+
             args.PlayerClient.Play();
         }
 
@@ -86,5 +118,14 @@ namespace Player.Net
         {
             ConsoleDebug.Warning("Unknown Type");
         }
+
+        private static void FieldsUpdater(Common.SchemaWrapper.Field[,] oldTaskFields, Common.SchemaWrapper.Field[] newTaskFields)
+        {
+            foreach (Common.SchemaWrapper.Field taskField in newTaskFields)
+            {
+                oldTaskFields[taskField.X, taskField.Y] = taskField;
+            }
+        }
+
     }
 }

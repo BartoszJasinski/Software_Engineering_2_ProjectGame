@@ -24,6 +24,7 @@ namespace Player.Net
         private string _guid;
         private Common.Schema.Player[] _players;
         private GameBoard _board;
+        private Common.SchemaWrapper.Field[,] _fields;
 
         public ulong GameId
         {
@@ -38,6 +39,15 @@ namespace Player.Net
             set { _players = value; }
         }
 
+        public Common.SchemaWrapper.Field[,] Fields
+        {
+            set { _fields = value; }
+            get { return _fields; }
+        }
+
+
+
+
         public GameBoard Board
         {
             set { _board = value; }
@@ -50,6 +60,8 @@ namespace Player.Net
         }
 
         public Location Location { get; set; }
+
+   
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
@@ -88,7 +100,7 @@ namespace Player.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            //ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
                 new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
