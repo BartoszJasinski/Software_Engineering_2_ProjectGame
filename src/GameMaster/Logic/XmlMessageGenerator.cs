@@ -184,7 +184,7 @@ namespace GameMaster.Logic
                     };
                     break;
                 case 19:
-                    obj = new PlayerMessage()
+                    obj = new PlayerGood()
                     {
                         playerId = 3
                     };
@@ -211,7 +211,7 @@ namespace GameMaster.Logic
                     {
                         gameName = "gamename",
                         preferredRole = PlayerType.leader,
-                        preferredTeam = TeamColour.red
+                        teamColour = TeamColour.red
                     };
                     break;
                 case 24:
@@ -390,7 +390,7 @@ namespace GameMaster.Logic
                 senderPlayerId = 4
             });
 
-            xmlMessages.Add("PlayerMessage", new PlayerMessage()
+            xmlMessages.Add("PlayerMessage", new PlayerGood()
             {
                 playerId = 3
             });
@@ -412,7 +412,7 @@ namespace GameMaster.Logic
             {
                 gameName = "gamename",
                 preferredRole = PlayerType.leader,
-                preferredTeam = TeamColour.red
+                teamColour = TeamColour.red
             });
 
             xmlMessages.Add("RegisteredGames", new RegisteredGames()

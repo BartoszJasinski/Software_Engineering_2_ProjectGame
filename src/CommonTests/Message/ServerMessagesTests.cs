@@ -18,14 +18,14 @@ namespace CommonTests.Message
             JoinGame joinGame = new JoinGame();
             joinGame.gameName = "testgamename";
             joinGame.preferredRole = PlayerType.leader;
-            joinGame.preferredTeam = TeamColour.red;
+            joinGame.teamColour = TeamColour.red;
 
             string xml = XmlMessageConverter.ToXml(joinGame);
             JoinGame result = (JoinGame)XmlMessageConverter.ToObject(xml);
 
             Assert.AreEqual("testgamename", result.gameName);
             Assert.AreEqual(PlayerType.leader, result.preferredRole);
-            Assert.AreEqual(TeamColour.red, result.preferredTeam);
+            Assert.AreEqual(TeamColour.red, result.teamColour);
         }
 
         [TestMethod]

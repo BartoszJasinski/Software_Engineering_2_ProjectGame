@@ -25,7 +25,7 @@ namespace GameMaster.Net
         public static void HandleMessage(JoinGame message, GameMasterClient gameMaster, Socket handler)
         {
 
-            var selectedTeam = gameMaster.SelectTeamForPlayer(message.preferredTeam);
+            var selectedTeam = gameMaster.SelectTeamForPlayer(message.teamColour);
             //both teams are full
             if (selectedTeam == null)
             {
@@ -120,6 +120,14 @@ namespace GameMaster.Net
                 }
                 resp.PlayerLocation = new Location(){x=(uint) (player.Location.x+dx),y=(uint) (player.Location.y+dy)};
                 player.Location = resp.PlayerLocation;
+                var newField = gameMaster.Board.Fields[player.Location.x, player.Location.y];
+                var goalFields = new List<GoalField>();
+                var taskFields = new List<TaskField>();
+                newField.AddFieldData(taskFields, goalFields);
+                if (taskFields.Count > 0)
+                    resp.TaskFields = taskFields.ToArray();
+                if (goalFields.Count > 0)
+                    resp.GoalFields = goalFields.ToArray();
                 gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
             });
         }
