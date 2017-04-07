@@ -41,7 +41,7 @@ namespace GameMaster.Net
 
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public Wrapper.AddressableBoard Board { get; set; }
-        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();
+        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
 
         private Random rng = new Random();
 
@@ -142,7 +142,7 @@ namespace GameMaster.Net
                 if(field == null)
                 {
                     ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                    continue;
+                    continue;   //TODO BUSYWAITING HERE probably
                 }
                 field.PieceId = newPiece.Id;
                 newPiece.Location = new Location() { x = field.X, y = field.Y };

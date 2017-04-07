@@ -328,7 +328,7 @@
   <xs:element name="JoinGame">
     <xs:complexType>
       <xs:attribute name="gameName" type="GameName" use="required" />
-      <xs:attribute name="preferredTeam" type="TeamColour" use="required">
+      <xs:attribute name="teamColour" type="TeamColour" use="required">
         <xs:annotation>
           <xs:documentation>Possible values: red|blue</xs:documentation>
         </xs:annotation>

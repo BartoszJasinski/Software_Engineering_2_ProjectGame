@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Schema;
+﻿using Common.Schema;
 
 namespace Common.SchemaWrapper
 {
-    public class GoalField : Field
+    public class GoalField: Field
     {
         private Schema.GoalField goalSchemaField;
 

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Schema;
 using Common.SchemaWrapper.Abstraction;
-using Common;
 
 namespace Common.SchemaWrapper
 {
@@ -47,6 +44,14 @@ namespace Common.SchemaWrapper
                 return null;
             return (TaskField)possibleFields.RandomElementUsing(rng);
         }
+
+        public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
+        {
+           // IList<GoalField> goals = new List<GoalField>();
+            var possibleFields = Fields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
+            return possibleFields.ToList();
+        }
+
 
         #region constructors
 
