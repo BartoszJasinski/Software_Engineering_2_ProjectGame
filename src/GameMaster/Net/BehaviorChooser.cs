@@ -120,16 +120,32 @@ namespace GameMaster.Net
                 }
                 resp.PlayerLocation = new Location(){x=(uint) (player.Location.x+dx),y=(uint) (player.Location.y+dy)};
                 player.Location = resp.PlayerLocation;
+                //add info about new field
                 var newField = gameMaster.Board.Fields[player.Location.x, player.Location.y];
                 var goalFields = new List<GoalField>();
                 var taskFields = new List<TaskField>();
+                var pieceList = new List<Piece>();
                 newField.AddFieldData(taskFields, goalFields);
                 if (taskFields.Count > 0)
                     resp.TaskFields = taskFields.ToArray();
                 if (goalFields.Count > 0)
                     resp.GoalFields = goalFields.ToArray();
+                //add info about piece
+                if(newField is Wrapper.TaskField)
+                {
+                    var taskField = newField as Wrapper.TaskField;
+                    if(taskField.PieceId.HasValue)
+                        pieceList.Add(gameMaster.Pieces.Where(p => p.Id == taskField.PieceId.Value).Select(p => p.SchemaPiece).Single());
+                    if (pieceList.Count > 0)
+                        resp.Pieces = pieceList.ToArray();
+                }
                 gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
             });
+        }
+
+        public static void HandleMessage(Discover message, GameMasterClient gameMaster, Socket handler)
+        {
+
         }
 
 

@@ -149,7 +149,9 @@ namespace GameMaster.Net
                 field.PieceId = newPiece.Id;
                 newPiece.Location = new Location() { x = field.X, y = field.Y };
                 Pieces.Add(newPiece);
+                Board.UpdateDistanceToPiece(Pieces);
                 ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+                BoardPrinter.Print(Board);
             }
         }
 

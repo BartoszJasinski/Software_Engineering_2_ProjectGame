@@ -52,6 +52,15 @@ namespace Common.SchemaWrapper
             return possibleFields.ToList();
         }
 
+        public void UpdateDistanceToPiece(IList<Piece> pieces)
+        {
+            foreach(var field in Fields.Cast<Field>().Where(f => f is TaskField))
+            {
+                var distance = pieces.Select(p => Math.Abs(p.Location.x - field.X) + Math.Abs(p.Location.y - field.Y)).Min();
+                (field as TaskField).DistanceToPiece = (uint)distance;
+            }
+        }
+
 
         #region constructors
 
