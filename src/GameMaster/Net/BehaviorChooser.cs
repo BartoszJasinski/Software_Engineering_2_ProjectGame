@@ -110,7 +110,7 @@ namespace GameMaster.Net
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.Width) ||
                     (player.Location.y + dy < 0 ||
-                     player.Location.y + dy >= gameMaster.Board.TasksHeight * 2 + gameMaster.Board.GoalsHeight)
+                     player.Location.y + dy >= gameMaster.Board.Height)
                     ||
                     gameMaster.Players.Where(
                         p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy).Any())
@@ -119,6 +119,7 @@ namespace GameMaster.Net
                     gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
                     return;
                 }
+
                 resp.PlayerLocation = new Location()
                 {
                     x = (uint) (player.Location.x + dx),

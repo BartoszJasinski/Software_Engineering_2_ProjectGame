@@ -140,6 +140,7 @@ namespace Player.Net
             Array values = Enum.GetValues(typeof(MoveType));
             MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
             Move(randomMove);
+            //Move(MoveType.up);
         }
 
         private void Move(MoveType direction)
