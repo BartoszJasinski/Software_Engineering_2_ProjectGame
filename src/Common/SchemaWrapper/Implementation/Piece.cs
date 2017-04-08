@@ -18,6 +18,7 @@ namespace Common.SchemaWrapper
             Id = id;
             Type = type;
             TimeStamp = timeStamp;
+            IsCarried = false;
         }
 
         public Schema.Piece SchemaPiece
@@ -60,5 +61,6 @@ namespace Common.SchemaWrapper
         }
 
         public Location Location { get; set; }
+        public bool IsCarried { get; set; }
     }
 }

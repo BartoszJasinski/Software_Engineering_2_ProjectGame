@@ -68,16 +68,17 @@ namespace Common.SchemaWrapper
 
         public void UpdateDistanceToPiece(IList<Piece> pieces)
         {
+            var notCarriedPieces = pieces.Where(p => !p.IsCarried).ToList();
             foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
             {
-                if (pieces.Count == 0)
+                if (notCarriedPieces.Count == 0)
                 {
                     (field as TaskField).DistanceToPiece = NO_PIECE;
                 }
                 else
                 {
                     //you need to cast to long, otherwise uint can wrap around -.-
-                    var distance = pieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    var distance = notCarriedPieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
                     (field as TaskField).DistanceToPiece = (uint)distance;
                 }
             }
