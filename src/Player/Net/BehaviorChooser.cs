@@ -114,6 +114,21 @@ namespace Player.Net
             args.PlayerClient.Play();
         }
 
+        public static void HandleMessage(KnowledgeExchangeRequest message, PlayerMessageHandleArgs args)
+        {
+
+        }
+
+        public static void HandleMessage(AcceptExchangeRequest message, PlayerMessageHandleArgs args)
+        {
+
+        }
+
+        public static void HandleMessage(RejectKnowledgeExchange message, PlayerMessageHandleArgs args)
+        {
+
+        }
+
         public static void HandleMessage(object message, PlayerMessageHandleArgs args)
         {
             ConsoleDebug.Warning("Unknown Type");
