@@ -303,6 +303,47 @@ namespace GameMaster.Net
             });
         }
 
+        public static void HandleMessage(AuthorizeKnowledgeExchange message, GameMasterClient gameMaster, Socket handler)
+        {
+            var playerFrom = gameMaster.Players.Where(p => p.Guid == message.playerGuid).Single();
+            var playerTo = gameMaster.Players.Where(p => p.Id == message.withPlayerId).SingleOrDefault();
+
+            Task.Delay((int)gameMaster.Settings.ActionCosts.KnowledgeExchangeDelay).ContinueWith(_ =>
+            {
+                if (playerTo == null)
+                {
+                    var permanentReject = new RejectKnowledgeExchange()
+                    {
+                        permanent = true,
+                        playerId = playerFrom.Id
+                    };
+                    gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(permanentReject));
+                    return;
+                }
+
+                if(playerTo.OpenExchangeRequests.Contains(playerFrom.Id))
+                {
+                    var accept = new AcceptExchangeRequest()
+                    {
+                        playerId = playerTo.Id,
+                        senderPlayerId = playerFrom.Id
+                    };
+
+                    playerTo.OpenExchangeRequests.Remove(playerFrom.Id);
+                    gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(accept));
+                    return;
+                }
+
+                var response = new KnowledgeExchangeRequest()
+                {
+                    playerId = playerTo.Id,
+                    senderPlayerId = playerFrom.Id
+                };
+
+                playerFrom.OpenExchangeRequests.Add(playerTo.Id);
+                gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(response));
+            });
+        }
 
         public static void HandleMessage(object message, GameMasterClient gameMaster, Socket handler)
         {

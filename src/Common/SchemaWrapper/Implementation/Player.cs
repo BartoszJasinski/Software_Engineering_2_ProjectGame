@@ -1,4 +1,5 @@
 ﻿using Common.Schema;
+using System.Collections.Generic;
 
 namespace Common.SchemaWrapper
 {
@@ -30,6 +31,8 @@ namespace Common.SchemaWrapper
                 };
             }
         }
+        //contains ids of players that we have sent an exchange request and did not get an answer
+        public IList<ulong> OpenExchangeRequests { get; private set; }
 
         public Player(ulong id, string guid, Team team, uint x = 0, uint y = 0)
         {
@@ -39,6 +42,7 @@ namespace Common.SchemaWrapper
             Location = new Location();
             X = x;
             Y = y;
+            OpenExchangeRequests = new List<ulong>();
         }
 
         public Player(ulong id, string guid, Team team, Location location)
@@ -47,6 +51,7 @@ namespace Common.SchemaWrapper
             Guid = guid;
             Team = team;
             Location = location;
+            OpenExchangeRequests = new List<ulong>();
         }
     }
 }
