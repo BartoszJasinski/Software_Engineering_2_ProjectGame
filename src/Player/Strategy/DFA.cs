@@ -34,7 +34,7 @@ namespace Player.Strategy
         {
             foreach (var pair in transitions)
             {
-                if (pair.Value())
+                if (pair.Value!=null && pair.Value())
                     return pair.Key;
             }
             return this;

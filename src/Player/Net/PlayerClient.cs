@@ -161,6 +161,7 @@ namespace Player.Net
 
         public void Play()
         {
+            ConsoleDebug.Error(currentState.Name);
             var act = currentState.Action;
             act?.Invoke();
             currentState = currentState.NextState();
@@ -252,9 +253,9 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
-        uint DistToPiece()
+        uint? DistToPiece()
         {
-            return (Fields[Location.x, Location.y] as Wrapper.TaskField).DistanceToPiece;
+            return (Fields[Location.x, Location.y] as Wrapper.TaskField)?.DistanceToPiece;
         }
 
         private State BiuldDfa()
