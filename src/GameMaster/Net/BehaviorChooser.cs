@@ -206,6 +206,7 @@ namespace GameMaster.Net
                 else
                 {
                     piece.PlayerId = currentPlayer.Id;
+                    piece.IsCarried = true;
                     var taskField = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.TaskField;
                     if (taskField != null) //update taskField
                     {
