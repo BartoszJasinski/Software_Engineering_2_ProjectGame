@@ -136,9 +136,8 @@ namespace GameMaster.Net
         {
             for (int i = 0; i < amount; i++)
             {
-                //var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-                //sham status gets set when testing
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, PieceType.unknown, DateTime.Now);
+                var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
                 newPiece.Id = (ulong)Pieces.Count;
                 var field = Board.GetRandomEmptyFieldInTaskArea();
                 if(field == null)

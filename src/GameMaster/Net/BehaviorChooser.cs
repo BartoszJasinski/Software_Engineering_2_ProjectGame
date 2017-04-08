@@ -142,6 +142,8 @@ namespace GameMaster.Net
                             gameMaster.Pieces.Where(p => p.Id == taskField.PieceId.Value)
                                 .Select(p => p.SchemaPiece)
                                 .Single());
+                    //we cannot give the player info about piece type from a discover
+                    pieceList.ForEach(p => p.type = PieceType.unknown);
                     if (pieceList.Count > 0)
                         resp.Pieces = pieceList.ToArray();
                 }
@@ -178,6 +180,8 @@ namespace GameMaster.Net
                 }
                 if (taskFields.Count > 0)
                     resp.TaskFields = taskFields.ToArray();
+                //we cannot give the player info about piece type from a discover
+                pieceList.ForEach(p => p.type = PieceType.unknown);
                 if (pieceList.Count > 0)
                     resp.Pieces = pieceList.ToArray();
                 gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
