@@ -50,9 +50,11 @@ namespace GameMaster.Net
             fieldForPlayer.PlayerId = message.playerId;
 
             if (role == PlayerType.leader)
-                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam, fieldForPlayer.X, fieldForPlayer.Y));
+                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam, fieldForPlayer.X,
+                    fieldForPlayer.Y));
             else
-                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam, fieldForPlayer.X, fieldForPlayer.Y));
+                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam, fieldForPlayer.X,
+                    fieldForPlayer.Y));
 
             var answer = new ConfirmJoiningGame();
             answer.playerId = message.playerId;
@@ -151,6 +153,18 @@ namespace GameMaster.Net
             });
         }
 
+        static Wrapper.TaskField FieldAt(Wrapper.Field[,] fields, uint x, uint y)
+        {
+            try
+            {
+                return (fields[x, y] as Wrapper.TaskField);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static void HandleMessage(Discover message, GameMasterClient gameMaster, Socket handler)
         {
             Data resp = new Data();
@@ -182,7 +196,7 @@ namespace GameMaster.Net
                 if (taskFields.Count > 0)
                     resp.TaskFields = taskFields.ToArray();
                 //we cannot give the player info about piece type from a discover
-                pieceList=pieceList.Select(piece => new Piece()
+                pieceList = pieceList.Select(piece => new Piece()
                 {
                     playerId = piece.playerId,
                     id = piece.id,
@@ -205,7 +219,7 @@ namespace GameMaster.Net
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
                 gameMaster.Logger.Log(message, currentPlayer);
                 Wrapper.Piece piece =
-                    gameMaster.Pieces.SingleOrDefault(
+                    gameMaster.Pieces.FirstOrDefault(
                         pc =>
                             pc.Location.x == currentPlayer.Location.x && pc.Location.y == currentPlayer.Location.y &&
                             !pc.PlayerId.HasValue);
@@ -226,22 +240,23 @@ namespace GameMaster.Net
                         //clocest neighbour to piece + 1
                         taskField.DistanceToPiece = new[]
                         {
-                            (gameMaster.Board.Fields[currentPlayer.X + 1, currentPlayer.Y] as Wrapper.TaskField)
-                            ?.DistanceToPiece,
-                            (gameMaster.Board.Fields[currentPlayer.X - 1, currentPlayer.Y] as Wrapper.TaskField)
-                            ?.DistanceToPiece,
-                            (gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y + 1] as Wrapper.TaskField)
-                            ?.DistanceToPiece,
-                            (gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y - 1] as Wrapper.TaskField)
-                            ?.DistanceToPiece
+                            FieldAt(gameMaster.Board.Fields, currentPlayer.X + 1, currentPlayer.Y)
+                                ?.DistanceToPiece,
+                            FieldAt(gameMaster.Board.Fields, currentPlayer.X - 1, currentPlayer.Y)
+                                ?.DistanceToPiece,
+                            FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y + 1)
+                                ?.DistanceToPiece,
+                            FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y - 1)
+                                ?.DistanceToPiece
                         }.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
                     }
                     resp = new DataMessageBuilder(currentPlayer.Id)
-                        .AddPiece(new Piece()
+                        .AddPiece(new Common.Schema.Piece()
                         {
                             id = piece.Id,
                             timestamp = piece.TimeStamp,
                             playerId = currentPlayer.Id,
+                            playerIdSpecified = true,
                             type = PieceType.unknown
                         })
                         .GetXml();
@@ -290,7 +305,8 @@ namespace GameMaster.Net
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>
                             pc.PlayerId == currentPlayer.Id);
-                if (carriedPiece == null || !gameMaster.IsPlayerInGoalArea(currentPlayer) || carriedPiece.Type==PieceType.sham)
+                if (carriedPiece == null || !gameMaster.IsPlayerInGoalArea(currentPlayer) ||
+                    carriedPiece.Type == PieceType.sham)
                 {
                     //send empty piece collection
                     resp = new DataMessageBuilder(currentPlayer.Id)
@@ -320,7 +336,7 @@ namespace GameMaster.Net
             var playerFrom = gameMaster.Players.Where(p => p.Guid == message.playerGuid).Single();
             var playerTo = gameMaster.Players.Where(p => p.Id == message.withPlayerId).SingleOrDefault();
 
-            Task.Delay((int)gameMaster.Settings.ActionCosts.KnowledgeExchangeDelay).ContinueWith(_ =>
+            Task.Delay((int) gameMaster.Settings.ActionCosts.KnowledgeExchangeDelay).ContinueWith(_ =>
             {
                 if (playerTo == null)
                 {
@@ -333,7 +349,7 @@ namespace GameMaster.Net
                     return;
                 }
 
-                if(playerTo.OpenExchangeRequests.Contains(playerFrom.Id))
+                if (playerTo.OpenExchangeRequests.Contains(playerFrom.Id))
                 {
                     var accept = new AcceptExchangeRequest()
                     {

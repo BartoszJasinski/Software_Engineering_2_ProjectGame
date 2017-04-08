@@ -62,6 +62,7 @@ namespace Player.Net
         public GameBoard Board
         {
             set { _board = value; }
+            get { return _board; }
         }
 
         public string Guid
@@ -201,35 +202,53 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
         }
 
+        Wrapper.TaskField FieldAt(uint x, uint y)
+        {
+            try
+            {
+                return (Fields[x,y] as Wrapper.TaskField);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private void MoveToNieghborClosestToPiece()
         {
-            var d = new[]
+            var t = new[]
             {
-                (Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                FieldAt(Location.x+1,Location.y)
                 ?.DistanceToPiece,
-                (Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                FieldAt(Location.x-1,Location.y)
                 ?.DistanceToPiece,
-                (Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                FieldAt(Location.x,Location.y+1)
                 ?.DistanceToPiece,
-                (Fields[Location.x, Location.y - 1] as Wrapper.TaskField)
+                FieldAt(Location.x,Location.y-1)
                 ?.DistanceToPiece
-            }.Where(u => u.HasValue).Select(u => u.Value).Min();
-
+            }.Where(u => u.HasValue).Select(u => u.Value);
+            int? d;
+            if (t.Count() == 0)
+                d = null;
+            else
+            {
+                d = (int?) t.Min();
+            }
             MoveType where()
             {
-                if ((Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                if (FieldAt(Location.x + 1, Location.y)
                     ?.DistanceToPiece == d)
                     return MoveType.right;
-                if ((Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                if (FieldAt(Location.x - 1, Location.y)
                     ?.DistanceToPiece == d)
                     return MoveType.left;
-                if ((Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                if (FieldAt(Location.x, Location.y + 1)
                     ?.DistanceToPiece == d)
                     return MoveType.up;
-                if ((Fields[Location.x, Location.y - 1] as Wrapper.TaskField)
+                if (FieldAt(Location.x, Location.y - 1)
                     ?.DistanceToPiece == d)
                     return MoveType.down;
-                if (this.Team==TeamColour.blue)
+                if (Location.x<=Board.goalsHeight)
                     return MoveType.up;
                 return MoveType.down;
             }
@@ -265,14 +284,14 @@ namespace Player.Net
                 .AddState("checkIfOnPiece")
                 .AddTransition("start", "checkIfOnPiece")
                 .AddState("moving", MoveToNieghborClosestToPiece)
-                .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0)
+                .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("checkPieceAfterMove")
                 .AddTransition("moving", "checkPieceAfterMove")
-                .AddTransition("checkPieceAfterMove", "moving", () => DistToPiece() > 0)
+                .AddTransition("checkPieceAfterMove", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("onPiece", PickUpPiece)
                 .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
                 .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
-                .AddState("carrying", LookForGoal)
+                .AddState("carrying")
                 .AddTransition("onPiece","carrying",HasPiece)
                 .StartingState();
         }
