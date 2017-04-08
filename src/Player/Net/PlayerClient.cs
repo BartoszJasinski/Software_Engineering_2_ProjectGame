@@ -153,10 +153,16 @@ namespace Player.Net
 
         public void Play()
         {
-            Array values = Enum.GetValues(typeof(MoveType));
-            MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
-            Move(randomMove);
+            //Array values = Enum.GetValues(typeof(MoveType));
+            //MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
+            //Move(randomMove);
             //Move(MoveType.up);
+            var d = new Discover()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(d));
         }
 
         private void Move(MoveType direction)

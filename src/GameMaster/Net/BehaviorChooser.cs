@@ -157,6 +157,7 @@ namespace GameMaster.Net
             Task.Delay((int) gameMaster.Settings.ActionCosts.DiscoverDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Where(p => p.Guid == message.playerGuid).Single();
+                resp.playerId = currentPlayer.Id;
                 var taskFields = new List<TaskField>();
                 var pieceList = new List<Piece>();
 
