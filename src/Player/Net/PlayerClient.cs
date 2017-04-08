@@ -27,6 +27,7 @@ namespace Player.Net
         private GameBoard _board;
         private Common.Schema.PlayerType _type;
         private Common.SchemaWrapper.Field[,] _fields;
+        private Random random = new Random();
 
         public ulong GameId
         {
@@ -137,7 +138,6 @@ namespace Player.Net
         public void Play()
         {
             Array values = Enum.GetValues(typeof(MoveType));
-            Random random = new Random();
             MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
             Move(randomMove);
         }

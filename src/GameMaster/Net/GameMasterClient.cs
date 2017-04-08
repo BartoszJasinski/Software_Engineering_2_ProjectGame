@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameMaster.Log;
-
+using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
 {
@@ -58,6 +58,12 @@ namespace GameMaster.Net
 
             TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
             TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+
+            var boardGenerator = new RandomGoalBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
+                uint.Parse(Settings.GameDefinition.TaskAreaLength),
+                uint.Parse(Settings.GameDefinition.GoalAreaLength),
+                123);
+            Board = boardGenerator.CreateBoard();
         }
 
         public void Connect()

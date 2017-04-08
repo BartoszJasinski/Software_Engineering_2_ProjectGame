@@ -57,6 +57,15 @@ namespace Common.SchemaWrapper
             return possibleFields.ToList();
         }
 
+        public Field GetEmptyPositionForPlayer(TeamColour team)
+        {
+            //no player, TaskField or our GoalField
+            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || (f as GoalField).Team == team) && f.PlayerId == null);
+            //maybe random is a bad idea (unfair?)
+            return possibleFields.RandomElementUsing(rng);
+
+        }
+
         public void UpdateDistanceToPiece(IList<Piece> pieces)
         {
             foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
