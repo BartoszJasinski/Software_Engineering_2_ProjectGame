@@ -22,8 +22,10 @@ namespace Player.Net
         private Socket serverSocket;
         private ulong _gameId;
         private string _guid;
+        private Common.Schema.TeamColour _team;
         private Common.Schema.Player[] _players;
         private GameBoard _board;
+        private Common.Schema.PlayerType _type;
         private Common.SchemaWrapper.Field[,] _fields;
 
         public ulong GameId
@@ -37,6 +39,7 @@ namespace Player.Net
         public Common.Schema.Player[] Players
         {
             set { _players = value; }
+            get { return _players; }
         }
 
         public Common.SchemaWrapper.Field[,] Fields
@@ -59,9 +62,26 @@ namespace Player.Net
             set { _guid = value; }
         }
 
+        public Common.Schema.TeamColour Team
+        {
+            get { return _team; }
+            set { _team = value; }
+        }
+
         public Location Location { get; set; }
 
-   
+        public PlayerType Type
+        {
+            get
+            {
+                return _type;
+            }
+
+            set
+            {
+                _type = value;
+            }
+        }
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {

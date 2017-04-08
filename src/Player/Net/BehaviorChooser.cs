@@ -51,6 +51,9 @@ namespace Player.Net
             args.PlayerClient.Id = message.playerId;
             args.PlayerClient.GameId = message.gameId;
             args.PlayerClient.Guid = message.privateGuid;
+            args.PlayerClient.Team = message.PlayerDefinition.team;
+            args.PlayerClient.Type = message.PlayerDefinition.type;
+
             return;
         }
 
@@ -116,6 +119,38 @@ namespace Player.Net
 
         public static void HandleMessage(KnowledgeExchangeRequest message, PlayerMessageHandleArgs args)
         {
+            var fromPlayer = args.PlayerClient.Players.Where(p => p.id == message.senderPlayerId).Single();
+
+            bool accept = false;
+            //it is our leader, we have to listen to him or we are the leader
+            if (fromPlayer.team == args.PlayerClient.Team 
+                && (fromPlayer.type == PlayerType.leader || args.PlayerClient.Type == PlayerType.leader))
+                accept = true;
+            else    //decide if we really want to exchange information
+                accept = true;
+
+            if (accept)
+            {
+                //when you accept an information exchange you have to send an AuthorizeKnowledgeExchange to the gm
+                var exchange = new AuthorizeKnowledgeExchange()
+                {
+                    gameId = args.PlayerClient.GameId,
+                    playerGuid = args.PlayerClient.Guid,
+                    withPlayerId = fromPlayer.id
+                };
+                args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(exchange));
+
+            }
+            else
+            {
+                //otherwise send a RejectKnowledgeExchange directly to the player
+                var reject = new RejectKnowledgeExchange()
+                {
+                    playerId = fromPlayer.id,
+                    senderPlayerId = args.PlayerClient.Id
+                };
+                args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(reject));
+            }
 
         }
 
