@@ -119,6 +119,8 @@ namespace Player.Net
 
         public void Play()
         {
+            Move(MoveType.up);
+            return;
             state.Action();
             state = state.NextState();
         }
