@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
 using Wrapper = Common.SchemaWrapper;
 using System.Net.Sockets;
-using System.Threading;
 using GameMaster.Logic;
-using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
 {
@@ -203,7 +199,7 @@ namespace GameMaster.Net
                 if (piece == null)
                 {
                     //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id)
+                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .SetPieces(new Piece[0])
                         .GetXml();
                 }
@@ -227,7 +223,7 @@ namespace GameMaster.Net
                             ?.DistanceToPiece
                         }.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
                     }
-                    resp = new DataMessageBuilder(currentPlayer.Id)
+                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .AddPiece(new Piece()
                         {
                             id = piece.Id,
@@ -255,13 +251,13 @@ namespace GameMaster.Net
                 if (piece == null)
                 {
                     //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id)
+                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .SetPieces(new Piece[0])
                         .GetXml();
                 }
                 else
                 {
-                    resp = new DataMessageBuilder(currentPlayer.Id)
+                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .AddPiece(piece.SchemaPiece)
                         .GetXml();
                 }
@@ -271,7 +267,10 @@ namespace GameMaster.Net
 
         public static void HandleMessage(PlacePiece message, GameMasterClient gameMaster, Socket handler)
         {
-            string resp = "";
+            MakeDecision.EndGame(gameMaster.Board, TeamColour.blue);
+            MakeDecision.EndGame(gameMaster.Board, TeamColour.red);
+
+            string response = "";
             Task.Delay((int) gameMaster.Settings.ActionCosts.PlacingDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
@@ -282,10 +281,10 @@ namespace GameMaster.Net
                 if (carriedPiece == null || !gameMaster.IsPlayerInGoalArea(currentPlayer) || carriedPiece.Type==PieceType.sham)
                 {
                     //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id)
+                    response = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .SetGoalFields(new GoalField[0])
                         .GetXml();
-                    gameMaster.Connection.SendFromClient(handler, resp);
+                    gameMaster.Connection.SendFromClient(handler, response);
                     return;
                 }
                 Wrapper.GoalField gf = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.GoalField;
@@ -296,11 +295,11 @@ namespace GameMaster.Net
                     gf.Type = GoalFieldType.nongoal;
                 }
 
-                resp = new DataMessageBuilder(currentPlayer.Id)
+                response = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                     .AddGoalField(gf.SchemaField as GoalField)
                     .GetXml();
 
-                gameMaster.Connection.SendFromClient(handler, resp);
+                gameMaster.Connection.SendFromClient(handler, response);
             });
         }
 

@@ -16,7 +16,7 @@ namespace Common.Message
         private Piece[] pieces;
         private GoalField[] goalFields;
 
-        public DataMessageBuilder(ulong playreId, bool gameFinished=false)
+        public DataMessageBuilder(ulong playreId, bool gameFinished = false)
         {
             this.playerId = playreId;
             finished = gameFinished;

@@ -52,9 +52,9 @@ namespace Common.SchemaWrapper
 
         public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
         {
-           // IList<GoalField> goals = new List<GoalField>();
-            var possibleFields = Fields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
-            return possibleFields.ToList();
+            var possibleFields = Fields.Cast<Field>().Where(f => f is GoalField );
+            var possibleGoalFields = Fields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
+            return possibleGoalFields.ToList();
         }
 
         public Field GetEmptyPositionForPlayer(TeamColour team)
