@@ -46,11 +46,13 @@ namespace GameMaster.Net
             }
 
             var guid = Utils.GenerateGuid();
+            var fieldForPlayer = gameMaster.Board.GetEmptyPositionForPlayer(selectedTeam.Color);
+            fieldForPlayer.PlayerId = message.playerId;
 
             if (role == PlayerType.leader)
-                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam));
+                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam, fieldForPlayer.X, fieldForPlayer.Y));
             else
-                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam));
+                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam, fieldForPlayer.X, fieldForPlayer.Y));
 
             var answer = new ConfirmJoiningGame();
             answer.playerId = message.playerId;
@@ -68,10 +70,7 @@ namespace GameMaster.Net
 
             if (gameMaster.IsReady)
             {
-                //TODO Load Board from config file
-                var boardGenerator = new RandomGoalBoardGenerator(5, 5, 3, 123);
-                var board = boardGenerator.CreateBoard();
-                gameMaster.Board = board;
+                var board = gameMaster.Board;
                 var players = gameMaster.Players.Select(p => p.SchemaPlayer).ToArray();
                 foreach (var player in gameMaster.Players)
                 {
@@ -79,7 +78,7 @@ namespace GameMaster.Net
                     {
                         Board = board.SchemaBoard,
                         playerId = player.Id,
-                        PlayerLocation = new Location() {x = (uint) player.Id, y = 0},
+                        PlayerLocation = new Location() {x = player.X, y = player.Y},
                         Players = players
                     };
                     var gameString = XmlMessageConverter.ToXml(startGame);
@@ -111,7 +110,7 @@ namespace GameMaster.Net
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= gameMaster.Board.Width) ||
                     (player.Location.y + dy < 0 ||
-                     player.Location.y + dy >= gameMaster.Board.TasksHeight * 2 + gameMaster.Board.GoalsHeight)
+                     player.Location.y + dy >= gameMaster.Board.Height)
                     ||
                     gameMaster.Players.Where(
                         p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy).Any())
@@ -120,6 +119,7 @@ namespace GameMaster.Net
                     gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
                     return;
                 }
+
                 resp.PlayerLocation = new Location()
                 {
                     x = (uint) (player.Location.x + dx),

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Common.Message;
 using Common.Schema;
 
-namespace GameMaster.Logic
+namespace Common.Message
 {
-    class DataMessageBuilder
+    public class DataMessageBuilder
     {
         private ulong playerId;
         private bool finished;

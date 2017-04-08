@@ -51,6 +51,9 @@ namespace Player.Net
             args.PlayerClient.Id = message.playerId;
             args.PlayerClient.GameId = message.gameId;
             args.PlayerClient.Guid = message.privateGuid;
+            args.PlayerClient.Team = message.PlayerDefinition.team;
+            args.PlayerClient.Type = message.PlayerDefinition.type;
+
             return;
         }
 
@@ -98,12 +101,17 @@ namespace Player.Net
             }
             if (message.Pieces != null)
             {
-                foreach (Piece piece in message.Pieces)
+                //foreach (Piece piece in message.Pieces)
+                //{
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
+                //}
+                args.PlayerClient.Pieces.Clear();
+                foreach (var piece in message.Pieces)
                 {
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
+                    args.PlayerClient.Pieces.Add(piece);
                 }
             }
             if (message.gameFinished == true)
@@ -111,6 +119,65 @@ namespace Player.Net
                 args.PlayerClient.Disconnect();
             }
 
+            args.PlayerClient.Play();
+        }
+
+        public static void HandleMessage(KnowledgeExchangeRequest message, PlayerMessageHandleArgs args)
+        {
+            var fromPlayer = args.PlayerClient.Players.Where(p => p.id == message.senderPlayerId).Single();
+
+            bool accept = false;
+            //it is our leader, we have to listen to him or we are the leader
+            if (fromPlayer.team == args.PlayerClient.Team 
+                && (fromPlayer.type == PlayerType.leader || args.PlayerClient.Type == PlayerType.leader))
+                accept = true;
+            else    //decide if we really want to exchange information
+                accept = true;
+
+            if (accept)
+            {
+                //when you accept an information exchange you have to send an AuthorizeKnowledgeExchange to the gm
+                var exchange = new AuthorizeKnowledgeExchange()
+                {
+                    gameId = args.PlayerClient.GameId,
+                    playerGuid = args.PlayerClient.Guid,
+                    withPlayerId = fromPlayer.id
+                };
+                args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(exchange));
+                //do not play, wait for data answer
+            }
+            else
+            {
+                //otherwise send a RejectKnowledgeExchange directly to the player
+                var reject = new RejectKnowledgeExchange()
+                {
+                    playerId = fromPlayer.id,
+                    senderPlayerId = args.PlayerClient.Id
+                };
+                args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(reject));
+                //after reject we have to play, otherwise we will be stuck (because reject does not generate an answer)
+                args.PlayerClient.Play();
+            }
+
+        }
+
+        public static void HandleMessage(AcceptExchangeRequest message, PlayerMessageHandleArgs args)
+        {
+            //the other player accepted our request, send data to him
+            DataMessageBuilder builder = new DataMessageBuilder(message.senderPlayerId);
+
+            builder.SetGoalFields(args.PlayerClient.Fields.Cast<Field>().Where(f => f is GoalField).Cast<GoalField>());
+            builder.SetTaskFields(args.PlayerClient.Fields.Cast<Field>().Where(f => f is TaskField).Cast<TaskField>());
+            builder.SetPieces(args.PlayerClient.Pieces);
+
+            var data = builder.GetXml();
+            args.Connection.SendFromClient(args.Socket, data);
+            //do not call play, we call play already when we get our data
+        }
+
+        public static void HandleMessage(RejectKnowledgeExchange message, PlayerMessageHandleArgs args)
+        {
+            //be sad and play on
             args.PlayerClient.Play();
         }
 

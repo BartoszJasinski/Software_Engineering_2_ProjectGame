@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameMaster.Log;
-
+using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
 {
@@ -58,6 +58,12 @@ namespace GameMaster.Net
 
             TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
             TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
+
+            var boardGenerator = new RandomGoalBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
+                uint.Parse(Settings.GameDefinition.TaskAreaLength),
+                uint.Parse(Settings.GameDefinition.GoalAreaLength),
+                123);
+            Board = boardGenerator.CreateBoard();
         }
 
         public void Connect()
@@ -101,7 +107,7 @@ namespace GameMaster.Net
         {
             var socket = eventArgs.Handler as Socket;
 
-            //ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
         }
@@ -109,7 +115,7 @@ namespace GameMaster.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            //System.Console.WriteLine("New message sent to {0}", address.ToString());
+            System.Console.WriteLine("New message sent to {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
         }
@@ -150,7 +156,7 @@ namespace GameMaster.Net
                 Pieces.Add(newPiece);
                 Board.UpdateDistanceToPiece(Pieces);
                 ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
-                BoardPrinter.Print(Board);
+                //BoardPrinter.Print(Board);
             }
         }
 

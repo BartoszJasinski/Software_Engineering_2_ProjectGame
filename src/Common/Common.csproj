@@ -53,6 +53,7 @@
     <Compile Include="DebugUtils\ConsoleDebug.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="GameInfo\GameState.cs" />
+    <Compile Include="Message\DataMessageBuilder.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantBoard.cs" />
     <Compile Include="SchemaWrapper\Abstraction\ISchemaCompliantField.cs" />
     <Compile Include="SchemaWrapper\Implementation\AddressableBoard.cs" />
