@@ -157,6 +157,7 @@ namespace GameMaster.Net
             Task.Delay((int) gameMaster.Settings.ActionCosts.DiscoverDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Where(p => p.Guid == message.playerGuid).Single();
+                gameMaster.Logger.Log(message, currentPlayer);
                 var taskFields = new List<TaskField>();
                 var pieceList = new List<Piece>();
 
@@ -181,9 +182,17 @@ namespace GameMaster.Net
                 if (taskFields.Count > 0)
                     resp.TaskFields = taskFields.ToArray();
                 //we cannot give the player info about piece type from a discover
-                pieceList.ForEach(p => p.type = PieceType.unknown);
+                pieceList=pieceList.Select(piece => new Piece()
+                {
+                    playerId = piece.playerId,
+                    id = piece.id,
+                    playerIdSpecified = piece.playerIdSpecified,
+                    timestamp = piece.timestamp,
+                    type = PieceType.unknown
+                }).ToList();
                 if (pieceList.Count > 0)
                     resp.Pieces = pieceList.ToArray();
+                resp.playerId = currentPlayer.Id;
                 gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
             });
         }
@@ -194,6 +203,7 @@ namespace GameMaster.Net
             Task.Delay((int) gameMaster.Settings.ActionCosts.PickUpDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
+                gameMaster.Logger.Log(message, currentPlayer);
                 Wrapper.Piece piece =
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>
@@ -246,6 +256,7 @@ namespace GameMaster.Net
             Task.Delay((int) gameMaster.Settings.ActionCosts.TestDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
+                gameMaster.Logger.Log(message, currentPlayer);
                 Wrapper.Piece piece =
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>
@@ -274,6 +285,7 @@ namespace GameMaster.Net
             Task.Delay((int) gameMaster.Settings.ActionCosts.PlacingDelay).ContinueWith(_ =>
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
+                gameMaster.Logger.Log(message, currentPlayer);
                 Wrapper.Piece carriedPiece =
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>

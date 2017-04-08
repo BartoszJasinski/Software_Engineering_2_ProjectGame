@@ -12,6 +12,10 @@ using Common.IO.Console;
 using Common.Schema;
 using Location = Common.Schema.Location;
 using System.Collections.Generic;
+using System.Linq;
+using Player.Strategy;
+using TeamColour = Common.Schema.TeamColour;
+using Wrapper = Common.SchemaWrapper;
 
 namespace Player.Net
 {
@@ -30,6 +34,7 @@ namespace Player.Net
         private Common.Schema.PlayerType _type;
         private Common.SchemaWrapper.Field[,] _fields;
         private Random random = new Random();
+        private State currentState;
 
         public ulong GameId
         {
@@ -99,6 +104,8 @@ namespace Player.Net
             }
         }
 
+       
+
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
             this.connection = connection;
@@ -108,6 +115,7 @@ namespace Player.Net
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
             Pieces = new List<Piece>();
+            currentState = BiuldDfa();
         }
 
         public void Connect()
@@ -153,10 +161,11 @@ namespace Player.Net
 
         public void Play()
         {
-            Array values = Enum.GetValues(typeof(MoveType));
-            MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
-            Move(randomMove);
-            //Move(MoveType.up);
+            var act = currentState.Action;
+            act?.Invoke();
+            currentState = currentState.NextState();
+            if (act == null)
+                Play();
         }
 
         private void Move(MoveType direction)
@@ -170,6 +179,63 @@ namespace Player.Net
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(m));
         }
+        private void Discover()
+        {
+            Common.Schema.Discover d = new Discover()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(d));
+
+        }
+
+        private void PickUpPiece()
+        {
+            Common.Schema.PickUpPiece p = new PickUpPiece()
+            {
+                playerGuid = Guid,
+                gameId = GameId
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
+        }
+
+        private void MoveToNieghborClosestToPiece()
+        {
+            var d = new[]
+            {
+                (Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x, Location.y - 1] as Wrapper.TaskField)
+                ?.DistanceToPiece
+            }.Where(u => u.HasValue).Select(u => u.Value).Min();
+
+            MoveType where()
+            {
+                if ((Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.right;
+                if ((Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.left;
+                if ((Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.up;
+                if ((Fields[Location.x, Location.y - 1] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.down;
+                if (this.Team==TeamColour.blue)
+                    return MoveType.up;
+                return MoveType.down;
+            }
+
+            Move(where());
+        }
+
 
         private void RegisterForNextGameAfterGameEnd()
         {
@@ -186,5 +252,42 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
+        uint DistToPiece()
+        {
+            return (Fields[Location.x, Location.y] as Wrapper.TaskField).DistanceToPiece;
+        }
+
+        private State BiuldDfa()
+        {
+            return new DfaBuilder()
+                .AddState("start", Discover)
+                .AddState("checkIfOnPiece")
+                .AddTransition("start", "checkIfOnPiece")
+                .AddState("moving", MoveToNieghborClosestToPiece)
+                .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0)
+                .AddState("checkPieceAfterMove")
+                .AddTransition("moving", "checkPieceAfterMove")
+                .AddTransition("checkPieceAfterMove", "moving", () => DistToPiece() > 0)
+                .AddState("onPiece", PickUpPiece)
+                .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
+                .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
+                .AddState("carrying", LookForGoal)
+                .AddTransition("onPiece","carrying",HasPiece)
+                .StartingState();
+        }
+
+        private void LookForGoal()
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool HasPiece()
+        {
+            var carriedPiece =
+                    Pieces.SingleOrDefault(
+                        pc =>
+                            pc.playerId == Id);
+            return carriedPiece != null;
+        }
     } //class
 } //namespace

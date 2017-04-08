@@ -54,8 +54,7 @@ namespace Player.Strategy
         {
             if (States.ContainsKey(name))
                 throw new Exception("State names must be unique");
-            if (action == null)
-                action = () => { };
+           
             States[name] = new State(name, action);
             if (States.Count == 1)
                 starting = States[name];
