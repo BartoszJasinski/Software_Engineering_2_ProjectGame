@@ -144,7 +144,7 @@ namespace Player.Net
                     withPlayerId = fromPlayer.id
                 };
                 args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(exchange));
-
+                //do not play, wait for data answer
             }
             else
             {
@@ -155,6 +155,8 @@ namespace Player.Net
                     senderPlayerId = args.PlayerClient.Id
                 };
                 args.Connection.SendFromClient(args.Socket, XmlMessageConverter.ToXml(reject));
+                //after reject we have to play, otherwise we will be stuck (because reject does not generate an answer)
+                args.PlayerClient.Play();
             }
 
         }
@@ -175,7 +177,8 @@ namespace Player.Net
 
         public static void HandleMessage(RejectKnowledgeExchange message, PlayerMessageHandleArgs args)
         {
-
+            //be sad and play on
+            args.PlayerClient.Play();
         }
 
         public static void HandleMessage(object message, PlayerMessageHandleArgs args)
