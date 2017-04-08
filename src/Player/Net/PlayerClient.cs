@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Common;
@@ -10,7 +11,9 @@ using Player.Logic;
 using Common.Config;
 using Common.IO.Console;
 using Common.Schema;
+using Player.Strategy;
 using Location = Common.Schema.Location;
+using Wrapper = Common.SchemaWrapper;
 
 namespace Player.Net
 {
@@ -45,7 +48,7 @@ namespace Player.Net
             get { return _fields; }
         }
 
-
+        private State state;
 
 
         public GameBoard Board
@@ -61,7 +64,6 @@ namespace Player.Net
 
         public Location Location { get; set; }
 
-   
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
@@ -71,6 +73,8 @@ namespace Player.Net
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
+
+            state = BiuldDfa();
         }
 
         public void Connect()
@@ -86,7 +90,6 @@ namespace Player.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            
             var address = eventArgs.Handler.GetRemoteAddress();
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
@@ -116,10 +119,8 @@ namespace Player.Net
 
         public void Play()
         {
-            Array values = Enum.GetValues(typeof(MoveType));
-            Random random = new Random();
-            MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
-            Move(randomMove);
+            state.Action();
+            state = state.NextState();
         }
 
         private void Move(MoveType direction)
@@ -133,6 +134,60 @@ namespace Player.Net
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(m));
         }
+
+        private void Discover()
+        {
+            Common.Schema.Discover d = new Discover()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(d));
+
+        }
+
+        private void PickUpPiece()
+        {
+            Common.Schema.PickUpPiece p = new PickUpPiece()
+            {
+                playerGuid = Guid,
+                gameId = GameId
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
+        }
+
+        private void MoveToNieghborClosestToPiece()
+        {
+            var d = new[]
+            {
+                (Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                ?.DistanceToPiece,
+                (Fields[Location.x, Location.y - 1] as Wrapper.TaskField)
+                ?.DistanceToPiece
+            }.Where(u => u.HasValue).Select(u => u.Value).Min();
+
+            MoveType where()
+            {
+                if ((Fields[Location.x + 1, Location.y] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.right;
+                if ((Fields[Location.x - 1, Location.y] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.left;
+                if ((Fields[Location.x, Location.y + 1] as Wrapper.TaskField)
+                    ?.DistanceToPiece == d)
+                    return MoveType.up;
+
+                return MoveType.down;
+            }
+
+            Move(where());
+        }
+
 
         private void RegisterForNextGameAfterGameEnd()
         {
@@ -149,5 +204,22 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
+        uint DistToPiece()
+        {
+            return (Fields[Location.x, Location.y] as Wrapper.TaskField).DistanceToPiece;
+        }
+
+        private State BiuldDfa()
+        {
+            return new DfaBuilder()
+                .AddState("start", Discover)
+                .AddState("checkIfOnPiece")
+                .AddTransition("start", "checkIfOnPiece")
+                .AddState("moving")
+                .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0)
+                .AddState("onPiece", PickUpPiece)
+                .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
+                .StartingState();
+        }
     } //class
 } //namespace
