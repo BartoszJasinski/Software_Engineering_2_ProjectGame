@@ -11,6 +11,7 @@ using Common.Config;
 using Common.IO.Console;
 using Common.Schema;
 using Location = Common.Schema.Location;
+using System.Collections.Generic;
 
 namespace Player.Net
 {
@@ -24,6 +25,7 @@ namespace Player.Net
         private string _guid;
         private Common.Schema.TeamColour _team;
         private Common.Schema.Player[] _players;
+        private IList<Piece> _pieces;
         private GameBoard _board;
         private Common.Schema.PlayerType _type;
         private Common.SchemaWrapper.Field[,] _fields;
@@ -84,6 +86,19 @@ namespace Player.Net
             }
         }
 
+        public IList<Piece> Pieces
+        {
+            get
+            {
+                return _pieces;
+            }
+
+            set
+            {
+                _pieces = value;
+            }
+        }
+
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
             this.connection = connection;
@@ -92,6 +107,7 @@ namespace Player.Net
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
+            Pieces = new List<Piece>();
         }
 
         public void Connect()

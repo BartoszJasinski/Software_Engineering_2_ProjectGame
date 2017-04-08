@@ -101,12 +101,17 @@ namespace Player.Net
             }
             if (message.Pieces != null)
             {
-                foreach (Piece piece in message.Pieces)
+                //foreach (Piece piece in message.Pieces)
+                //{
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
+                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
+                //}
+                args.PlayerClient.Pieces.Clear();
+                foreach (var piece in message.Pieces)
                 {
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
-                    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
+                    args.PlayerClient.Pieces.Add(piece);
                 }
             }
             if (message.gameFinished == true)
@@ -156,7 +161,16 @@ namespace Player.Net
 
         public static void HandleMessage(AcceptExchangeRequest message, PlayerMessageHandleArgs args)
         {
+            //the other player accepted our request, send data to him
+            DataMessageBuilder builder = new DataMessageBuilder(message.senderPlayerId);
 
+            builder.SetGoalFields(args.PlayerClient.Fields.Cast<Field>().Where(f => f is GoalField).Cast<GoalField>());
+            builder.SetTaskFields(args.PlayerClient.Fields.Cast<Field>().Where(f => f is TaskField).Cast<TaskField>());
+            builder.SetPieces(args.PlayerClient.Pieces);
+
+            var data = builder.GetXml();
+            args.Connection.SendFromClient(args.Socket, data);
+            //do not call play, we call play already when we get our data
         }
 
         public static void HandleMessage(RejectKnowledgeExchange message, PlayerMessageHandleArgs args)
