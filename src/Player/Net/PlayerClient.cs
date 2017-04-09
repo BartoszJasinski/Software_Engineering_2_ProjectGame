@@ -172,8 +172,9 @@ namespace Player.Net
 
         private void Move(MoveType direction)
         {
-            if (Location.Equals(previousLocation))
+            if (previousLocation != null && Location != null && Location.x == previousLocation.x && Location.y == previousLocation.y)
             {
+                ConsoleDebug.Error("Snake time! =====================================");
                 if (direction==MoveType.up)
                     direction=MoveType.right;
                 else if (direction == MoveType.right)

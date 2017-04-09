@@ -157,6 +157,12 @@ namespace GameMaster.Net
                         ConsoleDebug.Warning("There are no empty places for a new Piece!");
                         continue;   //TODO BUSYWAITING HERE probably
                     }
+                    //remove old piece
+                    if(field.PieceId != null)
+                    {
+                        var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
+                        Pieces.Remove(oldPiece);
+                    }
                     field.PieceId = newPiece.Id;
                     newPiece.Location = new Location() { x = field.X, y = field.Y };
                     Pieces.Add(newPiece);
