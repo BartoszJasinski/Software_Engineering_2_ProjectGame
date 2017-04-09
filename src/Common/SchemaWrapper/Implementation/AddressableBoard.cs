@@ -60,7 +60,7 @@ namespace Common.SchemaWrapper
         public Field GetEmptyPositionForPlayer(TeamColour team)
         {
             //no player, TaskField or our GoalField
-            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || (f as GoalField).Team == team) && f.PlayerId == null);
+            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || ( f is GoalField && !IsInEnemyGoalArea(f.Y, team))) && f.PlayerId == null);
             //maybe random is a bad idea (unfair?)
             return possibleFields.RandomElementUsing(rng);
 
