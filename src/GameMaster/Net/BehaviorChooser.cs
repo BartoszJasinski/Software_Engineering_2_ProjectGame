@@ -279,6 +279,7 @@ namespace GameMaster.Net
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
                 gameMaster.Logger.Log(message, currentPlayer);
+
                 Wrapper.Piece piece =
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>                            
@@ -329,7 +330,8 @@ namespace GameMaster.Net
                         carriedPiece.PlayerId = null;
                         carriedPiece.Location.x = currentPlayer.Location.x;
                         carriedPiece.Location.y = currentPlayer.Location.y;
-                        gameMaster.Board.UpdateDistanceToPiece(new[] {carriedPiece}.ToList());
+                        (gameMaster.Board.Fields[carriedPiece.Location.x, carriedPiece.Location.y] as Wrapper.TaskField).PieceId = carriedPiece.Id;
+                        gameMaster.Board.UpdateDistanceToPiece(gameMaster.Pieces);
                     }
                     else //destroying piece
                     {
