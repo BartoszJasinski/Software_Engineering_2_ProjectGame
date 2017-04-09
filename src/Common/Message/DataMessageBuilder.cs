@@ -22,6 +22,37 @@ namespace Common.Message
             finished = gameFinished;
         }
 
+        public DataMessageBuilder SetWrapperTaskFields(IEnumerable<SchemaWrapper.TaskField> taskFields)
+        {
+            var tF = new List<TaskField>();
+            foreach (var schemaWrapperTaskField in taskFields)
+                tF.Add((TaskField)schemaWrapperTaskField.SchemaField);
+            this.taskFields = tF.ToArray();
+
+            return this;
+        }
+
+        public DataMessageBuilder SetWrapperGoalFields(IEnumerable<SchemaWrapper.GoalField> goalFields)
+        {
+            var gF = new List<GoalField>();
+            foreach (var schemaWrapperGoalField in goalFields)
+                gF.Add((GoalField)schemaWrapperGoalField.SchemaField);
+            this.goalFields = gF.ToArray();
+
+            return this;
+        }
+
+        public DataMessageBuilder SetWrapperPieces(IEnumerable<SchemaWrapper.Piece> pieces)
+        {
+            var p = new List<Piece>();
+            foreach (var piece in pieces)
+                p.Add(piece.SchemaPiece);
+            this.pieces = p.ToArray();
+
+            return this;
+        }
+
+
         public DataMessageBuilder SetTaskFields(IEnumerable<TaskField> taskFields)
         {
             this.taskFields = taskFields.ToArray();

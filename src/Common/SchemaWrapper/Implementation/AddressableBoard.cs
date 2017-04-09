@@ -41,6 +41,22 @@ namespace Common.SchemaWrapper
             get { return board; }
         }
 
+        public IEnumerable<TaskField> GetTaskFields()
+        {
+
+            var tF = Fields.Cast<Field>().Where(f => f is TaskField);
+            var taskFields = tF.Cast<TaskField>();
+            return taskFields.ToList();
+        }
+
+        public IEnumerable<GoalField> GetGoalFields()
+        {
+
+            var gF = Fields.Cast<Field>().Where(f => f is GoalField);
+            var goalFields = gF.Cast<GoalField>();
+            return goalFields.ToList();
+        }
+
         public TaskField GetRandomEmptyFieldInTaskArea()
         {
             //TODO this can overwrite existing Pieces
@@ -53,7 +69,7 @@ namespace Common.SchemaWrapper
         public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
         {
             var possibleFields = Fields.Cast<Field>().Where(f => f is GoalField );
-            var possibleGoalFields = Fields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
+            var possibleGoalFields = possibleFields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
             return possibleGoalFields.ToList();
         }
 

@@ -268,8 +268,6 @@ namespace GameMaster.Net
 
         public static void HandleMessage(PlacePiece message, GameMasterClient gameMaster, Socket handler)
         {
-            MakeDecision.EndGame(gameMaster.Board, TeamColour.blue);
-            MakeDecision.EndGame(gameMaster.Board, TeamColour.red);
 
             string response = "";
             Task.Delay((int) gameMaster.Settings.ActionCosts.PlacingDelay).ContinueWith(_ =>
@@ -302,6 +300,25 @@ namespace GameMaster.Net
 
                 gameMaster.Connection.SendFromClient(handler, response);
             });
+
+
+            MakeDecision.EndGame(gameMaster.Board, TeamColour.blue);
+            MakeDecision.EndGame(gameMaster.Board, TeamColour.red);
+
+            if (MakeDecision.endGame)
+            {
+                foreach (var player in gameMaster.Players)
+                {
+                    string endGameResponse = new DataMessageBuilder(player.Id, MakeDecision.endGame)
+                        .SetWrapperTaskFields(gameMaster.Board.GetTaskFields())
+                        .SetWrapperGoalFields(gameMaster.Board.GetGoalFields())
+                        .SetWrapperPieces(gameMaster.Pieces)
+                        .SetPlayerLocation(player.Location)
+                        .GetXml();
+
+                    gameMaster.Connection.SendFromClient(handler, endGameResponse);
+                }
+            }
         }
 
         public static void HandleMessage(AuthorizeKnowledgeExchange message, GameMasterClient gameMaster, Socket handler)
