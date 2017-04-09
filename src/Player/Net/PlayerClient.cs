@@ -274,8 +274,10 @@ namespace Player.Net
             {
                 d = (int?) t.Min();
             }
-
-            Move(Where(d));
+            if (d >= FieldAt(Location.x, Location.y)?.DistanceToPiece)
+                Discover();
+            else
+                Move(Where(d));
         }
 
 
