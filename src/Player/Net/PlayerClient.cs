@@ -340,7 +340,7 @@ namespace Player.Net
 
         private void LookForGoal()
         {
-            if (Fields[Location.x, Location.y] is Wrapper.TaskField)
+            if (Fields[Location.x, Location.y] == null || Fields[Location.x, Location.y] is Wrapper.TaskField)
             {
                 if (Team==TeamColour.blue)
                     Move(MoveType.down);
