@@ -320,12 +320,12 @@ namespace Player.Net
                 .AddTransition("tested","start", ()=>CarriedPiece==null)
                 .AddState("afterCarryingSham")
                 .AddTransition("carryingSham","afterCarryingSham")
-                .AddTransition("afterCarryingSham", "start", HasPiece)
-                .AddTransition("afterCarryingSham", "carryingSham",()=> !HasPiece())
+                .AddTransition("afterCarryingSham", "start", ()=>!HasPiece())
+                .AddTransition("afterCarryingSham", "carryingSham",HasPiece)
                 .AddState("afterCarryingNormal")
-                .AddTransition("carryingSham", "afterCarryingSham")
-                .AddTransition("afterCarryingNormal", "start", HasPiece)
-                .AddTransition("afterCarryingNormal", "carryingSham", () => !HasPiece())
+                .AddTransition("carryingNormal", "afterCarryingNormal")
+                .AddTransition("afterCarryingNormal", "start", () => !HasPiece())
+                .AddTransition("afterCarryingNormal", "carryingNormal",HasPiece)
                
                 .StartingState();
         }
@@ -340,7 +340,12 @@ namespace Player.Net
 
         private void LookForGoal()
         {
-            if (Fields[Location.x, Location.y] == null || Fields[Location.x, Location.y] is Wrapper.TaskField)
+            if (Fields[Location.x, Location.y] == null)
+            {
+                Discover();
+                return;
+            }
+            if (Fields[Location.x, Location.y] is Wrapper.TaskField)
             {
                 if (Team==TeamColour.blue)
                     Move(MoveType.down);
@@ -349,7 +354,7 @@ namespace Player.Net
                 return;
             }
             var gf = Fields[Location.x, Location.y] as Wrapper.GoalField;
-            if (gf.Type == GoalFieldType.goal | gf.Type == GoalFieldType.unknown)
+            if (gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
                 PlacePiece();
             else
             {
