@@ -102,6 +102,10 @@ namespace Player.Net
             set { _pieces = value; }
         }
 
+        public bool IsInGoalArea
+            =>
+                Team == TeamColour.blue && Location.y < Board.goalsHeight ||
+                Team == TeamColour.red && Location.y >= Board.tasksHeight + Board.goalsHeight;
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
@@ -205,6 +209,7 @@ namespace Player.Net
                 playerGuid = Guid
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
+            Pieces.Remove(CarriedPiece);
 
         }
 
@@ -338,14 +343,16 @@ namespace Player.Net
                 PlacePiece();
         }
 
+
+
         private void LookForGoal()
         {
-            if (Fields[Location.x, Location.y] == null)
+            if (Fields[Location.x, Location.y] == null && !IsInGoalArea)
             {
                 Discover();
                 return;
             }
-            if (Fields[Location.x, Location.y] is Wrapper.TaskField)
+            if (!IsInGoalArea)
             {
                 if (Team==TeamColour.blue)
                     Move(MoveType.down);
@@ -354,7 +361,7 @@ namespace Player.Net
                 return;
             }
             var gf = Fields[Location.x, Location.y] as Wrapper.GoalField;
-            if (gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
+            if (gf==null || gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
                 PlacePiece();
             else
             {

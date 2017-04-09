@@ -495,7 +495,7 @@ namespace Common.Schema
 
         private System.DateTime timestampField;
 
-        private ulong playerIdField;
+        private ulong playerIdField = UInt64.MaxValue;
 
         private bool playerIdFieldSpecified;
 
