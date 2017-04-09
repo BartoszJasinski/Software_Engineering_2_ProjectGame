@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
+using System.Threading;
 
 namespace Server.Connection
 {
     public static class BehaviorChooser
     {
+        private static object joinLock = new object();
+
         public static void HandleMessage(RegisterGame request, CommunicationServer server, Socket handler)
         {
 
@@ -64,9 +67,13 @@ namespace Server.Connection
                 ConsoleDebug.Error("Game with specified name not found");
                 return;
             }
-            request.playerId = server.IdForNewClient();
-            request.playerIdSpecified = true;
-            server.Clients.Add(request.playerId, handler);
+
+            lock(joinLock)
+            {
+                request.playerId = server.IdForNewClient();
+                request.playerIdSpecified = true;
+                server.Clients.Add(request.playerId, handler);
+            }
 
             var response = XmlMessageConverter.ToXml(request);
 
@@ -74,7 +81,7 @@ namespace Server.Connection
                 return;
         }
 
-        public static void HandleMessage(PlayerMessage request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(PlayerGood request, CommunicationServer server, Socket handler)
         {
             if (request == null)
                 return;
@@ -83,7 +90,7 @@ namespace Server.Connection
             server.ConnectionEndpoint.SendFromServer(server.Clients[request.playerId], response);
         }
 
-        public static void HandleMessage(GameMessage request, CommunicationServer server, Socket handler)
+        public static void HandleMessage(GameGood request, CommunicationServer server, Socket handler)
         {
             if (request == null)
                 return;

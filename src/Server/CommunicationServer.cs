@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Common;
 using Common.Connection.EventArg;
@@ -63,8 +58,10 @@ namespace Server
         {
 
             var address = eventArgs.Handler.GetRemoteAddress();
+
             if (address != null)
                 Console.WriteLine("New message from {0}: {1}", address, eventArgs.Message);
+
             try
             {
                 BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
@@ -87,6 +84,7 @@ namespace Server
             if (freeIdList.Count == 0)
             {
                 id = (ulong)Clients.Count;
+                Console.WriteLine(id);
             }
             else
             {

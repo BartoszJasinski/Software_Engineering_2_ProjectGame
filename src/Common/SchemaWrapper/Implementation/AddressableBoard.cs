@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Schema;
 using Common.SchemaWrapper.Abstraction;
+using Common.DebugUtils;
 
 namespace Common.SchemaWrapper
 {
-    public class AddressableBoard : ISchemaCompliantBoard
+    public class AddressableBoard: ISchemaCompliantBoard
     {
         private GameBoard board;
+        private Random rng = new Random();
+
+        private const uint NO_PIECE = uint.MaxValue;
 
         public Field[,] Fields { get; set; }
 
@@ -19,6 +21,8 @@ namespace Common.SchemaWrapper
             get { return board.width; }
             set { board.width = value; }
         }
+
+        public uint Height => TasksHeight + 2 * GoalsHeight;
 
         public uint TasksHeight
         {
@@ -37,11 +41,84 @@ namespace Common.SchemaWrapper
             get { return board; }
         }
 
+        public IEnumerable<TaskField> GetTaskFields()
+        {
+
+            var tF = Fields.Cast<Field>().Where(f => f is TaskField);
+            var taskFields = tF.Cast<TaskField>();
+            return taskFields.ToList();
+        }
+
+        public IEnumerable<GoalField> GetGoalFields()
+        {
+
+            var gF = Fields.Cast<Field>().Where(f => f is GoalField);
+            var goalFields = gF.Cast<GoalField>();
+            return goalFields.ToList();
+        }
+
+        public TaskField GetRandomEmptyFieldInTaskArea()
+        {
+            //TODO this can overwrite existing Pieces
+            var possibleFields = Fields.Cast<Field>().Where(f => f.Y >= GoalsHeight && f.Y < GoalsHeight + TasksHeight && f.PlayerId == null);
+            if (possibleFields.Count() == 0)
+                return null;
+            return (TaskField)possibleFields.RandomElementUsing(rng);
+        }
+
+        public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
+        {
+            var possibleFields = Fields.Cast<Field>().Where(f => f is GoalField );
+            var possibleGoalFields = possibleFields.Cast<GoalField>().Where(f => f.Team == teamColour && f.Type == GoalFieldType.goal);
+            return possibleGoalFields.ToList();
+        }
+
+        public Field GetEmptyPositionForPlayer(TeamColour team)
+        {
+            //no player, TaskField or our GoalField
+            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || ( f is GoalField && !IsInEnemyGoalArea(f.Y, team))) && f.PlayerId == null);
+            //maybe random is a bad idea (unfair?)
+            return possibleFields.RandomElementUsing(rng);
+
+        }
+
+
+        public bool IsInEnemyGoalArea(long y, TeamColour myTeam)
+        {
+            if (myTeam == TeamColour.blue) //we are blue, enemy is red and on top
+                return y >= Height - GoalsHeight;
+            //we are red, enemy is blue and on the bottom
+            return y < GoalsHeight;
+        }
+
+        public void UpdateDistanceToPiece(IList<Piece> pieces)
+        {
+            foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
+            {
+                if (pieces.Count == 0)
+                {
+                    (field as TaskField).DistanceToPiece = NO_PIECE;
+                }
+                else
+                {
+                    //you need to cast to long, otherwise uint can wrap around -.-
+                    var distance = pieces.Where(p=>p.PlayerId==null).Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    (field as TaskField).DistanceToPiece = (uint)distance;
+                }
+            }
+        }
+
+
         #region constructors
 
         public AddressableBoard()
         {
             this.board = new GameBoard();
+        }
+
+        public AddressableBoard(GameBoard board)
+        {
+            this.board = board;
         }
 
         #endregion

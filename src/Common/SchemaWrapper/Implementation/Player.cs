@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Common.Schema;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Schema;
 
-namespace GameMaster.Logic
+namespace Common.SchemaWrapper
 {
     public class Player
     {
@@ -35,6 +31,8 @@ namespace GameMaster.Logic
                 };
             }
         }
+        //contains ids of players that we have sent an exchange request and did not get an answer
+        public IList<ulong> OpenExchangeRequests { get; private set; }
 
         public Player(ulong id, string guid, Team team, uint x = 0, uint y = 0)
         {
@@ -44,6 +42,7 @@ namespace GameMaster.Logic
             Location = new Location();
             X = x;
             Y = y;
+            OpenExchangeRequests = new List<ulong>();
         }
 
         public Player(ulong id, string guid, Team team, Location location)
@@ -52,6 +51,7 @@ namespace GameMaster.Logic
             Guid = guid;
             Team = team;
             Location = location;
+            OpenExchangeRequests = new List<ulong>();
         }
     }
 }

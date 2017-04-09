@@ -18,7 +18,7 @@ namespace Common.IO.Console
         public string GameName { get; set; }
 
         [Option('t', "team", Required = false, HelpText = "preferred color")]
-        public string PreferredColor { get; set; }
+        public string PreferredTeam { get; set; }
 
         [Option('r', "role", Required = false, HelpText = "preferred role")]
         public string PreferredRole { get; set; }
