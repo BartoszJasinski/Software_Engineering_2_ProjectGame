@@ -116,6 +116,7 @@ namespace Player.Net
             }
             if (message.gameFinished == true)
             {
+                ConsoleDebug.Good("\nGame just ended\n");
                 args.PlayerClient.Disconnect();
             }
 
