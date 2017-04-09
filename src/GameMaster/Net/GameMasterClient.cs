@@ -39,6 +39,8 @@ namespace GameMaster.Net
 
         public ulong Id { get; set; }
 
+        public object BoardLock { get; set; } = new object();
+
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public Wrapper.AddressableBoard Board { get; set; }
         public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
@@ -145,19 +147,22 @@ namespace GameMaster.Net
             for (int i = 0; i < amount; i++)
             {
                 var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
-                newPiece.Id =pieceid++;
-                var field = Board.GetRandomEmptyFieldInTaskArea();
-                if(field == null)
+                lock(BoardLock)
                 {
-                    ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                    continue;   //TODO BUSYWAITING HERE probably
+                    var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+                    newPiece.Id = pieceid++;
+                    var field = Board.GetRandomEmptyFieldInTaskArea();
+                    if (field == null)
+                    {
+                        ConsoleDebug.Warning("There are no empty places for a new Piece!");
+                        continue;   //TODO BUSYWAITING HERE probably
+                    }
+                    field.PieceId = newPiece.Id;
+                    newPiece.Location = new Location() { x = field.X, y = field.Y };
+                    Pieces.Add(newPiece);
+                    Board.UpdateDistanceToPiece(Pieces);
+                    ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
                 }
-                field.PieceId = newPiece.Id;
-                newPiece.Location = new Location() { x = field.X, y = field.Y };
-                Pieces.Add(newPiece);
-                Board.UpdateDistanceToPiece(Pieces);
-                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
                 //BoardPrinter.Print(Board);
             }
         }

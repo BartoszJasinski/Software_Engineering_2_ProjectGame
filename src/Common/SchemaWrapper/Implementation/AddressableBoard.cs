@@ -66,6 +66,15 @@ namespace Common.SchemaWrapper
 
         }
 
+
+        public bool IsInEnemyGoalArea(long y, TeamColour myTeam)
+        {
+            if (myTeam == TeamColour.blue) //we are blue, enemy is red and on top
+                return y >= Height - GoalsHeight;
+            //we are red, enemy is blue and on the bottom
+            return y < GoalsHeight;
+        }
+
         public void UpdateDistanceToPiece(IList<Piece> pieces)
         {
             foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
