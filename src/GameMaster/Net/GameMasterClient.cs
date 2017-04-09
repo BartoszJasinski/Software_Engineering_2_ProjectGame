@@ -39,6 +39,8 @@ namespace GameMaster.Net
 
         public ulong Id { get; set; }
 
+        public object BoardLock { get; set; } = new object();
+
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public Wrapper.AddressableBoard Board { get; set; }
         public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
@@ -108,6 +110,7 @@ namespace GameMaster.Net
             var socket = eventArgs.Handler as Socket;
 
             ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            BoardPrinter.Print(Board);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
         }
@@ -138,24 +141,35 @@ namespace GameMaster.Net
             return selectedTeam;
         }
 
+        private static ulong pieceid = 0;
+
         public void PlaceNewPieces(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
                 var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
-                newPiece.Id = (ulong)Pieces.Count;
-                var field = Board.GetRandomEmptyFieldInTaskArea();
-                if(field == null)
+                lock(BoardLock)
                 {
-                    ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                    continue;   //TODO BUSYWAITING HERE probably
+                    var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+                    newPiece.Id = pieceid++;
+                    var field = Board.GetRandomEmptyFieldInTaskArea();
+                    if (field == null)
+                    {
+                        ConsoleDebug.Warning("There are no empty places for a new Piece!");
+                        continue;   //TODO BUSYWAITING HERE probably
+                    }
+                    //remove old piece
+                    if(field.PieceId != null)
+                    {
+                        var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
+                        Pieces.Remove(oldPiece);
+                    }
+                    field.PieceId = newPiece.Id;
+                    newPiece.Location = new Location() { x = field.X, y = field.Y };
+                    Pieces.Add(newPiece);
+                    Board.UpdateDistanceToPiece(Pieces);
+                    ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
                 }
-                field.PieceId = newPiece.Id;
-                newPiece.Location = new Location() { x = field.X, y = field.Y };
-                Pieces.Add(newPiece);
-                Board.UpdateDistanceToPiece(Pieces);
-                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
                 //BoardPrinter.Print(Board);
             }
         }

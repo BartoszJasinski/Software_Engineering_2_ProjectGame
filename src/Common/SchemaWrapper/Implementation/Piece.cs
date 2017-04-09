@@ -56,7 +56,10 @@ namespace Common.SchemaWrapper
                     schemaPiece.playerId = value.Value;
                 }
                 else
+                {
                     schemaPiece.playerIdSpecified = false;
+                    schemaPiece.playerId=UInt64.MaxValue;
+                }
             }
         }
 

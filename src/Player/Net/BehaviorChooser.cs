@@ -10,6 +10,7 @@ namespace Player.Net
 {
     public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
     {
+        private static object joinLock = new object();
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)
         {
             if (message.GameInfo == null || message.GameInfo.Length == 0)
@@ -101,22 +102,41 @@ namespace Player.Net
             }
             if (message.Pieces != null)
             {
-                //foreach (Piece piece in message.Pieces)
-                //{
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
-                //}
-                args.PlayerClient.Pieces.Clear();
-                foreach (var piece in message.Pieces)
+                foreach (Piece piece in message.Pieces)
                 {
+                    lock (joinLock)
+                    {
+                        if (piece.playerIdSpecified)
+                        {
+                            args.PlayerClient.Pieces=args.PlayerClient.Pieces.Where(piece1 => piece1.playerId != piece.playerId).ToList();
+                        }
+                        if (args.PlayerClient.Pieces.Count(p => p.id == piece.id) == 0)
                     args.PlayerClient.Pieces.Add(piece);
+                        else
+                        {
+                            
+                            var pp = args.PlayerClient.Pieces.Single(p => p.id == piece.id);
+                            pp.playerId = piece.playerId;
+                            pp.playerIdSpecified = piece.playerIdSpecified;
+                            pp.timestamp = piece.timestamp;
+                            if (pp.type == PieceType.unknown)
+                                pp.type = piece.type;
+
+                        }
+                        
+                    }
                 }
+                //args.PlayerClient.Pieces.Clear();
+                //foreach (var piece in message.Pieces)
+                //{
+                //    args.PlayerClient.Pieces.Add(piece);
+                //}
             }
             if (message.gameFinished == true)
             {
                 ConsoleDebug.Good("\nGame just ended\n");
+                BoardPrinter.Print(args.PlayerClient.Fields);
+                System.Console.ReadLine();
                 args.PlayerClient.Disconnect();
             }
 

@@ -69,32 +69,40 @@ namespace Common.SchemaWrapper
         public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
         {
             var possibleFields = Fields.Cast<Field>().Where(f => f is GoalField );
-            var possibleGoalFields = possibleFields.Cast<GoalField>().Where(f => f.Y < GoalsHeight && f.Team == teamColour);
+            var possibleGoalFields = possibleFields.Cast<GoalField>().Where(f => f.Team == teamColour && f.Type == GoalFieldType.goal);
             return possibleGoalFields.ToList();
         }
 
         public Field GetEmptyPositionForPlayer(TeamColour team)
         {
             //no player, TaskField or our GoalField
-            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || (f as GoalField).Team == team) && f.PlayerId == null);
+            var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || ( f is GoalField && !IsInEnemyGoalArea(f.Y, team))) && f.PlayerId == null);
             //maybe random is a bad idea (unfair?)
             return possibleFields.RandomElementUsing(rng);
 
         }
 
+
+        public bool IsInEnemyGoalArea(long y, TeamColour myTeam)
+        {
+            if (myTeam == TeamColour.blue) //we are blue, enemy is red and on top
+                return y >= Height - GoalsHeight;
+            //we are red, enemy is blue and on the bottom
+            return y < GoalsHeight;
+        }
+
         public void UpdateDistanceToPiece(IList<Piece> pieces)
         {
-            var notCarriedPieces = pieces.Where(p => !p.IsCarried).ToList();
             foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
             {
-                if (notCarriedPieces.Count == 0)
+                if (pieces.Count == 0)
                 {
                     (field as TaskField).DistanceToPiece = NO_PIECE;
                 }
                 else
                 {
                     //you need to cast to long, otherwise uint can wrap around -.-
-                    var distance = notCarriedPieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    var distance = pieces.Where(p=>p.PlayerId==null).Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
                     (field as TaskField).DistanceToPiece = (uint)distance;
                 }
             }
@@ -106,6 +114,11 @@ namespace Common.SchemaWrapper
         public AddressableBoard()
         {
             this.board = new GameBoard();
+        }
+
+        public AddressableBoard(GameBoard board)
+        {
+            this.board = board;
         }
 
         #endregion

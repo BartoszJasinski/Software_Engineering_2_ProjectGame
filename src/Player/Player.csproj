@@ -56,6 +56,7 @@
     <Compile Include="Net\BehaviorChooser.cs" />
     <Compile Include="Net\PlayerClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strategy\DFA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
