@@ -302,6 +302,7 @@ namespace Player.Net
         private State BiuldDfa()
         {
             return new DfaBuilder()
+                //finding piece
                 .AddState("start", Discover)
                 .AddState("checkIfOnPiece")
                 .AddTransition("start", "checkIfOnPiece")
@@ -311,12 +312,14 @@ namespace Player.Net
                 .AddTransition("moving", "checkPieceAfterMove")
                 .AddTransition("checkPieceAfterMove", "start", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("onPiece", PickUpPiece)
+                //picking piece
                 .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
                 .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
                 .AddState("afterPick")
                 .AddTransition("onPiece", "afterPick")
                 .AddState("notTested", Test)
                 .AddState("carryingNormal", LookForGoal)
+                //testing piece
                 .AddTransition("afterPick", "notTested", HasPiece)
                 .AddTransition("afterPick", "start", () => !HasPiece())
                 .AddState("tested")
@@ -327,6 +330,7 @@ namespace Player.Net
                     () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
                 .AddTransition("tested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
                 .AddTransition("tested", "start", () => CarriedPiece == null)
+                //sham madness
                 .AddState("shamPicked2", Discover)
                 .AddTransition("shamPicked", "shamPicked2")
                 .AddState("shamPicked3")
@@ -337,6 +341,7 @@ namespace Player.Net
                 .AddTransition("afterCarryingSham", "start", () => !HasPiece())
                 .AddTransition("afterCarryingSham", "carryingSham", HasPiece)
                 .AddState("afterCarryingNormal")
+                //place normal piece
                 .AddTransition("carryingNormal", "afterCarryingNormal")
                 .AddTransition("afterCarryingNormal", "start", () => !HasPiece())
                 .AddTransition("afterCarryingNormal", "carryingNormal", HasPiece)
