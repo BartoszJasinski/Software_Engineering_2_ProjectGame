@@ -172,6 +172,18 @@ namespace Player.Net
 
         private void Move(MoveType direction)
         {
+            if (Location.Equals(previousLocation))
+            {
+                if (direction==MoveType.up)
+                    direction=MoveType.right;
+                else if (direction == MoveType.right)
+                    direction = MoveType.down;
+                else if (direction == MoveType.down)
+                    direction = MoveType.left;
+                else
+                    direction = MoveType.up;
+            }
+            previousLocation=new Location(){x=Location.x,y=Location.y};
             Move m = new Move()
             {
                 direction = direction,
@@ -235,6 +247,7 @@ namespace Player.Net
             }
         }
 
+        private Location previousLocation=null;
         MoveType Where(int? d)
         {
             if (FieldAt(Location.x + 1, Location.y)
