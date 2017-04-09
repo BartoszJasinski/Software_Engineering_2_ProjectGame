@@ -334,8 +334,8 @@ namespace Player.Net
                 .AddState("shamPicked2", Discover)
                 .AddTransition("shamPicked", "shamPicked2")
                 .AddState("shamPicked3")
-                .AddTransition("shamPicked2","shamPicked3")
-                .AddTransition("shamPicked3","carryingSham")
+                .AddTransition("shamPicked2", "shamPicked3")
+                .AddTransition("shamPicked3", "carryingSham")
                 .AddState("afterCarryingSham")
                 .AddTransition("carryingSham", "afterCarryingSham")
                 .AddTransition("afterCarryingSham", "start", () => !HasPiece())
@@ -356,6 +356,7 @@ namespace Player.Net
                 PlacePiece();
         }
 
+        private bool left = true;
 
         private void LookForGoal()
         {
@@ -377,10 +378,34 @@ namespace Player.Net
                 PlacePiece();
             else
             {
-                //TODO change it
-                Array values = Enum.GetValues(typeof(MoveType));
-                MoveType randomMove = (MoveType) values.GetValue(random.Next(values.Length));
-                Move(randomMove);
+                if (Team == TeamColour.blue &&
+                    (Location.y == 0 && Location.x % 2 == 0 ||
+                     Location.y == Board.goalsHeight - 1 && Location.x % 2 == 1)
+                    ||
+                    Team == TeamColour.red &&
+                    (Location.y == Board.tasksHeight + Board.goalsHeight * 2 - 1 && Location.x % 2 == 1 ||
+                     Location.y == Board.tasksHeight + Board.goalsHeight && Location.x % 2 == 0))
+                {
+                    if (left && Location.x == 0 || !left && Location.x + 1 == Board.width)
+                        left = !left;
+                    if (left)
+                    {
+                        Move(MoveType.left);
+                    }
+                    else
+                    {
+                        Move(MoveType.right);
+                    }
+                    return;
+                }
+                if (Location.x % 2 == 1)
+                {
+                    Move(MoveType.up);
+                }
+                else
+                {
+                    Move(MoveType.down);
+                }
             }
         }
 
