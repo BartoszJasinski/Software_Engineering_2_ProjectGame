@@ -63,8 +63,8 @@ namespace Player.Net
             get
             {
                 return Pieces.SingleOrDefault(
-                        pc =>
-                            pc.playerId == Id);
+                    pc =>
+                        pc.playerId == Id);
             }
         }
 
@@ -211,7 +211,6 @@ namespace Player.Net
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
             Pieces.Remove(CarriedPiece);
-
         }
 
         private void Test()
@@ -222,7 +221,6 @@ namespace Player.Net
                 playerGuid = Guid
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(t));
-
         }
 
         Wrapper.TaskField FieldAt(uint x, uint y)
@@ -316,26 +314,32 @@ namespace Player.Net
                 .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
                 .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
                 .AddState("afterPick")
-                .AddTransition("onPiece","afterPick")
+                .AddTransition("onPiece", "afterPick")
                 .AddState("notTested", Test)
                 .AddState("carryingNormal", LookForGoal)
                 .AddTransition("afterPick", "notTested", HasPiece)
-                .AddTransition("afterPick", "start", ()=>!HasPiece())
+                .AddTransition("afterPick", "start", () => !HasPiece())
                 .AddState("tested")
-                .AddTransition("notTested","tested")
+                .AddTransition("notTested", "tested")
                 .AddState("carryingSham", DestroySham)
-                .AddTransition("tested", "carryingNormal", ()=>CarriedPiece!=null && CarriedPiece.type==PieceType.normal)
-                .AddTransition("tested", "carryingSham", ()=>CarriedPiece!=null && CarriedPiece.type==PieceType.sham)
-                .AddTransition("tested","start", ()=>CarriedPiece==null)
+                .AddState("shamPicked")
+                .AddTransition("tested", "carryingNormal",
+                    () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
+                .AddTransition("tested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
+                .AddTransition("tested", "start", () => CarriedPiece == null)
+                .AddState("shamPicked2", Discover)
+                .AddTransition("shamPicked", "shamPicked2")
+                .AddState("shamPicked3")
+                .AddTransition("shamPicked2","shamPicked3")
+                .AddTransition("shamPicked3","carryingSham")
                 .AddState("afterCarryingSham")
-                .AddTransition("carryingSham","afterCarryingSham")
-                .AddTransition("afterCarryingSham", "start", ()=>!HasPiece())
-                .AddTransition("afterCarryingSham", "carryingSham",HasPiece)
+                .AddTransition("carryingSham", "afterCarryingSham")
+                .AddTransition("afterCarryingSham", "start", () => !HasPiece())
+                .AddTransition("afterCarryingSham", "carryingSham", HasPiece)
                 .AddState("afterCarryingNormal")
                 .AddTransition("carryingNormal", "afterCarryingNormal")
                 .AddTransition("afterCarryingNormal", "start", () => !HasPiece())
-                .AddTransition("afterCarryingNormal", "carryingNormal",HasPiece)
-               
+                .AddTransition("afterCarryingNormal", "carryingNormal", HasPiece)
                 .StartingState();
         }
 
@@ -348,7 +352,6 @@ namespace Player.Net
         }
 
 
-
         private void LookForGoal()
         {
             if (Fields[Location.x, Location.y] == null && !IsInGoalArea)
@@ -358,20 +361,20 @@ namespace Player.Net
             }
             if (!IsInGoalArea)
             {
-                if (Team==TeamColour.blue)
+                if (Team == TeamColour.blue)
                     Move(MoveType.down);
                 else
                     Move(MoveType.up);
                 return;
             }
             var gf = Fields[Location.x, Location.y] as Wrapper.GoalField;
-            if (gf==null || gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
+            if (gf == null || gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
                 PlacePiece();
             else
             {
                 //TODO change it
                 Array values = Enum.GetValues(typeof(MoveType));
-                MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
+                MoveType randomMove = (MoveType) values.GetValue(random.Next(values.Length));
                 Move(randomMove);
             }
         }
