@@ -10,6 +10,7 @@ namespace Player.Net
 {
     public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
     {
+        private static object joinLock = new object();
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)
         {
             if (message.GameInfo == null || message.GameInfo.Length == 0)
@@ -103,12 +104,26 @@ namespace Player.Net
             {
                 foreach (Piece piece in message.Pieces)
                 {
-                    if (args.PlayerClient.Pieces.Count(p => p.id==piece.id)==0)
-                        args.PlayerClient.Pieces.Add(piece);
-                    else
+                    lock (joinLock)
                     {
-                        piece.type = args.PlayerClient.Pieces.Single(p => p.id == piece.id).type;
-                        args.PlayerClient.Pieces.Add(piece);
+                        if (piece.playerIdSpecified)
+                        {
+                            args.PlayerClient.Pieces=args.PlayerClient.Pieces.Where(piece1 => piece1.playerId != piece.playerId).ToList();
+                        }
+                        if (args.PlayerClient.Pieces.Count(p => p.id == piece.id) == 0)
+                            args.PlayerClient.Pieces.Add(piece);
+                        else
+                        {
+                            
+                            var pp = args.PlayerClient.Pieces.Single(p => p.id == piece.id);
+                            pp.playerId = piece.playerId;
+                            pp.playerIdSpecified = piece.playerIdSpecified;
+                            pp.timestamp = piece.timestamp;
+                            if (pp.type == PieceType.unknown)
+                                pp.type = piece.type;
+
+                        }
+                        
                     }
                 }
                 //args.PlayerClient.Pieces.Clear();

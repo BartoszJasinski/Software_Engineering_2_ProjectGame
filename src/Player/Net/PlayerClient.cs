@@ -231,6 +231,25 @@ namespace Player.Net
             }
         }
 
+        MoveType Where(int? d)
+        {
+            if (FieldAt(Location.x + 1, Location.y)
+                    ?.DistanceToPiece == d)
+                return MoveType.right;
+            if (FieldAt(Location.x - 1, Location.y)
+                    ?.DistanceToPiece == d)
+                return MoveType.left;
+            if (FieldAt(Location.x, Location.y + 1)
+                    ?.DistanceToPiece == d)
+                return MoveType.up;
+            if (FieldAt(Location.x, Location.y - 1)
+                    ?.DistanceToPiece == d)
+                return MoveType.down;
+            if (Location.y <= Board.goalsHeight)
+                return MoveType.up;
+            return MoveType.down;
+        }
+
         private void MoveToNieghborClosestToPiece()
         {
             var t = new[]
@@ -252,26 +271,7 @@ namespace Player.Net
                 d = (int?) t.Min();
             }
 
-            MoveType where()
-            {
-                if (FieldAt(Location.x + 1, Location.y)
-                        ?.DistanceToPiece == d)
-                    return MoveType.right;
-                if (FieldAt(Location.x - 1, Location.y)
-                        ?.DistanceToPiece == d)
-                    return MoveType.left;
-                if (FieldAt(Location.x, Location.y + 1)
-                        ?.DistanceToPiece == d)
-                    return MoveType.up;
-                if (FieldAt(Location.x, Location.y - 1)
-                        ?.DistanceToPiece == d)
-                    return MoveType.down;
-                if (Location.y <= Board.goalsHeight)
-                    return MoveType.up;
-                return MoveType.down;
-            }
-
-            Move(where());
+            Move(Where(d));
         }
 
 
