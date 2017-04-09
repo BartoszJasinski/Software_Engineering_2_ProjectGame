@@ -170,19 +170,26 @@ namespace Player.Net
                 Play();
         }
 
+        private MoveType RandomMoveType()
+        {
+            Array values = Enum.GetValues(typeof(MoveType));
+            return (MoveType)values.GetValue(random.Next(values.Length));
+        }
+
         private void Move(MoveType direction)
         {
             if (previousLocation != null && Location != null && Location.x == previousLocation.x && Location.y == previousLocation.y)
             {
                 ConsoleDebug.Error("Snake time! =====================================");
-                if (direction==MoveType.up)
-                    direction=MoveType.right;
-                else if (direction == MoveType.right)
-                    direction = MoveType.down;
-                else if (direction == MoveType.down)
-                    direction = MoveType.left;
-                else
-                    direction = MoveType.up;
+                //if (direction==MoveType.up)
+                //    direction=MoveType.right;
+                //else if (direction == MoveType.right)
+                //    direction = MoveType.down;
+                //else if (direction == MoveType.down)
+                //    direction = MoveType.left;
+                //else
+                //    direction = MoveType.up;
+                direction = RandomMoveType();
             }
             previousLocation=new Location(){x=Location.x,y=Location.y};
             Move m = new Move()

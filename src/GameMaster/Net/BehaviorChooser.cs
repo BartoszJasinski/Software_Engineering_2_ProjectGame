@@ -245,7 +245,7 @@ namespace GameMaster.Net
                             pc =>
                                 pc.Location.x == currentPlayer.Location.x && pc.Location.y == currentPlayer.Location.y &&
                                 !pc.PlayerId.HasValue);
-                    if (piece == null)
+                    if (piece == null || gameMaster.Pieces.Any(pc => pc.PlayerId == currentPlayer.Id))
                     {
                         //send empty piece collection
                         resp = new DataMessageBuilder(currentPlayer.Id)
@@ -301,7 +301,7 @@ namespace GameMaster.Net
                     Wrapper.Piece piece =
                         gameMaster.Pieces.SingleOrDefault(
                             pc =>
-                                pc.PlayerId == currentPlayer.Id);
+                                pc.PlayerId == currentPlayer.Id);   
                     ConsoleDebug.Warning("1");
                     if (piece == null) // not carrying anything
                     {
