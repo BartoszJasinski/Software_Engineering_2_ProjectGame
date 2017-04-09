@@ -100,6 +100,11 @@ namespace Common.SchemaWrapper
             this.board = new GameBoard();
         }
 
+        public AddressableBoard(GameBoard board)
+        {
+            this.board = board;
+        }
+
         #endregion
 
     }

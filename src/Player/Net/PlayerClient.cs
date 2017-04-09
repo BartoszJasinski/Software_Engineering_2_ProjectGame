@@ -162,6 +162,7 @@ namespace Player.Net
         public void Play()
         {
             ConsoleDebug.Error(currentState.Name);
+            BoardPrinter.Print(Fields);
             var act = currentState.Action;
             act?.Invoke();
             currentState = currentState.NextState();

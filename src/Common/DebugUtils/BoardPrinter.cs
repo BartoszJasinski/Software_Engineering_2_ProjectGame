@@ -28,8 +28,25 @@ namespace Common.DebugUtils
             }
         }
 
+        public static void Print(Field[,] fields)
+        {
+            for (int i = 0; i < fields.GetLength(1); i++)
+            {
+                for (int j = 0; j < fields.GetLength(0); j++)
+                {
+                    PrintField(fields[j, i]);
+                }
+                Console.WriteLine();
+            }
+        }
+
         private static void PrintField(Field field)
         {
+            if(field == null)
+            {
+                Console.Write("?");
+                return;
+            }
             if(field is GoalField)
             {
                 var f = field as GoalField;
