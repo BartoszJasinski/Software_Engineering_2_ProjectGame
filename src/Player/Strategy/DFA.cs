@@ -60,7 +60,7 @@ namespace Player.Strategy
                 starting = States[name];
             return this;
         }
-        //if no predicate specified, it always goes there
+        ///if no predicate specified, it always goes there
         public DfaBuilder AddTransition(string from, string to, Func<bool> when =null)
         {
             if (!States.ContainsKey(from) || !States.ContainsKey(to))

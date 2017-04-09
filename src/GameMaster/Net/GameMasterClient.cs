@@ -138,13 +138,15 @@ namespace GameMaster.Net
             return selectedTeam;
         }
 
+        private static ulong pieceid = 0;
+
         public void PlaceNewPieces(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
                 var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
                 var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
-                newPiece.Id = (ulong)Pieces.Count;
+                newPiece.Id =pieceid++;
                 var field = Board.GetRandomEmptyFieldInTaskArea();
                 if(field == null)
                 {

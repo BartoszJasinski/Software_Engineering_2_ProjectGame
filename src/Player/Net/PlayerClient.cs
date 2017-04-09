@@ -14,6 +14,7 @@ using Location = Common.Schema.Location;
 using System.Collections.Generic;
 using System.Linq;
 using Player.Strategy;
+using GoalFieldType = Common.Schema.GoalFieldType;
 using TeamColour = Common.Schema.TeamColour;
 using Wrapper = Common.SchemaWrapper;
 
@@ -57,7 +58,15 @@ namespace Player.Net
         }
 
 
-
+        public Piece CarriedPiece
+        {
+            get
+            {
+                return Pieces.SingleOrDefault(
+                        pc =>
+                            pc.playerId == Id);
+            }
+        }
 
         public GameBoard Board
         {
@@ -81,31 +90,18 @@ namespace Player.Net
 
         public PlayerType Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
 
-            set
-            {
-                _type = value;
-            }
+            set { _type = value; }
         }
 
         public IList<Piece> Pieces
         {
-            get
-            {
-                return _pieces;
-            }
+            get { return _pieces; }
 
-            set
-            {
-                _pieces = value;
-            }
+            set { _pieces = value; }
         }
 
-       
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
@@ -132,7 +128,6 @@ namespace Player.Net
 
         private void OnConnection(object sender, ConnectEventArgs eventArgs)
         {
-            
             var address = eventArgs.Handler.GetRemoteAddress();
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
@@ -181,6 +176,7 @@ namespace Player.Net
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(m));
         }
+
         private void Discover()
         {
             Common.Schema.Discover d = new Discover()
@@ -189,7 +185,6 @@ namespace Player.Net
                 playerGuid = Guid
             };
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(d));
-
         }
 
         private void PickUpPiece()
@@ -202,11 +197,33 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
         }
 
+        private void PlacePiece()
+        {
+            Common.Schema.PlacePiece p = new PlacePiece()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
+
+        }
+
+        private void Test()
+        {
+            TestPiece t = new TestPiece()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(t));
+
+        }
+
         Wrapper.TaskField FieldAt(uint x, uint y)
         {
             try
             {
-                return (Fields[x,y] as Wrapper.TaskField);
+                return (Fields[x, y] as Wrapper.TaskField);
             }
             catch
             {
@@ -218,14 +235,14 @@ namespace Player.Net
         {
             var t = new[]
             {
-                FieldAt(Location.x+1,Location.y)
-                ?.DistanceToPiece,
-                FieldAt(Location.x-1,Location.y)
-                ?.DistanceToPiece,
-                FieldAt(Location.x,Location.y+1)
-                ?.DistanceToPiece,
-                FieldAt(Location.x,Location.y-1)
-                ?.DistanceToPiece
+                FieldAt(Location.x + 1, Location.y)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x - 1, Location.y)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x, Location.y + 1)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x, Location.y - 1)
+                    ?.DistanceToPiece
             }.Where(u => u.HasValue).Select(u => u.Value);
             int? d;
             if (t.Count() == 0)
@@ -234,21 +251,22 @@ namespace Player.Net
             {
                 d = (int?) t.Min();
             }
+
             MoveType where()
             {
                 if (FieldAt(Location.x + 1, Location.y)
-                    ?.DistanceToPiece == d)
+                        ?.DistanceToPiece == d)
                     return MoveType.right;
                 if (FieldAt(Location.x - 1, Location.y)
-                    ?.DistanceToPiece == d)
+                        ?.DistanceToPiece == d)
                     return MoveType.left;
                 if (FieldAt(Location.x, Location.y + 1)
-                    ?.DistanceToPiece == d)
+                        ?.DistanceToPiece == d)
                     return MoveType.up;
                 if (FieldAt(Location.x, Location.y - 1)
-                    ?.DistanceToPiece == d)
+                        ?.DistanceToPiece == d)
                     return MoveType.down;
-                if (Location.y<=Board.goalsHeight)
+                if (Location.y <= Board.goalsHeight)
                     return MoveType.up;
                 return MoveType.down;
             }
@@ -291,22 +309,63 @@ namespace Player.Net
                 .AddState("onPiece", PickUpPiece)
                 .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
                 .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
-                .AddState("carrying")
-                .AddTransition("onPiece","carrying",HasPiece)
+                .AddState("notTested", Test)
+                .AddState("carryingNormal", LookForGoal)
+                .AddTransition("onPiece", "notTested", HasPiece)
+                .AddState("tested")
+                .AddTransition("notTested","tested")
+                .AddState("carryingSham", DestroySham)
+                .AddTransition("tested", "carryingNormal", ()=>CarriedPiece!=null && CarriedPiece.type==PieceType.normal)
+                .AddTransition("tested", "carryingSham", ()=>CarriedPiece!=null && CarriedPiece.type==PieceType.sham)
+                .AddTransition("tested","start", ()=>CarriedPiece==null)
+                .AddState("afterCarryingSham")
+                .AddTransition("carryingSham","afterCarryingSham")
+                .AddTransition("afterCarryingSham", "start", HasPiece)
+                .AddTransition("afterCarryingSham", "carryingSham",()=> !HasPiece())
+                .AddState("afterCarryingNormal")
+                .AddTransition("carryingSham", "afterCarryingSham")
+                .AddTransition("afterCarryingNormal", "start", HasPiece)
+                .AddTransition("afterCarryingNormal", "carryingSham", () => !HasPiece())
+               
                 .StartingState();
+        }
+
+        private void DestroySham()
+        {
+            if (DistToPiece() > 0)
+                MoveToNieghborClosestToPiece();
+            else
+                PlacePiece();
         }
 
         private void LookForGoal()
         {
-            throw new NotImplementedException();
+            if (Fields[Location.x, Location.y] is Wrapper.TaskField)
+            {
+                if (Team==TeamColour.blue)
+                    Move(MoveType.down);
+                else
+                    Move(MoveType.up);
+                return;
+            }
+            var gf = Fields[Location.x, Location.y] as Wrapper.GoalField;
+            if (gf.Type == GoalFieldType.goal | gf.Type == GoalFieldType.unknown)
+                PlacePiece();
+            else
+            {
+                //TODO change it
+                Array values = Enum.GetValues(typeof(MoveType));
+                MoveType randomMove = (MoveType)values.GetValue(random.Next(values.Length));
+                Move(randomMove);
+            }
         }
 
         private bool HasPiece()
         {
             var carriedPiece =
-                    Pieces.SingleOrDefault(
-                        pc =>
-                            pc.playerId == Id);
+                Pieces.SingleOrDefault(
+                    pc =>
+                        pc.playerId == Id);
             return carriedPiece != null;
         }
     } //class

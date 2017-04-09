@@ -274,9 +274,12 @@ namespace GameMaster.Net
                 gameMaster.Logger.Log(message, currentPlayer);
                 Wrapper.Piece piece =
                     gameMaster.Pieces.SingleOrDefault(
-                        pc =>
-                            pc.Location.x == currentPlayer.Location.x && pc.Location.y == currentPlayer.Location.y &&
+                        pc =>                            
                             pc.PlayerId == currentPlayer.Id);
+                if (piece == null) // not carrying anything
+                {
+                    piece = gameMaster.Pieces.SingleOrDefault(pc => pc.Location.Equals(currentPlayer.Location));
+                }
                 if (piece == null)
                 {
                     //send empty piece collection
@@ -301,17 +304,52 @@ namespace GameMaster.Net
             {
                 Wrapper.Player currentPlayer = gameMaster.Players.Single(p => p.Guid == message.playerGuid);
                 gameMaster.Logger.Log(message, currentPlayer);
+                var dmb = new DataMessageBuilder(currentPlayer.Id);
                 Wrapper.Piece carriedPiece =
                     gameMaster.Pieces.SingleOrDefault(
                         pc =>
                             pc.PlayerId == currentPlayer.Id);
-                if (carriedPiece == null || !gameMaster.IsPlayerInGoalArea(currentPlayer) ||
+
+                if (carriedPiece != null && !gameMaster.IsPlayerInGoalArea(currentPlayer))
+                {
+                    Wrapper.Piece lyingPiece =
+                        gameMaster.Pieces.SingleOrDefault(
+                            pc =>
+                                pc.PlayerId != currentPlayer.Id && pc.Location.Equals(currentPlayer.Location));
+
+                    if (lyingPiece == null) //leaving our piece there
+                    {
+                        carriedPiece.PlayerId = null;
+                        carriedPiece.Location.x = currentPlayer.Location.x;
+                        carriedPiece.Location.y = currentPlayer.Location.y;
+                        gameMaster.Board.UpdateDistanceToPiece(new[] {carriedPiece}.ToList());
+                    }
+                    else //destroying piece
+                    {
+                        gameMaster.Pieces.Remove(carriedPiece);
+                    }
+                    Wrapper.TaskField tf =
+                        gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.TaskField;
+                    resp = dmb.AddTaskField(tf.SchemaField as TaskField).GetXml();
+                    gameMaster.Connection.SendFromClient(handler, resp);
+                    return;
+                }
+                if (carriedPiece == null ||
                     carriedPiece.Type == PieceType.sham)
                 {
-                    //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id)
-                        .SetGoalFields(new GoalField[0])
-                        .GetXml();
+                    if (gameMaster.IsPlayerInGoalArea(currentPlayer))
+                    {
+                        //send empty piece collection
+                        resp = dmb
+                            .SetGoalFields(new GoalField[0])
+                            .GetXml();
+                    }
+                    else
+                    {
+                        resp = dmb
+                            .SetTaskFields(new TaskField[0])
+                            .GetXml();
+                    }
                     gameMaster.Connection.SendFromClient(handler, resp);
                     return;
                 }
@@ -319,9 +357,10 @@ namespace GameMaster.Net
                 // remove piece and goal
                 if (gf.Type == GoalFieldType.goal)
                 {
-                    gameMaster.Pieces.Remove(carriedPiece);
                     gf.Type = GoalFieldType.nongoal;
                 }
+                gameMaster.Pieces.Remove(carriedPiece);
+
 
                 resp = new DataMessageBuilder(currentPlayer.Id)
                     .AddGoalField(gf.SchemaField as GoalField)

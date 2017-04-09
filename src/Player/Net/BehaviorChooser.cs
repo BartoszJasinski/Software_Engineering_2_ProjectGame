@@ -101,18 +101,21 @@ namespace Player.Net
             }
             if (message.Pieces != null)
             {
-                //foreach (Piece piece in message.Pieces)
-                //{
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PieceId = piece.id;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).Timestamp = piece.timestamp;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).PlayerId = piece.playerId;
-                //    (args.PlayerClient.Fields[args.PlayerClient.Location.x, args.PlayerClient.Location.y] as Common.SchemaWrapper.TaskField).DistanceToPiece = 0;
-                //}
-                args.PlayerClient.Pieces.Clear();
-                foreach (var piece in message.Pieces)
+                foreach (Piece piece in message.Pieces)
                 {
-                    args.PlayerClient.Pieces.Add(piece);
+                    if (args.PlayerClient.Pieces.Count(p => p.id==piece.id)==0)
+                        args.PlayerClient.Pieces.Add(piece);
+                    else
+                    {
+                        piece.type = args.PlayerClient.Pieces.Single(p => p.id == piece.id).type;
+                        args.PlayerClient.Pieces.Add(piece);
+                    }
                 }
+                //args.PlayerClient.Pieces.Clear();
+                //foreach (var piece in message.Pieces)
+                //{
+                //    args.PlayerClient.Pieces.Add(piece);
+                //}
             }
             if (message.gameFinished == true)
             {

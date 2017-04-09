@@ -77,7 +77,7 @@ namespace Common.SchemaWrapper
                 else
                 {
                     //you need to cast to long, otherwise uint can wrap around -.-
-                    var distance = pieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    var distance = pieces.Where(p=>p.PlayerId==null).Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
                     (field as TaskField).DistanceToPiece = (uint)distance;
                 }
             }
