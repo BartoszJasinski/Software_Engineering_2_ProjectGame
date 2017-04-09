@@ -145,7 +145,14 @@ namespace GameMaster.Net
                                 .Select(p => p.SchemaPiece)
                                 .Single());
                     //we cannot give the player info about piece type from a discover
-                    pieceList.ForEach(p => p.type = PieceType.unknown);
+                    pieceList = pieceList.Select(piece => new Piece()
+                    {
+                        playerId = piece.playerId,
+                        id = piece.id,
+                        playerIdSpecified = piece.playerIdSpecified,
+                        timestamp = piece.timestamp,
+                        type = PieceType.unknown
+                    }).ToList();
                     if (pieceList.Count > 0)
                         resp.Pieces = pieceList.ToArray();
                 }
