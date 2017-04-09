@@ -229,7 +229,7 @@ namespace Player.Net
             }.Where(u => u.HasValue).Select(u => u.Value);
             int? d;
             if (t.Count() == 0)
-                d = null;
+                d = Int32.MaxValue;
             else
             {
                 d = (int?) t.Min();
@@ -248,7 +248,7 @@ namespace Player.Net
                 if (FieldAt(Location.x, Location.y - 1)
                     ?.DistanceToPiece == d)
                     return MoveType.down;
-                if (Location.x<=Board.goalsHeight)
+                if (Location.y<=Board.goalsHeight)
                     return MoveType.up;
                 return MoveType.down;
             }
@@ -287,7 +287,7 @@ namespace Player.Net
                 .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("checkPieceAfterMove")
                 .AddTransition("moving", "checkPieceAfterMove")
-                .AddTransition("checkPieceAfterMove", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
+                .AddTransition("checkPieceAfterMove", "start", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("onPiece", PickUpPiece)
                 .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
                 .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
