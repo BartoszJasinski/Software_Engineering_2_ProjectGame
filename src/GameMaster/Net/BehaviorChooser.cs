@@ -25,50 +25,55 @@ namespace GameMaster.Net
 
         public static void HandleMessage(JoinGame message, GameMasterClient gameMaster, Socket handler)
         {
-            var selectedTeam = gameMaster.SelectTeamForPlayer(message.teamColour);
-            //both teams are full
-            if (selectedTeam == null)
+
+            lock(gameMaster.BoardLock)
             {
-                gameMaster.Connection.SendFromClient(handler,
-                    XmlMessageConverter.ToXml(new RejectJoiningGame()
-                    {
-                        gameName = message.gameName,
-                        playerId = message.playerId
-                    }));
-                return;
+                var selectedTeam = gameMaster.SelectTeamForPlayer(message.teamColour);
+                //both teams are full
+                if (selectedTeam == null)
+                {
+                    gameMaster.Connection.SendFromClient(handler,
+                        XmlMessageConverter.ToXml(new RejectJoiningGame()
+                        {
+                            gameName = message.gameName,
+                            playerId = message.playerId
+                        }));
+                    return;
+                }
+
+                var role = message.preferredRole;
+                if (role == PlayerType.leader)
+                {
+                    if (selectedTeam.HasLeader)
+                        role = PlayerType.member;
+                }
+
+                var guid = Utils.GenerateGuid();
+                var fieldForPlayer = gameMaster.Board.GetEmptyPositionForPlayer(selectedTeam.Color);
+                fieldForPlayer.PlayerId = message.playerId;
+
+                if (role == PlayerType.leader)
+                    selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam, fieldForPlayer.X,
+                        fieldForPlayer.Y));
+                else
+                    selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam, fieldForPlayer.X,
+                        fieldForPlayer.Y));
+
+                var answer = new ConfirmJoiningGame();
+                answer.playerId = message.playerId;
+                answer.privateGuid = guid;
+                answer.gameId = gameMaster.Id;
+                answer.PlayerDefinition = new Player()
+                {
+                    id = message.playerId,
+                    team = selectedTeam.Color,
+                    type = role
+                };
+                var answerString = XmlMessageConverter.ToXml(answer);
+                gameMaster.Connection.SendFromClient(handler, answerString);
             }
 
-            var role = message.preferredRole;
-            if (role == PlayerType.leader)
-            {
-                if (selectedTeam.HasLeader)
-                    role = PlayerType.member;
-            }
 
-            var guid = Utils.GenerateGuid();
-            var fieldForPlayer = gameMaster.Board.GetEmptyPositionForPlayer(selectedTeam.Color);
-            fieldForPlayer.PlayerId = message.playerId;
-
-            if (role == PlayerType.leader)
-                selectedTeam.AddLeader(new Wrapper.Leader(message.playerId, guid, selectedTeam, fieldForPlayer.X,
-                    fieldForPlayer.Y));
-            else
-                selectedTeam.Players.Add(new Wrapper.Player(message.playerId, guid, selectedTeam, fieldForPlayer.X,
-                    fieldForPlayer.Y));
-
-            var answer = new ConfirmJoiningGame();
-            answer.playerId = message.playerId;
-            answer.privateGuid = guid;
-            answer.gameId = gameMaster.Id;
-            answer.PlayerDefinition = new Player()
-            {
-                id = message.playerId,
-                team = selectedTeam.Color,
-                type = role
-            };
-
-            var answerString = XmlMessageConverter.ToXml(answer);
-            gameMaster.Connection.SendFromClient(handler, answerString);
 
             if (gameMaster.IsReady)
             {
