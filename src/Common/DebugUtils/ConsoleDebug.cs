@@ -43,6 +43,13 @@ namespace Common.DebugUtils
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public static void Strategy(string consoleMessage)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(consoleMessage);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
 
     }
 }
