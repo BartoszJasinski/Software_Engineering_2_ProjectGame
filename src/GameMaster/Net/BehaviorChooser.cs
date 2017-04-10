@@ -391,11 +391,22 @@ namespace GameMaster.Net
                 }
                 gameMaster.Pieces.Remove(carriedPiece);
 
-                MakeDecision.EndGame(gameMaster.Board, TeamColour.blue);
-                MakeDecision.EndGame(gameMaster.Board, TeamColour.red);
+                bool blueWon = false;
 
+                MakeDecision.EndGame(gameMaster.Board, TeamColour.blue);
+                if (MakeDecision.endGame)
+                    blueWon = true;
+                else
+                    MakeDecision.EndGame(gameMaster.Board, TeamColour.red);
+    
                 if (MakeDecision.endGame)
                 {
+                    if (blueWon)
+                        ConsoleDebug.Good("Blue team won!");
+                    else
+                        ConsoleDebug.Good("Red team won!");
+                    BoardPrinter.Print(gameMaster.Board);
+
                     foreach (var player in gameMaster.Players)
                     {
                         string endGameResponse = new DataMessageBuilder(player.Id, MakeDecision.endGame)
@@ -408,7 +419,7 @@ namespace GameMaster.Net
                         gameMaster.Connection.SendFromClient(handler, endGameResponse);
                     }
 
-                    BoardPrinter.Print(gameMaster.Board);
+                    gameMaster.CancelToken.Cancel();
                 }
 
                 resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
