@@ -163,11 +163,12 @@ namespace Player.Net
         {
             ConsoleDebug.Strategy(currentState.Name);
             BoardPrinter.Print(Fields);
-            var act = currentState.Action;
-            act?.Invoke();
+            
             currentState = currentState.NextState();
-            if (act == null)
+            if (currentState.Action == null)
                 Play();
+            else
+                currentState.Action();
         }
 
         private MoveType RandomMoveType()
@@ -326,48 +327,34 @@ namespace Player.Net
         {
             return new DfaBuilder()
                 //finding piece
-                .AddState("start", Discover)
-                .AddState("checkIfOnPiece")
-                .AddTransition("start", "checkIfOnPiece")
+                .AddState("start")
+                .AddState("discover", Discover)                
+                .AddTransition("start", "discover")
                 .AddState("moving", MoveToNieghborClosestToPiece)
-                .AddTransition("checkIfOnPiece", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
-                .AddState("checkPieceAfterMove")
-                .AddTransition("moving", "checkPieceAfterMove")
-                .AddTransition("checkPieceAfterMove", "start", () => DistToPiece() > 0 || DistToPiece() == null)
+                .AddTransition("discover", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
+                .AddTransition("moving", "discover", () => DistToPiece() > 0 || DistToPiece() == null)
                 .AddState("onPiece", PickUpPiece)
                 //picking piece
-                .AddTransition("checkIfOnPiece", "onPiece", () => DistToPiece() == 0)
-                .AddTransition("checkPieceAfterMove", "onPiece", () => DistToPiece() == 0)
-                .AddState("afterPick")
-                .AddTransition("onPiece", "afterPick")
+                .AddTransition("discover", "onPiece", () => DistToPiece() == 0)
+                .AddTransition("moving", "onPiece", () => DistToPiece() == 0)
                 .AddState("notTested", Test)
+                .AddTransition("onPiece", "notTested")
                 .AddState("carryingNormal", LookForGoal)
                 //testing piece
-                .AddTransition("afterPick", "notTested", HasPiece)
-                .AddTransition("afterPick", "start", () => !HasPiece())
-                .AddState("tested")
-                .AddTransition("notTested", "tested")
+                .AddTransition("onPiece", "notTested", HasPiece)
+                .AddTransition("onPiece", "discover", () => !HasPiece())
                 .AddState("carryingSham", DestroySham)
-                .AddState("shamPicked")
-                .AddTransition("tested", "carryingNormal",
+                .AddState("shamPicked", Discover)
+                .AddTransition("notTested", "carryingNormal",
                     () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
-                .AddTransition("tested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
-                .AddTransition("tested", "start", () => CarriedPiece == null)
-                //sham madness
-                .AddState("shamPicked2", Discover)
-                .AddTransition("shamPicked", "shamPicked2")
-                .AddState("shamPicked3")
-                .AddTransition("shamPicked2", "shamPicked3")
-                .AddTransition("shamPicked3", "carryingSham")
-                .AddState("afterCarryingSham")
-                .AddTransition("carryingSham", "afterCarryingSham")
-                .AddTransition("afterCarryingSham", "start", () => !HasPiece())
-                .AddTransition("afterCarryingSham", "carryingSham", HasPiece)
-                .AddState("afterCarryingNormal")
-                //place normal piece
-                .AddTransition("carryingNormal", "afterCarryingNormal")
-                .AddTransition("afterCarryingNormal", "start", () => !HasPiece())
-                .AddTransition("afterCarryingNormal", "carryingNormal", HasPiece)
+                .AddTransition("notTested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
+                .AddTransition("notTested", "discover", () => CarriedPiece == null)
+                //destroying sham
+                .AddTransition("shamPicked", "carryingSham")                
+                .AddTransition("carryingSham", "discover", () => !HasPiece())                
+                //place normal piece               
+                .AddTransition("carryingNormal", "discover", () => !HasPiece())
+
                 .StartingState();
         }
 

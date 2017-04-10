@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GameMaster.Log;
 using GameMaster.Logic.Board;
+using System.Threading;
 
 namespace GameMaster.Net
 {
@@ -25,6 +26,8 @@ namespace GameMaster.Net
         public Common.Config.GameMasterSettings Settings;
 
         public ILogger Logger { get; set; }
+
+        public CancellationTokenSource CancelToken { get; } = new CancellationTokenSource();
 
         //The two teams
         public Wrapper.Team TeamRed { get; set; }
@@ -185,6 +188,8 @@ namespace GameMaster.Net
         {
             while(true)
             {
+                if (CancelToken.Token.IsCancellationRequested)
+                    break;
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
                 PlaceNewPieces(1);
             }
