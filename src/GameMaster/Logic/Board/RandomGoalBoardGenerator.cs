@@ -27,7 +27,7 @@ namespace GameMaster.Logic.Board
             {
                 for (int x = 0; x < boardWidth; x++)
                 {
-                    goalLayout[x, y] = rand.NextDouble() > 0.5;
+                    goalLayout[x, y] = rand.NextDouble() > 0.9;
                 }
             }
 
