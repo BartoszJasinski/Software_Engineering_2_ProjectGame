@@ -42,7 +42,7 @@ namespace GameMasterTests
 
         public void SendFromClient(Socket client, string data)
         {
-            var m = data;
+
         }
 
         public void StartClient()
