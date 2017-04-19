@@ -145,6 +145,74 @@ namespace GameMasterTests
             Assert.AreEqual(player.Location.x, initialLocation.x);
         }
 
+        [TestMethod]
+        public void GivenANewGame_WhenPlayerMovesOutOfBoard_PlayerPositionDoesNotChange()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var initialLocation = new Common.Schema.Location() { x = 0, y = 3 };
+            var player = addPlayer(gm, 1, PlayerType.leader, Common.Schema.TeamColour.blue, initialLocation);
+            var message = new Move()
+            {
+                directionSpecified = true,
+                direction = MoveType.left,
+                playerGuid = player.Guid
+            };
+            //Act
+            BehaviorChooser.HandleMessage(message, gm, null).Wait();
+            //Assert
+            Assert.AreEqual(gm.Board.Fields[initialLocation.x, initialLocation.y].PlayerId,
+                player.Id);
+            Assert.AreEqual(player.Location.y, initialLocation.y);
+            Assert.AreEqual(player.Location.x, initialLocation.x);
+        }
+
+        [TestMethod]
+        public void GivenANewGame_WhenPlayerMovesIntoEnemyGoalArea_PlayerPositionDoesNotChange()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var initialLocation = new Common.Schema.Location() { x = 0, y = 6 };
+            var player = addPlayer(gm, 1, PlayerType.leader, Common.Schema.TeamColour.blue, initialLocation);
+            var message = new Move()
+            {
+                directionSpecified = true,
+                direction = MoveType.up,
+                playerGuid = player.Guid
+            };
+            //Act
+            BehaviorChooser.HandleMessage(message, gm, null).Wait();
+            //Assert
+            Assert.AreEqual(gm.Board.Fields[initialLocation.x, initialLocation.y].PlayerId,
+                player.Id);
+            Assert.AreEqual(player.Location.y, initialLocation.y);
+            Assert.AreEqual(player.Location.x, initialLocation.x);
+        }
+
+        [TestMethod]
+        public void GivenANewGame_WhenPlayerMovesIntoAnotherPlayer_PlayerPositionDoesNotChange()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var initialLocation = new Common.Schema.Location() { x = 0, y = 3 };
+            var initialLocation2 = new Common.Schema.Location() { x = 0, y = 4 };
+            var player = addPlayer(gm, 1, PlayerType.leader, Common.Schema.TeamColour.blue, initialLocation);
+            var player2 = addPlayer(gm, 2, PlayerType.leader, Common.Schema.TeamColour.red, initialLocation2);
+            var message = new Move()
+            {
+                directionSpecified = true,
+                direction = MoveType.up,
+                playerGuid = player.Guid
+            };
+            //Act
+            BehaviorChooser.HandleMessage(message, gm, null).Wait();
+            //Assert
+            Assert.AreEqual(gm.Board.Fields[initialLocation.x, initialLocation.y].PlayerId,
+                player.Id);
+            Assert.AreEqual(player.Location.y, initialLocation.y);
+            Assert.AreEqual(player.Location.x, initialLocation.x);
+        }
+
 
 
     }
