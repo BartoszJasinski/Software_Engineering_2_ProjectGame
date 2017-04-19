@@ -35,18 +35,18 @@ namespace PlayerTests
             Assert.AreEqual(TeamColour.red, (player.Fields[2, 3] as Common.SchemaWrapper.GoalField).Team);
         }
 
-        [TestMethod]
-        public void HandleMessageData_Pieces_UpdateInfoAboutPiece()
-        {
-            PlayerClient player = new PlayerClient(new ConnectionMock(), new Common.Config.PlayerSettings(), new AgentCommandLineOptions());
-            player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
-            player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
-            player.Location = new Location() { x = 3, y = 3 };
-            Data data = new Data() { Pieces = new Piece[] { new Piece() { id = 3} } };
-            Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
+        //[TestMethod]
+        //public void HandleMessageData_Pieces_UpdateInfoAboutPiece()
+        //{
+        //    PlayerClient player = new PlayerClient(new ConnectionMock(), new Common.Config.PlayerSettings(), new AgentCommandLineOptions());
+        //    player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
+        //    player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
+        //    player.Location = new Location() { x = 3, y = 3 };
+        //    Data data = new Data() { Pieces = new Piece[] { new Piece() { id = 3} } };
+        //    Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
 
-            Assert.AreEqual((ulong)3, (player.Fields[3, 3] as Common.SchemaWrapper.TaskField).PieceId);
-        }
+        //    Assert.AreEqual((ulong)3, (player.Fields[3, 3] as Common.SchemaWrapper.TaskField).PieceId);
+        //}
 
 
 

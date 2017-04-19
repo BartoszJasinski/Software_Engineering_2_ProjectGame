@@ -51,11 +51,11 @@ namespace GameMaster.Net
         private Random rng = new Random();
 
 
-        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings)
+        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings, ILogger logger)
         {
             this.Connection = connection;
             this.Settings = settings;
-            Logger = new Logger();
+            Logger = logger;
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;

@@ -11,7 +11,7 @@ using GameMaster.Logic;
 
 namespace GameMaster.Net
 {
-    static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
+    public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
     {
         public static void HandleMessage(ConfirmGameRegistration message, GameMasterClient gameMaster, Socket handler)
         {
