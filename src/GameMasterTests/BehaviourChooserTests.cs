@@ -248,5 +248,27 @@ namespace GameMasterTests
             Assert.IsFalse(gm.Pieces.Where(p => p.Id == oldPiece.Id).Any());
         }
 
+        [TestMethod]
+        public void GivenANewGame_WhenPickingUpPiece_PieceDisappearsFromBoardAndGetsPlayerId()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var location = new Common.Schema.Location() { x = 1, y = 4 };
+            var player = addPlayer(gm, 1, PlayerType.leader, Common.Schema.TeamColour.blue, location);
+            var piece = addPiece(gm, location);
+            var message = new PickUpPiece()
+            {
+                playerGuid = player.Guid
+            };
+            //Act
+            BehaviorChooser.HandleMessage(message, gm, null).Wait();
+            //Assert
+            Assert.IsNull((gm.Board.Fields[location.x, location.y]
+                as Common.SchemaWrapper.TaskField).PieceId);
+            Assert.AreEqual(gm.Pieces.Where(p => p.Id == piece.Id).Single().PlayerId, player.Id);
+        }
+
+
+
     }
 }
