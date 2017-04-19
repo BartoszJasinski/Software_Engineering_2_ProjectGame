@@ -89,7 +89,10 @@ namespace GameMaster.Net
                     gameMaster.Connection.SendFromClient(handler, gameString);
                 }
                 //place first pieces
-                gameMaster.PlaceNewPieces((int)gameMaster.Settings.GameDefinition.InitialNumberOfPieces);
+                for(int i = 0; i < gameMaster.Settings.GameDefinition.InitialNumberOfPieces; i++)
+                {
+                    gameMaster.PlaceNewPiece(gameMaster.Board.GetRandomEmptyFieldInTaskArea());
+                }
                 //start infinite Piece place loop
                 gameMaster.GeneratePieces();
             }

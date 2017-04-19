@@ -17,7 +17,7 @@ using System.Threading;
 
 namespace GameMaster.Net
 {
-    
+
     public class GameMasterClient
     {
         public IConnection Connection { get; }
@@ -105,7 +105,7 @@ namespace GameMaster.Net
 
             string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
             Connection.SendFromClient(socket, registerGameString);
-            
+
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -146,35 +146,32 @@ namespace GameMaster.Net
 
         private static ulong pieceid = 0;
 
-        public void PlaceNewPieces(int amount)
+        public void PlaceNewPiece(Common.SchemaWrapper.TaskField field)
         {
-            for (int i = 0; i < amount; i++)
+
+            var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+            lock (BoardLock)
             {
-                var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-                lock(BoardLock)
+                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+                newPiece.Id = pieceid++;
+                if (field == null)
                 {
-                    var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
-                    newPiece.Id = pieceid++;
-                    var field = Board.GetRandomEmptyFieldInTaskArea();
-                    if (field == null)
-                    {
-                        ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                        continue;   //TODO BUSYWAITING HERE probably
-                    }
-                    //remove old piece
-                    if(field.PieceId != null)
-                    {
-                        var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
-                        Pieces.Remove(oldPiece);
-                    }
-                    field.PieceId = newPiece.Id;
-                    newPiece.Location = new Location() { x = field.X, y = field.Y };
-                    Pieces.Add(newPiece);
-                    Board.UpdateDistanceToPiece(Pieces);
-                    ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+                    ConsoleDebug.Warning("There are no empty places for a new Piece!");
+                    return;   //TODO BUSYWAITING HERE probably
                 }
-                //BoardPrinter.Print(Board);
+                //remove old piece
+                if (field.PieceId != null)
+                {
+                    var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
+                    Pieces.Remove(oldPiece);
+                }
+                field.PieceId = newPiece.Id;
+                newPiece.Location = new Location() { x = field.X, y = field.Y };
+                Pieces.Add(newPiece);
+                Board.UpdateDistanceToPiece(Pieces);
+                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
             }
+            //BoardPrinter.Print(Board);
         }
 
         public bool IsPlayerInGoalArea(Wrapper.Player p)
@@ -186,12 +183,12 @@ namespace GameMaster.Net
 
         public async Task GeneratePieces()
         {
-            while(true)
+            while (true)
             {
                 if (CancelToken.Token.IsCancellationRequested)
                     break;
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
-                PlaceNewPieces(1);
+                PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
             }
         }
 

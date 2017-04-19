@@ -55,6 +55,13 @@ namespace GameMasterTests
             return player;
         }
 
+        private Common.SchemaWrapper.Piece addPiece(GameMasterClient gm, Common.Schema.Location location)
+        {
+            var field = gm.Board.Fields[location.x, location.y];
+            gm.PlaceNewPiece(field as Common.SchemaWrapper.TaskField);
+            return gm.Pieces.Last();
+        }
+
         [TestMethod]
         public void GivenANewGame_WhenAPlayerJoins_PlayerGetsDesiredTeamAndRole()
         {
@@ -213,7 +220,33 @@ namespace GameMasterTests
             Assert.AreEqual(player.Location.x, initialLocation.x);
         }
 
+        [TestMethod]
+        public void GivenANewGame_WhenPlacingAPiece_PieceGetsAdded()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var location = new Common.Schema.Location() { x = 1, y = 4 };
+            //Act
+            var piece = addPiece(gm, location);
+            //Assert
+            Assert.IsNotNull((gm.Board.Fields[location.x, location.y]
+                as Common.SchemaWrapper.TaskField).PieceId);
+            Assert.AreEqual(piece.Location.x, location.x);
+            Assert.AreEqual(piece.Location.y, location.y);
+        }
 
+        [TestMethod]
+        public void GivenANewGame_WhenPlacingAPieceOnAnother_OldPieceDisappears()
+        {
+            //Arrange
+            var gm = newGameMaster();
+            var location = new Common.Schema.Location() { x = 1, y = 4 };
+            var oldPiece = addPiece(gm, location);
+            //Act
+            var piece = addPiece(gm, location);
+            //Assert
+            Assert.IsFalse(gm.Pieces.Where(p => p.Id == oldPiece.Id).Any());
+        }
 
     }
 }
