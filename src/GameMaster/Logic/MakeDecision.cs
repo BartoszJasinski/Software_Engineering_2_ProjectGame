@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.GameInfo;
-using Common.Schema;
 using Common.SchemaWrapper;
 using TeamColour = Common.Schema.TeamColour;
 

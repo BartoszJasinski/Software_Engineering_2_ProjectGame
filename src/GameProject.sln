@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{1CD588B1-5458-4E94-84BE-292ACA25972C}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{37E0A13D-0B1F-417C-A2D2-5355C25FF4F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerTests", "PlayerTests\PlayerTests.csproj", "{70A020AF-9A94-4833-8B05-DD8C9148BFA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameMasterTests", "GameMasterTests\GameMasterTests.csproj", "{6CB6CA28-22AC-4A47-9319-82A8E60A6AA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{70A020AF-9A94-4833-8B05-DD8C9148BFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70A020AF-9A94-4833-8B05-DD8C9148BFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70A020AF-9A94-4833-8B05-DD8C9148BFA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB6CA28-22AC-4A47-9319-82A8E60A6AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB6CA28-22AC-4A47-9319-82A8E60A6AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB6CA28-22AC-4A47-9319-82A8E60A6AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB6CA28-22AC-4A47-9319-82A8E60A6AA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

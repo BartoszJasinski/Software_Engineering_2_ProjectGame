@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Xml.Serialization;
 using Common;
 using Common.Connection.EventArg;
-using Common.Schema;
 using Server.Connection;
 using Common.Message;
 using Server.Game;

@@ -1,5 +1,4 @@
-﻿using System;
-using Common.Schema;
+﻿using Common.Schema;
 using System.Collections.Generic;
 
 namespace Common.SchemaWrapper
