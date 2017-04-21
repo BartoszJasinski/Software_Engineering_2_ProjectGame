@@ -1,12 +1,12 @@
 cd ServerConsole/bin/Debug/
-START ServerConsole.exe --port 5000 --conf Config/ServerSettings.xml
+START ServerConsole.exe -p 5000 -c Config/ServerSettings.xml
 cd ../../../GameMaster/bin/Debug/
-START GameMaster.exe --address 192.168.0.16 --port 5000 --conf Config/GameMasterSettings.xml
+START GameMaster.exe -a 192.168.0.19 -p 5000 -c Config/GameMasterSettings.xml
 cd ../../../Player/bin/Debug/
 
 IF "%1"=="" set a=1 
 IF not "%1"=="" set a=%1
 
-for /l %%i in (1,1,%a%) do START Player.exe --address 192.168.0.16 --port 5000 --conf Config/PlayerSettings.xml --game "Initial game" --team blue --role player
+for /l %%i in (1,1,%a%) do START Player.exe -a 192.168.0.19 -p 5000 -c Config/PlayerSettings.xml -n "Initial game" -t blue -r player
 cd ../../..
 

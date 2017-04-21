@@ -1,5 +1,4 @@
-﻿using System.IO;
-using CommandLine;
+﻿using CommandLine;
 
 namespace Common.IO.Console
 {

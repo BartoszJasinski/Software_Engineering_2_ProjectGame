@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Threading;
 using Common.Connection.EventArg;
 using Common.Message;
 using Common.Schema;

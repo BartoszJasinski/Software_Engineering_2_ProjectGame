@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GameMaster.Net;
 using Common.Config;
 using Common.Schema;
 using System.Linq;
-using System.Net.Sockets;
 using Common.SchemaWrapper;
 
 namespace GameMasterTests

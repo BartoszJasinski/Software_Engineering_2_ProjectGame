@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Common.Connection;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Common.IO.Console;
-using Server.Connection;
 using Common.Schema;
 using Player.Net;
 
