@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -79,6 +80,18 @@ namespace Server.Connection
 
                 server.ConnectionEndpoint.SendFromServer(g.GameMaster, response);
                 return;
+        }
+
+        public static void HandleMessage(ConfirmJoiningGame request, CommunicationServer server, Socket handler)
+        {
+            HandleMessage(request as PlayerGood, server, handler);
+
+            var dict = server.GameIdPlayerIdDictionary;
+            if (!dict.ContainsKey(request.gameId))
+            {
+                dict[request.gameId] = new List<ulong>();
+            }
+            dict[request.gameId].Add(request.playerId);
         }
 
         public static void HandleMessage(PlayerGood request, CommunicationServer server, Socket handler)
