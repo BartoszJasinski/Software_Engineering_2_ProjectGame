@@ -40,7 +40,7 @@ namespace GameMaster.Net
             }
         }
 
-        public ulong Id { get; set; }
+        public ulong gameId { get; set; }
 
         public object BoardLock { get; set; } = new object();
 

@@ -1299,7 +1299,7 @@ namespace Common.Schema
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "https://se2.mini.pw.edu.pl/17-results/")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "https://se2.mini.pw.edu.pl/17-results/", IsNullable = false)]
-    public partial class RejectJoiningGame : PlayerGood
+    public partial class RejectJoiningGame: PlayerGood
     {
 
         private string gameNameField;
