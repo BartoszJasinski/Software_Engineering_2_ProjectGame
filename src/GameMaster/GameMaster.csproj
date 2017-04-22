@@ -56,7 +56,6 @@
     <Compile Include="GameMaster.cs" />
     <Compile Include="Log\ILogger.cs" />
     <Compile Include="Log\Logger.cs" />
-    <Compile Include="Log\UniqueNameGenerator.cs" />
     <Compile Include="Net\BehaviorChooser.cs" />
     <Compile Include="Net\GameMasterClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

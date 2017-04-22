@@ -33,7 +33,7 @@ namespace GameMasterTests
             };
             return new GameMasterClient(new ConnectionMock(), settings, new MockLogger());
         }
-        
+
         private Common.SchemaWrapper.Player addPlayer(GameMasterClient gm, ulong id, PlayerType role, Common.Schema.TeamColour team, Common.Schema.Location location)
         {
             var message = new JoinGame()
@@ -266,7 +266,19 @@ namespace GameMasterTests
             Assert.AreEqual(gm.Pieces.Where(p => p.Id == piece.Id).Single().PlayerId, player.Id);
         }
 
+        [TestMethod]
+        public void HandleMessage_ConfirmGameRegistration_NewGameId()
+        {
+            var gm = newGameMaster();
 
+            var message = new ConfirmGameRegistration
+            {
+                gameId = 4
+            };
+            BehaviorChooser.HandleMessage(message, gm, null);
+
+            Assert.AreEqual((ulong)4, gm.gameId);
+        }
 
     }
 }
