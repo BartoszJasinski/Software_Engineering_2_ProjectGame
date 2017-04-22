@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 using Common;
@@ -20,6 +21,7 @@ namespace Server
         public IGamesContainer RegisteredGames;
         public Dictionary<ulong, Socket> Clients;
         private List<ulong> freeIdList;
+        public IDictionary<ulong, ICollection<ulong>> GameIdPlayerIdDictionary;
 
         private CommunicationServerSettings settings;
 
@@ -34,11 +36,53 @@ namespace Server
             connectionEndpoint.OnDisconnected += OnDisconnect;
             Clients = new Dictionary<ulong, Socket>();
             freeIdList = new List<ulong>();
+            GameIdPlayerIdDictionary = new Dictionary<ulong, ICollection<ulong>>();
+
         }
 
         private void OnDisconnect(object sender, ConnectEventArgs e)
         {
             RegisteredGames.RemoveGameMastersGames(e.Handler);
+
+            
+            // if it was a player, tell gm about it
+            try
+            {
+                ulong playerId = Clients.First(pair => pair.Value == e.Handler).Key;
+                ConsoleDebug.Message($"ID: {playerId}");
+                ICollection<ulong> gameIds = GameIdPlayerIdDictionary
+                    .Where(pair => pair.Value.Contains(playerId))
+                    .ToDictionary(pair => pair.Key, pair => pair.Value)
+                    .Keys;
+
+                ICollection<Socket> gameMasters = new List<Socket>(gameIds.Count);
+                foreach (var gameId in gameIds)
+                {
+                    gameMasters.Add(RegisteredGames.GetGameById((int)gameId).GameMaster);
+                    ConsoleDebug.Message($"Informing game master of game {gameId} about disconnected player, id: {playerId}");
+
+                    // remove player id occurrence
+                    GameIdPlayerIdDictionary[gameId].Remove(playerId);
+                }
+
+                foreach (var gameMaster in gameMasters)
+                {
+                    InformGameMasterAboutDisconnectedPlayer(gameMaster, playerId);
+                }
+            }
+            catch (Exception exception)
+            {
+                // ignore: it was not a player
+                Console.WriteLine(exception);
+            }
+
+        }
+
+        private void InformGameMasterAboutDisconnectedPlayer(Socket gameMasterSocket, ulong playerId)
+        {
+            var msg = new PlayerDisconnected { playerId = playerId };
+
+            ConnectionEndpoint.SendFromServer(gameMasterSocket, XmlMessageConverter.ToXml(msg));
         }
 
         public void Start()

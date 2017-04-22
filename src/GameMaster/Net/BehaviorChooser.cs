@@ -463,6 +463,11 @@ namespace GameMaster.Net
             gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(response));
         }
 
+        public static void HandleMessage(PlayerDisconnected message, GameMasterClient gameMaster, Socket handler)
+        {
+            ConsoleDebug.Message($"Player disconnected! Player id: {message.playerId}");
+        }
+
         public static void HandleMessage(object message, GameMasterClient gameMaster, Socket handler)
         {
             ConsoleDebug.Warning("Unknown Type");
