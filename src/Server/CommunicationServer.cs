@@ -11,6 +11,7 @@ using Common.Message;
 using Server.Game;
 using Common.Config;
 using Common.DebugUtils;
+using Common.Schema;
 
 namespace Server
 {
