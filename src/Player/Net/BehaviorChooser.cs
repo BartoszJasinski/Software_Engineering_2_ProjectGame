@@ -7,7 +7,7 @@ using Common.Schema;
 
 namespace Player.Net
 {
-    public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
+    public static class BehaviorChooser
     {
         private static object joinLock = new object();
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)
