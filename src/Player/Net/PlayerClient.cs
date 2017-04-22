@@ -161,7 +161,7 @@ namespace Player.Net
 
         public void Play()
         {
-            ConsoleDebug.Error(currentState.Name);
+            ConsoleDebug.Strategy(currentState.Name);
             BoardPrinter.Print(Fields);
             
             currentState = currentState.NextState();
