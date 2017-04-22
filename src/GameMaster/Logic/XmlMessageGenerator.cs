@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameMaster.Logic
 {

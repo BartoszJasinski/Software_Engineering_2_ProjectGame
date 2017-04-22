@@ -6,7 +6,6 @@ using Common.Connection;
 using Common.Connection.EventArg;
 using Common.DebugUtils;
 using Common.Message;
-using Player.Logic;
 using Common.Config;
 using Common.IO.Console;
 using Common.Schema;
@@ -161,7 +160,7 @@ namespace Player.Net
 
         public void Play()
         {
-            ConsoleDebug.Error(currentState.Name);
+            ConsoleDebug.Strategy(currentState.Name);
             BoardPrinter.Print(Fields);
             
             currentState = currentState.NextState();

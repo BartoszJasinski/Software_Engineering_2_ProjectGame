@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
-using System.Net.Sockets;
 
 namespace Player.Net
 {
-    public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
+    public static class BehaviorChooser
     {
         private static object joinLock = new object();
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)

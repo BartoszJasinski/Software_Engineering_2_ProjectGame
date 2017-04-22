@@ -67,8 +67,6 @@
     <Compile Include="IO\Console\CommandLineParser.cs" />
     <Compile Include="IO\Console\ICommandLineOptions.cs" />
     <Compile Include="IO\Console\ServerCommandLineOptions.cs" />
-    <Compile Include="Message\IMessageHandler.cs" />
-    <Compile Include="Message\KeepAliveCutter.cs" />
     <Compile Include="Message\Utf8StringWriter.cs" />
     <Compile Include="Message\XmlMessageConverter.cs" />
     <Compile Include="Message\XmlValidation.cs" />

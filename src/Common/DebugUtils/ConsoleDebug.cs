@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Common.DebugUtils
 {
@@ -39,6 +35,13 @@ namespace Common.DebugUtils
         public static void Warning(string consoleMessage)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(consoleMessage);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public static void Strategy(string consoleMessage)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(consoleMessage);
             Console.ForegroundColor = ConsoleColor.White;
         }

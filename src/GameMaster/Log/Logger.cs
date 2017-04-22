@@ -13,6 +13,10 @@ namespace GameMaster.Log
         public Logger(string filename="gamemaster.log")
         {
 
+            string gmLogDirName = System.IO.Directory.GetCurrentDirectory() + @"\GMLogs";
+            System.IO.Directory.CreateDirectory(gmLogDirName);
+            filename = gmLogDirName + @"\" + filename;
+
             writer = new StreamWriter(filename, true);
            
             if (new FileInfo(filename).Length == 0)
