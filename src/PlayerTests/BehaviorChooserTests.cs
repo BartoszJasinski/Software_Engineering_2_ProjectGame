@@ -4,6 +4,7 @@ using Common.Schema;
 using Player.Net;
 using Common.Schema;
 
+
 namespace PlayerTests
 {
     [TestClass]
@@ -68,29 +69,38 @@ namespace PlayerTests
             player.Id = 3;
             player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
             player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
-            player.Location = new Location() { x = 3, y = 3 };
-            player.Pieces = new Piece[] { };
-            Data data = new Data() { Pieces = new Piece[] { new Piece() { playerId = 3, playerIdSpecified = true, id = 1 } } };
+            Data data = new Data() { Pieces = new Piece[] { new Piece() {  id = 1 } } };
             Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
 
             Assert.AreEqual((ulong)1, player.Pieces[0].id);
         }
 
-        //[TestMethod]
-        //public void HandleMessageData_Pieces_Distance()
-        //{
-        //    PlayerClient player = new PlayerClient(new ConnectionMock(), new Common.Config.PlayerSettings(), new AgentCommandLineOptions());
-        //    player.Id = 3;
-        //    player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
-        //    player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
-        //    player.Fields[5, 3] = new Common.SchemaWrapper.TaskField();
-        //    player.Location = new Location() { x = 3, y = 3 };
-        //    Data data = new Data() { TaskFields = new Common.Schema.TaskField[] { new Common.Schema.TaskField() { distanceToPiece = 0 } } } ;
-        //    Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
-        //    player.Location = new Location() { x = 5, y = 3 };
+        [TestMethod]
+        public void HandleMessageData_Pieces_NewCarriedPiece()
+        {
+            PlayerClient player = new PlayerClient(new ConnectionMock(), new Common.Config.PlayerSettings(), new AgentCommandLineOptions());
+            player.Id = 3;
+            player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
+            player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
+            Data data = new Data() { Pieces = new Common.Schema.Piece[] { new Common.Schema.Piece() {  id = 1, playerId = 3, playerIdSpecified = true } } };
+            Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
 
-        //    Assert.AreEqual((uint)2, (player.Fields[5, 3] as Common.SchemaWrapper.TaskField).DistanceToPiece);
-        //}
+            Assert.AreEqual((ulong)1, player.CarriedPiece.id);
+        }
+
+        [TestMethod]
+        public void HandleMessageData_Location_ChangeLocation()
+        {
+            PlayerClient player = new PlayerClient(new ConnectionMock(), new Common.Config.PlayerSettings(), new AgentCommandLineOptions());
+            player.Id = 3;
+            player.Fields = new Common.SchemaWrapper.TaskField[10, 10];
+            player.Fields[3, 3] = new Common.SchemaWrapper.TaskField();
+            Data data = new Data() {  PlayerLocation = new Location { x = 4, y = 2 } };
+            Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
+
+            Assert.AreEqual((uint)4, player.Location.x);
+            Assert.AreEqual((uint)2, player.Location.y);
+        }
 
 
 
