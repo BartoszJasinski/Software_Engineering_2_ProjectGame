@@ -16,17 +16,23 @@ namespace Server.Connection
             if (request == null)
                 return;
 
-            Game.Game g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
-                bluePlayers: request.NewGameInfo.blueTeamPlayers,
-                redPlayers: request.NewGameInfo.redTeamPlayers, gameMaster: handler
-                );
-            try
+            Game.Game g;
+
+            lock(joinLock)
             {
-                server.RegisteredGames.RegisterGame(g);
-            }
-            catch
-            {
-                return;
+
+                g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
+                    bluePlayers: request.NewGameInfo.blueTeamPlayers,
+                    redPlayers: request.NewGameInfo.redTeamPlayers, gameMaster: handler
+                    );
+                try
+                {
+                    server.RegisteredGames.RegisterGame(g);
+                }
+                catch
+                {
+                    return;
+                }
             }
 
             ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() { gameId = (ulong)g.Id };
