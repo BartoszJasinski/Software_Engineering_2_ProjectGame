@@ -10,12 +10,12 @@ using GameMaster.Logic;
 
 namespace GameMaster.Net
 {
-    public static class BehaviorChooser /*: IMessageHandler<ConfirmGameRegistration>*/
+    public static class BehaviorChooser
     {
         public static void HandleMessage(ConfirmGameRegistration message, GameMasterClient gameMaster, Socket handler)
         {
             ConsoleDebug.Good("I get gameId = " + message.gameId);
-            gameMaster.Id = message.gameId;
+            gameMaster.gameId = message.gameId;
         }
 
         public static void HandleMessage(JoinGame message, GameMasterClient gameMaster, Socket handler)
@@ -33,6 +33,13 @@ namespace GameMaster.Net
                             gameName = message.gameName,
                             playerId = message.playerId
                         }));
+
+                    gameMaster.Connection.SendFromClient(handler, 
+                        XmlMessageConverter.ToXml(new GameStarted()
+                        {
+                          gameId  = gameMaster.gameId
+                        }));
+
                     return;
                 }
 
@@ -57,7 +64,7 @@ namespace GameMaster.Net
                 var answer = new ConfirmJoiningGame();
                 answer.playerId = message.playerId;
                 answer.privateGuid = guid;
-                answer.gameId = gameMaster.Id;
+                answer.gameId = gameMaster.gameId;
                 answer.PlayerDefinition = new Player()
                 {
                     id = message.playerId,

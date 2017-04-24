@@ -63,6 +63,7 @@
     <Compile Include="Message\ServerMessagesTests.cs" />
     <Compile Include="Message\XmlMessageConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\AddressableBoardTests.cs" />
     <Compile Include="Utils\PreferredTeamTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Common.DebugUtils;
 using Common.Message;
 using Common.Schema;
+using Server.Game;
 
 namespace Server.Connection
 {
@@ -16,17 +17,23 @@ namespace Server.Connection
             if (request == null)
                 return;
 
-            Game.Game g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
-                bluePlayers: request.NewGameInfo.blueTeamPlayers,
-                redPlayers: request.NewGameInfo.redTeamPlayers, gameMaster: handler
-                );
-            try
+            Game.Game g;
+
+            lock(joinLock)
             {
-                server.RegisteredGames.RegisterGame(g);
-            }
-            catch
-            {
-                return;
+
+                g = new Game.Game(gameId: server.RegisteredGames.NextGameId(), name: request.NewGameInfo.gameName,
+                    bluePlayers: request.NewGameInfo.blueTeamPlayers,
+                    redPlayers: request.NewGameInfo.redTeamPlayers, gameMaster: handler
+                    );
+                try
+                {
+                    server.RegisteredGames.RegisterGame(g);
+                }
+                catch
+                {
+                    return;
+                }
             }
 
             ConfirmGameRegistration gameRegistration = new ConfirmGameRegistration() { gameId = (ulong)g.Id };
@@ -56,6 +63,13 @@ namespace Server.Connection
             if (request == null)
                 return;
 
+            if (server.startedGames.Contains(request.gameName))
+            {
+                ConsoleDebug.Error("Game already started");
+                return;
+            }
+
+
             Game.IGame g = server.RegisteredGames.GetGameByName(request.gameName);
             if (g == null)
             {
@@ -74,6 +88,13 @@ namespace Server.Connection
 
                 server.ConnectionEndpoint.SendFromServer(g.GameMaster, response);
                 return;
+        }
+
+        public static void HandleMessage(GameStarted request, CommunicationServer server, Socket handler)
+        {
+            //FIXME HELLO BUG HERE BECAUSE WE USE INT in GetGameByID and not ULONG 
+            IGame game = server.RegisteredGames.GetGameById((int) request.gameId);
+            server.startedGames.Add(game.Name);
         }
 
         public static void HandleMessage(PlayerGood request, CommunicationServer server, Socket handler)
