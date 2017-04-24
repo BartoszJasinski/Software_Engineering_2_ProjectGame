@@ -12,7 +12,7 @@ namespace Player.Net
         private static object joinLock = new object();
         public static void HandleMessage(RegisteredGames message, PlayerMessageHandleArgs args)
         {
-            if (message.GameInfo == null || message.GameInfo.Length == 0)
+            if (message.GameInfo == null || message.GameInfo.Length == 0 || !message.GameInfo.Where(g => g.gameName == args.Options.GameName).Any())
             {
                 Task.Run(() =>
                 {
@@ -47,6 +47,8 @@ namespace Player.Net
         {
             if (message == null)
                 return;
+
+            ConsoleDebug.Good(message.gameId.ToString());
 
             args.PlayerClient.Id = message.playerId;
             args.PlayerClient.GameId = message.gameId;

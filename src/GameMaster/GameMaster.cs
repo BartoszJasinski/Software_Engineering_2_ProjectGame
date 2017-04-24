@@ -12,10 +12,11 @@ namespace GameMaster
         {
             AgentCommandLineOptions options = CommandLineParser.ParseArgs<AgentCommandLineOptions>(args, new AgentCommandLineOptions());
 
-            //GameMasterSettings settings = Configuration.FromFile<GameMasterSettings>(options.Conf);
-            //GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port), settings, new Logger(UniqueNameGenerator.GetUniqueName()));
-            //client.Connect();
-            //client.Disconnect();
+            GameMasterSettings settings = Configuration.FromFile<GameMasterSettings>(options.Conf);
+            GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port), settings, 
+                new Logger(UniqueNameGenerator.GetUniqueName(settings.GameDefinition.GameName)));
+            client.Connect();
+            client.Disconnect();
         }
     }
 }
