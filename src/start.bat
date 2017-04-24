@@ -11,3 +11,10 @@ IF not "%1"=="" set a=%1
 
 for /l %%i in (1,1,%a%) do START Player.exe -a %ip% -p 5000 -c Config/PlayerSettings.xml -n "Initial game" -t blue -r player
 cd ../../..
+
+::GameStarted TESTS
+:: wait 10 sec
+::ping -n 10 127.0.0.1 >nul
+
+::cd Player/bin/Debug/
+::START Player.exe -a %ip% -p 5000 -c Config/PlayerSettings.xml -n "Initial game" -t blue -r player

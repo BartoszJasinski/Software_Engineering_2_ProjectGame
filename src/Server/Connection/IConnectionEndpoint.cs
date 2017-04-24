@@ -12,6 +12,6 @@ namespace Server.Connection
         event EventHandler<ConnectEventArgs> OnConnect;
         event EventHandler<MessageRecieveEventArgs> OnMessageRecieve;
         event EventHandler<ConnectEventArgs> OnDisconnected;
-        //TODO add send event maybe
+
     }
 }

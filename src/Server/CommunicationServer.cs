@@ -23,6 +23,7 @@ namespace Server
         public Dictionary<ulong, Socket> Clients;
         private List<ulong> freeIdList;
         public IDictionary<ulong, ICollection<ulong>> GameIdPlayerIdDictionary;
+        public IList<string> startedGames;
 
         private CommunicationServerSettings settings;
 
@@ -38,6 +39,7 @@ namespace Server
             Clients = new Dictionary<ulong, Socket>();
             freeIdList = new List<ulong>();
             GameIdPlayerIdDictionary = new Dictionary<ulong, ICollection<ulong>>();
+            startedGames = new List<string>();
 
         }
 
