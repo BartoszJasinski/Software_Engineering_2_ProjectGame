@@ -86,7 +86,7 @@
     <Compile Include="SocketExtensions.cs" />
     <Compile Include="TheProjectGameCommunication.cs">
       <DependentUpon>TheProjectGameCommunication.xsd</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Utils\PreferredTeam.cs" />
   </ItemGroup>
@@ -98,7 +98,7 @@
     <None Include="packages.config" />
     <None Include="TheProjectGameCommunication.xsd">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup />

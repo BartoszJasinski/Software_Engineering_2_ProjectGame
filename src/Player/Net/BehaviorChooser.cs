@@ -36,7 +36,7 @@ namespace Player.Net
                         gameName = args.Options.GameName,
                         playerIdSpecified = false,
                         preferredRole = args.Options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-                        teamColour = args.Options?.PreferredTeam == "red" ? TeamColour.red : TeamColour.blue
+                        preferredTeam = args.Options?.PreferredTeam == "red" ? TeamColour.red : TeamColour.blue
                     });
                     args.Connection.SendFromClient(args.Socket, xmlMessage);
                 }

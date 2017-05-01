@@ -11,7 +11,7 @@ namespace Common.SchemaWrapper
         private GameBoard board;
         private Random rng = new Random();
 
-        private const uint NO_PIECE = uint.MaxValue;
+        private const int NO_PIECE = -1;
 
         public Field[,] Fields { get; set; }
 
@@ -102,7 +102,7 @@ namespace Common.SchemaWrapper
                 {
                     //you need to cast to long, otherwise uint can wrap around -.-
                     var distance = pieces.Where(p=>p.PlayerId==null).Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
-                    (field as TaskField).DistanceToPiece = (uint)distance;
+                    (field as TaskField).DistanceToPiece = (int)distance;
                 }
             }
         }

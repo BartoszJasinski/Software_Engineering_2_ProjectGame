@@ -306,7 +306,7 @@ namespace Player.Net
         {
             JoinGame joinGame = new JoinGame()
             {
-                teamColour = options.PreferredTeam == "blue"
+                preferredTeam = options.PreferredTeam == "blue"
                     ? Common.Schema.TeamColour.blue
                     : Common.Schema.TeamColour.red,
                 preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
@@ -317,7 +317,7 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
-        uint? DistToPiece()
+        int? DistToPiece()
         {
             return (Fields[Location.x, Location.y] as Wrapper.TaskField)?.DistanceToPiece;
         }

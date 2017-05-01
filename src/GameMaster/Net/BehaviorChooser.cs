@@ -23,7 +23,7 @@ namespace GameMaster.Net
 
             lock (gameMaster.BoardLock)
             {
-                var selectedTeam = gameMaster.SelectTeamForPlayer(message.teamColour);
+                var selectedTeam = gameMaster.SelectTeamForPlayer(message.preferredTeam);
                 //both teams are full
                 if (selectedTeam == null)
                 {
