@@ -18,8 +18,8 @@ namespace PlayerTests
             Data data = new Data() { TaskFields = new TaskField[] { new TaskField() { playerId = 0, x = 4, y = 5, distanceToPiece = 5 }, new TaskField() { playerId = 0, x = 2, y = 3, distanceToPiece = 7 } } };
             Player.Net.BehaviorChooser.HandleMessage(data, new Player.Net.PlayerMessageHandleArgs(null, null, null, null, player));
 
-            Assert.AreEqual((uint)5, (player.Fields[4, 5] as Common.SchemaWrapper.TaskField).DistanceToPiece);
-            Assert.AreEqual((uint)7, (player.Fields[2, 3] as Common.SchemaWrapper.TaskField).DistanceToPiece);
+            Assert.AreEqual((int)5, (player.Fields[4, 5] as Common.SchemaWrapper.TaskField).DistanceToPiece);
+            Assert.AreEqual((int)7, (player.Fields[2, 3] as Common.SchemaWrapper.TaskField).DistanceToPiece);
         }
 
         [TestMethod]

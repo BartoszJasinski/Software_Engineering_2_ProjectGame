@@ -112,7 +112,7 @@ namespace Player.Net
                             args.PlayerClient.Pieces=args.PlayerClient.Pieces.Where(piece1 => piece1.playerId != piece.playerId).ToList();
                         }
                         if (args.PlayerClient.Pieces.Count(p => p.id == piece.id) == 0)
-                    args.PlayerClient.Pieces.Add(piece);
+                            args.PlayerClient.Pieces.Add(piece);
                         else
                         {
                             
