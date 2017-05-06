@@ -64,10 +64,14 @@ namespace GameMaster.Net
             TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
             TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
 
-            var boardGenerator = new RandomGoalBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
+            //var boardGenerator = new RandomGoalBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
+            //    uint.Parse(Settings.GameDefinition.TaskAreaLength),
+            //    uint.Parse(Settings.GameDefinition.GoalAreaLength),
+            //    123);
+            var boardGenerator = new SimpleBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
                 uint.Parse(Settings.GameDefinition.TaskAreaLength),
                 uint.Parse(Settings.GameDefinition.GoalAreaLength),
-                123);
+                Settings.GameDefinition.Goals);
             Board = boardGenerator.CreateBoard();
         }
 
