@@ -93,6 +93,10 @@ namespace GameMaster.Net
                     var gameString = XmlMessageConverter.ToXml(startGame);
                     //ConsoleDebug.Message(gameString);
                     gameMaster.Connection.SendFromClient(handler, gameString);
+                    //send GameStarted message to server so it won't show it as an open game
+                    var gameStarted = new GameStarted() { gameId = gameMaster.gameId };
+                    var startedString = XmlMessageConverter.ToXml(gameStarted);
+                    gameMaster.Connection.SendFromClient(handler, startedString);
                 }
                 //place first pieces
                 for (int i = 0; i < gameMaster.Settings.GameDefinition.InitialNumberOfPieces; i++)
@@ -475,7 +479,7 @@ namespace GameMaster.Net
 
         public static void HandleMessage(PlayerDisconnected message, GameMasterClient gameMaster, Socket handler)
         {
-            ConsoleDebug.Message($"Player disconnected! Player id: {message.playerId}");
+            ConsoleDebug.Error($"Player disconnected! Player id: {message.playerId}");
         }
 
         public static void HandleMessage(object message, GameMasterClient gameMaster, Socket handler)

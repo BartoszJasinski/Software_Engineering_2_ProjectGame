@@ -153,19 +153,20 @@ namespace Server.Connection
 
         private void sendCallback(IAsyncResult ar)
         {
+            // Retrieve the socket from the state object.
+            Socket handler = (Socket)ar.AsyncState;
             try
-            {
-                // Retrieve the socket from the state object.
-                Socket handler = (Socket)ar.AsyncState;
+            { 
 
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
                 //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Client {0} disconnected", handler.GetRemoteAddress().ToString());
+                OnDisconnected(this, new ConnectEventArgs(handler));
             }
         }
 

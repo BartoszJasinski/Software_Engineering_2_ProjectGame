@@ -47,6 +47,8 @@ namespace Server.Connection
             List<GameInfo> gi = new List<GameInfo>();
             foreach (var game in server.RegisteredGames)
             {
+                if (game.HasStarted)
+                    continue;
                 gi.Add(new GameInfo()
                 {
                     blueTeamPlayers = game.BlueTeamPlayersCount,
@@ -63,11 +65,11 @@ namespace Server.Connection
             if (request == null)
                 return;
 
-            if (server.startedGames.Contains(request.gameName))
-            {
-                ConsoleDebug.Error("Game already started");
-                return;
-            }
+            //if (server.startedGames.Contains(request.gameName))
+            //{
+            //    ConsoleDebug.Error("Game already started");
+            //    return;
+            //}
 
 
             Game.IGame g = server.RegisteredGames.GetGameByName(request.gameName);
@@ -76,8 +78,13 @@ namespace Server.Connection
                 ConsoleDebug.Error("Game with specified name not found");
                 return;
             }
+            if(g.HasStarted)
+            {
+                ConsoleDebug.Error("Game already started");
+                return;
+            }
 
-            lock(joinLock)
+            lock (joinLock)
             {
                 request.playerId = server.IdForNewClient();
                 request.playerIdSpecified = true;
@@ -94,7 +101,8 @@ namespace Server.Connection
         {
             //FIXME HELLO BUG HERE BECAUSE WE USE INT in GetGameByID and not ULONG 
             IGame game = server.RegisteredGames.GetGameById((int) request.gameId);
-            server.startedGames.Add(game.Name);
+            game.HasStarted = true;
+            //server.startedGames.Add(game.Name);
         }
 
         public static void HandleMessage(PlayerMessage request, CommunicationServer server, Socket handler)

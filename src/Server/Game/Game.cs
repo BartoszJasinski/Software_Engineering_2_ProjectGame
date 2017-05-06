@@ -11,6 +11,8 @@ namespace Server.Game
 
         public Socket GameMaster { get; set; }
 
+        public bool HasStarted { get; set; }
+
         public Game(int gameId=0, string name="", ulong bluePlayers=0, ulong redPlayers=0, Socket gameMaster=null)
         {
             Id = gameId;
