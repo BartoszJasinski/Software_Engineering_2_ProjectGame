@@ -94,14 +94,16 @@ namespace Common.SchemaWrapper
         {
             foreach (var field in Fields.Cast<Field>().Where(f => f is TaskField))
             {
-                if (pieces.Count == 0)
+                if (pieces.Where(p => p.PlayerId == null).Count() == 0)
                 {
                     (field as TaskField).DistanceToPiece = NO_PIECE;
                 }
                 else
                 {
                     //you need to cast to long, otherwise uint can wrap around -.-
-                    var distance = pieces.Where(p=>p.PlayerId==null).Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y)).Min();
+                    var possiblePieces = pieces.Where(p => p.PlayerId == null);
+                    var distances = possiblePieces.Select(p => Math.Abs((long)p.Location.x - (long)field.X) + Math.Abs((long)p.Location.y - (long)field.Y));
+                    var distance = distances.Min();
                     (field as TaskField).DistanceToPiece = (int)distance;
                 }
             }
