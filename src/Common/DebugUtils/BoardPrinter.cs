@@ -168,7 +168,10 @@ namespace Common.DebugUtils
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Black;
-                    Console.Write(f.DistanceToPiece);
+                    if(f.DistanceToPiece > 0)
+                        Console.Write(f.DistanceToPiece);
+                    else
+                        Console.Write(" ");
                 }
                 
             }
