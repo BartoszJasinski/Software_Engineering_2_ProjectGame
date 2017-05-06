@@ -89,7 +89,7 @@ namespace CommonTests.Message
             string xml = XmlMessageConverter.ToXml(message);
             TaskField result = (TaskField)XmlMessageConverter.ToObject(xml);
 
-            Assert.AreEqual((uint)5, result.distanceToPiece);
+            Assert.AreEqual((int)5, result.distanceToPiece);
             Assert.AreEqual((ulong)1, result.pieceId);
             Assert.AreEqual(true, result.pieceIdSpecified);
 

@@ -36,7 +36,7 @@ namespace Player.Net
                         gameName = args.Options.GameName,
                         playerIdSpecified = false,
                         preferredRole = args.Options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-                        teamColour = args.Options?.PreferredTeam == "red" ? TeamColour.red : TeamColour.blue
+                        preferredTeam = args.Options?.PreferredTeam == "red" ? TeamColour.red : TeamColour.blue
                     });
                     args.Connection.SendFromClient(args.Socket, xmlMessage);
                 }
@@ -112,7 +112,7 @@ namespace Player.Net
                             args.PlayerClient.Pieces=args.PlayerClient.Pieces.Where(piece1 => piece1.playerId != piece.playerId).ToList();
                         }
                         if (args.PlayerClient.Pieces.Count(p => p.id == piece.id) == 0)
-                    args.PlayerClient.Pieces.Add(piece);
+                            args.PlayerClient.Pieces.Add(piece);
                         else
                         {
                             

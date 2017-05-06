@@ -36,6 +36,8 @@ namespace Player.Net
         private Random random = new Random();
         private State currentState;
 
+        private const int NO_PIECE = -1;
+
         public ulong GameId
         {
             get { return _gameId; }
@@ -63,7 +65,7 @@ namespace Player.Net
             {
                 return Pieces.SingleOrDefault(
                     pc =>
-                        pc.playerId == Id);
+                        pc.playerIdSpecified && pc.playerId == Id);
             }
         }
 
@@ -287,10 +289,10 @@ namespace Player.Net
                     ?.DistanceToPiece,
                 FieldAt(Location.x, Location.y - 1)
                     ?.DistanceToPiece
-            }.Where(u => u.HasValue).Select(u => u.Value);
+            }.Where(u => u.HasValue && u != NO_PIECE).Select(u => u.Value);
             int? d;
             if (t.Count() == 0)
-                d = Int32.MaxValue;
+                d = NO_PIECE;
             else
             {
                 d = (int?) t.Min();
@@ -306,7 +308,7 @@ namespace Player.Net
         {
             JoinGame joinGame = new JoinGame()
             {
-                teamColour = options.PreferredTeam == "blue"
+                preferredTeam = options.PreferredTeam == "blue"
                     ? Common.Schema.TeamColour.blue
                     : Common.Schema.TeamColour.red,
                 preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
@@ -317,7 +319,7 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
-        uint? DistToPiece()
+        int? DistToPiece()
         {
             return (Fields[Location.x, Location.y] as Wrapper.TaskField)?.DistanceToPiece;
         }
@@ -423,7 +425,7 @@ namespace Player.Net
             var carriedPiece =
                 Pieces.SingleOrDefault(
                     pc =>
-                        pc.playerId == Id);
+                        pc.playerIdSpecified && pc.playerId == Id);
             return carriedPiece != null;
         }
     } //class

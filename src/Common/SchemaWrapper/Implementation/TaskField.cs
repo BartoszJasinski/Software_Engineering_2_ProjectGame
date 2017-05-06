@@ -14,7 +14,7 @@ namespace Common.SchemaWrapper
             }
         }
 
-        public uint DistanceToPiece
+        public int DistanceToPiece
         {
             get { return schemaTaskField.distanceToPiece; }
             set { schemaTaskField.distanceToPiece = value; }

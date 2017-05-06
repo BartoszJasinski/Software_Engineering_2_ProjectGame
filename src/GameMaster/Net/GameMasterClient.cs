@@ -113,7 +113,7 @@ namespace GameMaster.Net
             var socket = eventArgs.Handler as Socket;
 
             ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
-            BoardPrinter.Print(Board);
+            BoardPrinter.PrintAlternative(Board);
 
             BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
         }
