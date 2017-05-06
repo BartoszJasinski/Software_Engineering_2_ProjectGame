@@ -110,8 +110,16 @@ namespace Server
 
             try
             {
-                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
-                    eventArgs.Handler);
+                if (eventArgs.Message.Length == 0) //ETB keep alive packet
+                {
+                    //send keep alive back
+                    ConnectionEndpoint.SendFromServer(eventArgs.Handler, String.Empty);
+                }
+                else
+                {
+                    BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this,
+                        eventArgs.Handler);
+                }
             }
             catch(Exception e)
             {

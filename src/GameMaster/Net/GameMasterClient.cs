@@ -28,6 +28,7 @@ namespace GameMaster.Net
         public ILogger Logger { get; set; }
 
         public CancellationTokenSource CancelToken { get; } = new CancellationTokenSource();
+        private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         //The two teams
         public Wrapper.Team TeamRed { get; set; }
@@ -82,6 +83,7 @@ namespace GameMaster.Net
 
         public void Disconnect()
         {
+            keepAliveToken.Cancel();
             Logger.Dispose();
             Connection.StopClient();
         }
@@ -110,16 +112,22 @@ namespace GameMaster.Net
             string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
             Connection.SendFromClient(socket, registerGameString);
 
+            //start sending keepalive bytes
+            startKeepAlive(socket);
+
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
-            BoardPrinter.PrintAlternative(Board);
+            if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
+            {
+                ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+                BoardPrinter.PrintAlternative(Board);
 
-            BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
+                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
+            }
         }
 
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
@@ -192,7 +200,22 @@ namespace GameMaster.Net
                 if (CancelToken.Token.IsCancellationRequested)
                     break;
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
+                if (CancelToken.Token.IsCancellationRequested)
+                    break;
                 PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
+            }
+        }
+
+        public async Task startKeepAlive(Socket server)
+        {
+            while(true)
+            {
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                await Task.Delay(TimeSpan.FromMilliseconds(Settings.KeepAliveInterval));
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                Connection.SendFromClient(server, string.Empty);
             }
         }
 

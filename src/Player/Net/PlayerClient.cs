@@ -16,6 +16,8 @@ using Player.Strategy;
 using GoalFieldType = Common.Schema.GoalFieldType;
 using TeamColour = Common.Schema.TeamColour;
 using Wrapper = Common.SchemaWrapper;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Player.Net
 {
@@ -35,6 +37,7 @@ namespace Player.Net
         private Common.SchemaWrapper.Field[,] _fields;
         private Random random = new Random();
         private State currentState;
+        private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         private const int NO_PIECE = -1;
 
@@ -127,6 +130,7 @@ namespace Player.Net
 
         public void Disconnect()
         {
+            keepAliveToken.Cancel();
             connection.StopClient();
         }
 
@@ -140,16 +144,22 @@ namespace Player.Net
             string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
             connection.SendFromClient(socket, xmlMessage);
+
+            //start sending keep alive bytes
+            startKeepAlive(socket);
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
+            {
+                ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
+                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message),
+                    new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
+            }
         }
 
 
@@ -427,6 +437,19 @@ namespace Player.Net
                     pc =>
                         pc.playerIdSpecified && pc.playerId == Id);
             return carriedPiece != null;
+        }
+
+        private async Task startKeepAlive(Socket server)
+        {
+            while (true)
+            {
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                await Task.Delay(TimeSpan.FromMilliseconds(settings.KeepAliveInterval));
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                connection.SendFromClient(server, string.Empty);
+            }
         }
     } //class
 } //namespace
