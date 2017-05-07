@@ -23,7 +23,7 @@ namespace GameMaster.Net
 
             lock (gameMaster.BoardLock)
             {
-                var selectedTeam = gameMaster.SelectTeamForPlayer(message.teamColour);
+                var selectedTeam = gameMaster.SelectTeamForPlayer(message.preferredTeam);
                 //both teams are full
                 if (selectedTeam == null)
                 {
@@ -93,6 +93,10 @@ namespace GameMaster.Net
                     var gameString = XmlMessageConverter.ToXml(startGame);
                     //ConsoleDebug.Message(gameString);
                     gameMaster.Connection.SendFromClient(handler, gameString);
+                    //send GameStarted message to server so it won't show it as an open game
+                    var gameStarted = new GameStarted() { gameId = gameMaster.gameId };
+                    var startedString = XmlMessageConverter.ToXml(gameStarted);
+                    gameMaster.Connection.SendFromClient(handler, startedString);
                 }
                 //place first pieces
                 for (int i = 0; i < gameMaster.Settings.GameDefinition.InitialNumberOfPieces; i++)
@@ -248,6 +252,7 @@ namespace GameMaster.Net
                              !pc.PlayerId.HasValue);
                 if (piece == null || gameMaster.Pieces.Any(pc => pc.PlayerId == currentPlayer.Id))
                 {
+                    ConsoleDebug.Warning("No piece here or you have already a piece!");
                     //send empty piece collection
                     resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .SetPieces(new Piece[0])
@@ -255,23 +260,26 @@ namespace GameMaster.Net
                 }
                 else
                 {
+                    ConsoleDebug.Warning("Piece picked up!");
                     piece.PlayerId = currentPlayer.Id;
                     var taskField = gameMaster.Board.Fields[currentPlayer.X, currentPlayer.Y] as Wrapper.TaskField;
                     if (taskField != null) //update taskField
                     {
+                        ConsoleDebug.Warning("Updating TaskField");
                         taskField.PieceId = null;
+                        gameMaster.Board.UpdateDistanceToPiece(gameMaster.Pieces);
                         //clocest neighbour to piece + 1
-                        taskField.DistanceToPiece = new[]
-                        {
-                            FieldAt(gameMaster.Board.Fields, currentPlayer.X + 1, currentPlayer.Y)
-                            ?.DistanceToPiece,
-                            FieldAt(gameMaster.Board.Fields, currentPlayer.X - 1, currentPlayer.Y)
-                            ?.DistanceToPiece,
-                            FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y + 1)
-                            ?.DistanceToPiece,
-                            FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y - 1)
-                            ?.DistanceToPiece
-                       }.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
+                       // taskField.DistanceToPiece = new[]
+                       // {
+                       //     FieldAt(gameMaster.Board.Fields, currentPlayer.X + 1, currentPlayer.Y)
+                       //     ?.DistanceToPiece,
+                       //     FieldAt(gameMaster.Board.Fields, currentPlayer.X - 1, currentPlayer.Y)
+                       //     ?.DistanceToPiece,
+                       //     FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y + 1)
+                       //     ?.DistanceToPiece,
+                       //     FieldAt(gameMaster.Board.Fields, currentPlayer.X, currentPlayer.Y - 1)
+                       //     ?.DistanceToPiece
+                       //}.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
                     }
                     resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                          .AddPiece(new Piece()
@@ -296,19 +304,18 @@ namespace GameMaster.Net
             gameMaster.Logger.Log(message, currentPlayer);
             lock (gameMaster.BoardLock)
             {
-                ConsoleDebug.Warning("0");
                 Wrapper.Piece piece =
                      gameMaster.Pieces.SingleOrDefault(
                          pc =>
                              pc.PlayerId == currentPlayer.Id);
-                ConsoleDebug.Warning("1");
                 if (piece == null) // not carrying anything
                 {
+                    ConsoleDebug.Warning("Not carrying a piece!");
                     piece = gameMaster.Pieces.SingleOrDefault(pc => pc.Location.Equals(currentPlayer.Location));
                 }
-                ConsoleDebug.Warning("2");
                 if (piece == null)
                 {
+                    ConsoleDebug.Warning("Not on a piece!");
                     //send empty piece collection
                     resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                         .SetPieces(new Piece[0])
@@ -316,11 +323,11 @@ namespace GameMaster.Net
                 }
                 else
                 {
+                    ConsoleDebug.Warning("On a piece!");
                     resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
                          .AddPiece(piece.SchemaPiece)
                          .GetXml();
                 }
-                ConsoleDebug.Warning("3");
             }
             gameMaster.Connection.SendFromClient(handler, resp);
         }
@@ -472,7 +479,7 @@ namespace GameMaster.Net
 
         public static void HandleMessage(PlayerDisconnected message, GameMasterClient gameMaster, Socket handler)
         {
-            ConsoleDebug.Message($"Player disconnected! Player id: {message.playerId}");
+            ConsoleDebug.Error($"Player disconnected! Player id: {message.playerId}");
         }
 
         public static void HandleMessage(object message, GameMasterClient gameMaster, Socket handler)

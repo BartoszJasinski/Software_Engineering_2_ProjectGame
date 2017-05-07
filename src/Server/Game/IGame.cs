@@ -10,5 +10,7 @@ namespace Server.Game
         ulong RedTeamPlayersCount { get; set; }
 
         Socket GameMaster { get; set; }
+
+        bool HasStarted { get; set; }
     }
 }

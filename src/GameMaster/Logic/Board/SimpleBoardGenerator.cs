@@ -9,6 +9,18 @@ namespace GameMaster.Logic.Board
         private uint taskAreaHeight;
         private bool[,] goalLayout;
 
+        public SimpleBoardGenerator(uint boardWidth, uint taskAreaHeight, uint goalAreaHeight, Common.Config.GoalField[] goalFields)
+        {
+            bool[,] layout = new bool[boardWidth, goalAreaHeight];
+            foreach(var field in goalFields)
+            {
+                layout[field.x, field.y] = true;
+            }
+            this.boardWidth = boardWidth;
+            this.taskAreaHeight = taskAreaHeight;
+            this.goalLayout = layout;
+        }
+
         public SimpleBoardGenerator(uint boardWidth, uint taskAreaHeight, bool[,] goalLayout)
         {
             this.boardWidth = boardWidth;
@@ -39,7 +51,7 @@ namespace GameMaster.Logic.Board
                         Y = (uint)y,
                         PlayerId = null,
                         Timestamp = timestamp,
-                        Team = Common.Schema.TeamColour.red,
+                        Team = Common.Schema.TeamColour.blue,
                         Type = goalLayout[x,y] ? Common.Schema.GoalFieldType.goal : Common.Schema.GoalFieldType.nongoal
                     };
                     var xLocal = board.Width - x - 1;
@@ -50,7 +62,7 @@ namespace GameMaster.Logic.Board
                         Y = (uint)yLocal,
                         PlayerId = null,
                         Timestamp = timestamp,
-                        Team = Common.Schema.TeamColour.blue,
+                        Team = Common.Schema.TeamColour.red,
                         Type = goalLayout[x, y] ? Common.Schema.GoalFieldType.goal : Common.Schema.GoalFieldType.nongoal
                     };
                 }

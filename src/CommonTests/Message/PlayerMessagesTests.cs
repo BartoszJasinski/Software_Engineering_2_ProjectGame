@@ -123,13 +123,13 @@ namespace CommonTests.Message
         [TestMethod]
         public void PlayerMessageTest()
         {
-            PlayerGood message = new PlayerGood();
+            PlayerMessage message = new PlayerMessage();
 
             message.playerId = 1;
 
 
             string xml = XmlMessageConverter.ToXml(message);
-            PlayerGood result = (PlayerGood)XmlMessageConverter.ToObject(xml);
+            PlayerMessage result = (PlayerMessage)XmlMessageConverter.ToObject(xml);
 
             Assert.AreEqual((ulong)1, result.playerId);
 

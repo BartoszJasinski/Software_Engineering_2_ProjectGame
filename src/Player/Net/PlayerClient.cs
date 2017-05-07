@@ -16,6 +16,8 @@ using Player.Strategy;
 using GoalFieldType = Common.Schema.GoalFieldType;
 using TeamColour = Common.Schema.TeamColour;
 using Wrapper = Common.SchemaWrapper;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Player.Net
 {
@@ -35,6 +37,9 @@ namespace Player.Net
         private Common.SchemaWrapper.Field[,] _fields;
         private Random random = new Random();
         private State currentState;
+        private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
+
+        private const int NO_PIECE = -1;
 
         public ulong GameId
         {
@@ -63,7 +68,7 @@ namespace Player.Net
             {
                 return Pieces.SingleOrDefault(
                     pc =>
-                        pc.playerId == Id);
+                        pc.playerIdSpecified && pc.playerId == Id);
             }
         }
 
@@ -125,6 +130,7 @@ namespace Player.Net
 
         public void Disconnect()
         {
+            keepAliveToken.Cancel();
             connection.StopClient();
         }
 
@@ -138,16 +144,22 @@ namespace Player.Net
             string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
             connection.SendFromClient(socket, xmlMessage);
+
+            //start sending keep alive bytes
+            startKeepAlive(socket);
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
         {
             var socket = eventArgs.Handler as Socket;
 
-            ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
+            if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
+            {
+                ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
 
-            BehaviorChooser.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message),
-                new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
+                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message),
+                    new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
+            }
         }
 
 
@@ -287,10 +299,10 @@ namespace Player.Net
                     ?.DistanceToPiece,
                 FieldAt(Location.x, Location.y - 1)
                     ?.DistanceToPiece
-            }.Where(u => u.HasValue).Select(u => u.Value);
+            }.Where(u => u.HasValue && u != NO_PIECE).Select(u => u.Value);
             int? d;
             if (t.Count() == 0)
-                d = Int32.MaxValue;
+                d = NO_PIECE;
             else
             {
                 d = (int?) t.Min();
@@ -306,7 +318,7 @@ namespace Player.Net
         {
             JoinGame joinGame = new JoinGame()
             {
-                teamColour = options.PreferredTeam == "blue"
+                preferredTeam = options.PreferredTeam == "blue"
                     ? Common.Schema.TeamColour.blue
                     : Common.Schema.TeamColour.red,
                 preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
@@ -317,7 +329,7 @@ namespace Player.Net
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
-        uint? DistToPiece()
+        int? DistToPiece()
         {
             return (Fields[Location.x, Location.y] as Wrapper.TaskField)?.DistanceToPiece;
         }
@@ -423,8 +435,21 @@ namespace Player.Net
             var carriedPiece =
                 Pieces.SingleOrDefault(
                     pc =>
-                        pc.playerId == Id);
+                        pc.playerIdSpecified && pc.playerId == Id);
             return carriedPiece != null;
+        }
+
+        private async Task startKeepAlive(Socket server)
+        {
+            while (true)
+            {
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                await Task.Delay(TimeSpan.FromMilliseconds(settings.KeepAliveInterval));
+                if (keepAliveToken.Token.IsCancellationRequested)
+                    break;
+                connection.SendFromClient(server, string.Empty);
+            }
         }
     } //class
 } //namespace

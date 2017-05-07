@@ -41,7 +41,7 @@ namespace GameMasterTests
                 playerIdSpecified = true,
                 playerId = id,
                 preferredRole = role,
-                teamColour = team
+                preferredTeam = team
             };
             BehaviorChooser.HandleMessage(message, gm, null);
             var player = gm.Players.Where(p => p.Id == id).Single();
@@ -70,14 +70,14 @@ namespace GameMasterTests
                 playerIdSpecified = true,
                 playerId = 2,
                 preferredRole = PlayerType.leader,
-                teamColour = Common.Schema.TeamColour.blue
+                preferredTeam = Common.Schema.TeamColour.blue
             };
             //Act
             BehaviorChooser.HandleMessage(message, gm, null);
             var player = gm.Players.Single();
             //Assert
             Assert.AreEqual(player.Id, message.playerId);
-            Assert.AreEqual(player.Team.Color, message.teamColour);
+            Assert.AreEqual(player.Team.Color, message.preferredTeam);
             Assert.IsNotNull(player as Leader);
         }
 
@@ -91,7 +91,7 @@ namespace GameMasterTests
                 playerIdSpecified = true,
                 playerId = 1,
                 preferredRole = PlayerType.leader,
-                teamColour = Common.Schema.TeamColour.blue
+                preferredTeam = Common.Schema.TeamColour.blue
             };
             BehaviorChooser.HandleMessage(message, gm, null);
             message.playerId = 2;
@@ -99,7 +99,7 @@ namespace GameMasterTests
             BehaviorChooser.HandleMessage(message, gm, null);
             var player = gm.Players.Where(p => p.Id == message.playerId).Single();
             //Assert
-            Assert.AreEqual(player.Team.Color, message.teamColour);
+            Assert.AreEqual(player.Team.Color, message.preferredTeam);
             Assert.IsNull(player as Leader);
         }
 
@@ -113,7 +113,7 @@ namespace GameMasterTests
                 playerIdSpecified = true,
                 playerId = 1,
                 preferredRole = PlayerType.leader,
-                teamColour = Common.Schema.TeamColour.blue
+                preferredTeam = Common.Schema.TeamColour.blue
             };
             BehaviorChooser.HandleMessage(message, gm, null);
             message.playerId = 2;
@@ -123,7 +123,7 @@ namespace GameMasterTests
             BehaviorChooser.HandleMessage(message, gm, null);
             var player = gm.Players.Where(p => p.Id == message.playerId).Single();
             //Assert
-            Assert.AreNotEqual(player.Team.Color, message.teamColour);
+            Assert.AreNotEqual(player.Team.Color, message.preferredTeam);
             Assert.IsNotNull(player as Leader);
         }
 

@@ -28,7 +28,7 @@ namespace CommonTests.Utils
             pieceList.Add(new Piece() { Location = new Common.Schema.Location() { x = 6, y = 6 }, IsCarried = false, PlayerId = null });
             board.UpdateDistanceToPiece(pieceList);
 
-            Assert.AreEqual((uint)1, (board.Fields[3, 5] as TaskField).DistanceToPiece);
+            Assert.AreEqual((int)1, (board.Fields[3, 5] as TaskField).DistanceToPiece);
         }
     }
 }
