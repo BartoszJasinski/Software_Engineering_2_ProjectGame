@@ -31,6 +31,14 @@ namespace GameMasterTests
                 TaskAreaLength = "5",
                 NumberOfPlayersPerTeam = "2"
             };
+            settings.GameDefinition.Goals = new Common.Config.GoalField[]
+            {
+                new Common.Config.GoalField()
+                {
+                    x = 0,
+                    y = 0
+                }
+            };
             return new GameMasterClient(new ConnectionMock(), settings, new MockLogger());
         }
 
