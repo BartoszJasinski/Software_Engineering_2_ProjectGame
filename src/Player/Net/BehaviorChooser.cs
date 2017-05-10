@@ -73,7 +73,7 @@ namespace Player.Net
         {
             args.PlayerClient.Players = message.Players;
             args.PlayerClient.Board = message.Board;
-            args.PlayerClient.Location = message.PlayerLocation;
+            args.PlayerClient.Location = message.Location;
             args.PlayerClient.Fields = new Common.SchemaWrapper.Field[message.Board.width, 2*message.Board.goalsHeight + message.Board.tasksHeight];
             ConsoleDebug.Good("Game started");
             args.PlayerClient.Play();

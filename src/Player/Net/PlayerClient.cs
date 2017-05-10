@@ -451,5 +451,10 @@ namespace Player.Net
                 connection.SendFromClient(server, string.Empty);
             }
         }
+
+        public void Send(string data)
+        {
+            connection.SendFromClient(serverSocket, data);
+        }
     } //class
 } //namespace
