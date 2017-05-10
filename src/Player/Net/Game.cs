@@ -9,6 +9,7 @@ using Common.Config;
 using Common.DebugUtils;
 using Common.Message;
 using Common.IO.Console;
+using Player.Strategy;
 
 namespace Player.Net
 {
@@ -31,6 +32,14 @@ namespace Player.Net
 
 
         private const int NO_PIECE = -1;
+
+        public Game(PlayerClient player, PlayerSettings settings, AgentCommandLineOptions options)
+        {
+            this.player = player;
+            this.settings = settings;
+            this.options = options;
+            Pieces = new List<Piece>();
+        }
 
         public ulong GameId
         {
@@ -307,5 +316,246 @@ namespace Player.Net
             }
         }
 
+
+        private void Move(MoveType direction)
+        {
+            if (previousLocation != null && Location != null && Location.x == previousLocation.x && Location.y == previousLocation.y)
+            {
+                ConsoleDebug.Error("Snake time! =====================================");
+                //if (direction==MoveType.up)
+                //    direction=MoveType.right;
+                //else if (direction == MoveType.right)
+                //    direction = MoveType.down;
+                //else if (direction == MoveType.down)
+                //    direction = MoveType.left;
+                //else
+                //    direction = MoveType.up;
+                direction = RandomMoveType();
+            }
+            previousLocation = new Common.Schema.Location() { x = Location.x, y = Location.y };
+            Move m = new Move()
+            {
+                direction = direction,
+                directionSpecified = true,
+                gameId = _gameId,
+                playerGuid = _guid
+            };
+            player.Send(XmlMessageConverter.ToXml(m));
+        }
+
+        private void Discover()
+        {
+            Common.Schema.Discover d = new Discover()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            player.Send(XmlMessageConverter.ToXml(d));
+        }
+
+        private void PickUpPiece()
+        {
+            Common.Schema.PickUpPiece p = new PickUpPiece()
+            {
+                playerGuid = Guid,
+                gameId = GameId
+            };
+            player.Send(XmlMessageConverter.ToXml(p));
+        }
+
+        private void PlacePiece()
+        {
+            Common.Schema.PlacePiece p = new PlacePiece()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            player.Send(XmlMessageConverter.ToXml(p));
+            Pieces.Remove(CarriedPiece);
+        }
+
+        private void Test()
+        {
+            TestPiece t = new TestPiece()
+            {
+                gameId = GameId,
+                playerGuid = Guid
+            };
+            player.Send(XmlMessageConverter.ToXml(t));
+        }
+
+        Common.SchemaWrapper.TaskField FieldAt(uint x, uint y)
+        {
+            try
+            {
+                return (Fields[x, y] as Common.SchemaWrapper.TaskField);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private Common.Schema.Location previousLocation = null;
+        MoveType Where(int? d)
+        {
+            if (FieldAt(Location.x + 1, Location.y)
+                    ?.DistanceToPiece == d)
+                return MoveType.right;
+            if (FieldAt(Location.x - 1, Location.y)
+                    ?.DistanceToPiece == d)
+                return MoveType.left;
+            if (FieldAt(Location.x, Location.y + 1)
+                    ?.DistanceToPiece == d)
+                return MoveType.up;
+            if (FieldAt(Location.x, Location.y - 1)
+                    ?.DistanceToPiece == d)
+                return MoveType.down;
+            if (Location.y <= Board.goalsHeight)
+                return MoveType.up;
+            return MoveType.down;
+        }
+
+        private void MoveToNieghborClosestToPiece()
+        {
+            var t = new[]
+            {
+                FieldAt(Location.x + 1, Location.y)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x - 1, Location.y)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x, Location.y + 1)
+                    ?.DistanceToPiece,
+                FieldAt(Location.x, Location.y - 1)
+                    ?.DistanceToPiece
+            }.Where(u => u.HasValue && u != NO_PIECE).Select(u => u.Value);
+            int? d;
+            if (t.Count() == 0)
+                d = NO_PIECE;
+            else
+            {
+                d = (int?)t.Min();
+            }
+            if (d >= FieldAt(Location.x, Location.y)?.DistanceToPiece)
+                Discover();
+            else
+                Move(Where(d));
+        }
+
+        int? DistToPiece()
+        {
+            return (Fields[Location.x, Location.y] as Common.SchemaWrapper.TaskField)?.DistanceToPiece;
+        }
+
+        private void DestroySham()
+        {
+            if (DistToPiece() > 0)
+                MoveToNieghborClosestToPiece();
+            else
+                PlacePiece();
+        }
+
+        private bool left = true;
+
+        private void LookForGoal()
+        {
+            if (Fields[Location.x, Location.y] == null && !IsInGoalArea)
+            {
+                Discover();
+                return;
+            }
+            if (!IsInGoalArea)
+            {
+                if (Team == Common.Schema.TeamColour.blue)
+                    Move(MoveType.down);
+                else
+                    Move(MoveType.up);
+                return;
+            }
+            var gf = Fields[Location.x, Location.y] as Common.SchemaWrapper.GoalField;
+            if (gf == null || gf.Type == Common.Schema.GoalFieldType.goal || gf.Type == Common.Schema.GoalFieldType.unknown)
+                PlacePiece();
+            else
+            {
+                if (Team == Common.Schema.TeamColour.blue &&
+                    (Location.y == 0 && Location.x % 2 == 0 ||
+                     Location.y == Board.goalsHeight - 1 && Location.x % 2 == 1)
+                    ||
+                    Team == Common.Schema.TeamColour.red &&
+                    (Location.y == Board.tasksHeight + Board.goalsHeight * 2 - 1 && Location.x % 2 == 1 ||
+                     Location.y == Board.tasksHeight + Board.goalsHeight && Location.x % 2 == 0))
+                {
+                    if (left && Location.x == 0 || !left && Location.x + 1 == Board.width)
+                        left = !left;
+                    if (left)
+                    {
+                        Move(MoveType.left);
+                    }
+                    else
+                    {
+                        Move(MoveType.right);
+                    }
+                    return;
+                }
+                if (Location.x % 2 == 1)
+                {
+                    Move(MoveType.up);
+                }
+                else
+                {
+                    Move(MoveType.down);
+                }
+            }
+        }
+
+        private bool HasPiece()
+        {
+            var carriedPiece =
+                Pieces.SingleOrDefault(
+                    pc =>
+                        pc.playerIdSpecified && pc.playerId == Id);
+            return carriedPiece != null;
+        }
+
+        private MoveType RandomMoveType()
+        {
+            Array values = Enum.GetValues(typeof(MoveType));
+            return (MoveType)values.GetValue(random.Next(values.Length));
+        }
+
+        public State BiuldDfa()
+        {
+            return new DfaBuilder()
+                //finding piece
+                .AddState("start")
+                .AddState("discover", Discover)
+                .AddTransition("start", "discover")
+                .AddState("moving", MoveToNieghborClosestToPiece)
+                .AddTransition("discover", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
+                .AddTransition("moving", "discover", () => DistToPiece() > 0 || DistToPiece() == null)
+                .AddState("onPiece", PickUpPiece)
+                //picking piece
+                .AddTransition("discover", "onPiece", () => DistToPiece() == 0)
+                .AddTransition("moving", "onPiece", () => DistToPiece() == 0)
+                .AddState("notTested", Test)
+                .AddTransition("onPiece", "notTested")
+                .AddState("carryingNormal", LookForGoal)
+                //testing piece
+                .AddTransition("onPiece", "notTested", HasPiece)
+                .AddTransition("onPiece", "discover", () => !HasPiece())
+                .AddState("carryingSham", DestroySham)
+                .AddState("shamPicked", Discover)
+                .AddTransition("notTested", "carryingNormal",
+                    () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
+                .AddTransition("notTested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
+                .AddTransition("notTested", "discover", () => CarriedPiece == null)
+                //destroying sham
+                .AddTransition("shamPicked", "carryingSham")
+                .AddTransition("carryingSham", "discover", () => !HasPiece())
+                //place normal piece               
+                .AddTransition("carryingNormal", "discover", () => !HasPiece())
+
+                .StartingState();
+        }
     }//class
 }
