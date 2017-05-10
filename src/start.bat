@@ -1,4 +1,4 @@
-SET ip=192.168.143.70
+SET ip=192.168.0.10
 
 cd ServerConsole/bin/Debug/
 START ServerConsole.exe -p 5000 -c Config/ServerSettings.xml

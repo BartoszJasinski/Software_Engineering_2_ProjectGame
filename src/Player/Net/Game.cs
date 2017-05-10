@@ -16,8 +16,6 @@ namespace Player.Net
     public class Game : IGame
     {
         private PlayerClient player;
-        private PlayerSettings settings;
-        private AgentCommandLineOptions options;
         private ulong _gameId;
         private string _guid;
         private Common.Schema.TeamColour _team;
@@ -33,11 +31,9 @@ namespace Player.Net
 
         private const int NO_PIECE = -1;
 
-        public Game(PlayerClient player, PlayerSettings settings, AgentCommandLineOptions options)
+        public Game(PlayerClient player)
         {
             this.player = player;
-            this.settings = settings;
-            this.options = options;
             Pieces = new List<Piece>();
         }
 
@@ -248,11 +244,11 @@ namespace Player.Net
             }
         }
 
-        public void HandleMessage(Game message)
+        public void HandleMessage(Common.Schema.Game message)
         {
             Players = message.Players;
             Board = message.Board;
-            Location = message.Location;
+            Location = message.PlayerLocation;
             Fields = new Common.SchemaWrapper.Field[message.Board.width, 2 * message.Board.goalsHeight + message.Board.tasksHeight];
             ConsoleDebug.Good("Game started");
             player.Play();
@@ -277,11 +273,11 @@ namespace Player.Net
 
         public void HandleMessage(RegisteredGames message)
         {
-            if (message.GameInfo == null || message.GameInfo.Length == 0 || !message.GameInfo.Where(g => g.gameName == args.Options.GameName).Any())
+            if (message.GameInfo == null || message.GameInfo.Length == 0 || !message.GameInfo.Where(g => g.gameName == player.Options.GameName).Any())
             {
                 Task.Run(() =>
                 {
-                    Thread.Sleep((int)settings.RetryJoinGameInterval);
+                    Thread.Sleep((int)player.Settings.RetryJoinGameInterval);
                     string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
                     player.Send(xmlMessage);
                 });
@@ -289,19 +285,19 @@ namespace Player.Net
             else
             {
                 ConsoleDebug.Good("Games available");
-                if (options.GameName == null)
+                if (player.Options.GameName == null)
                 {
                     ConsoleDebug.Warning("Game name not specified");
                     return;
                 }
-                if (message.GameInfo.Count(info => info.gameName == options.GameName) == 1)
+                if (message.GameInfo.Count(info => info.gameName == player.Options.GameName) == 1)
                 {
                     string xmlMessage = XmlMessageConverter.ToXml(new JoinGame()
                     {
-                        gameName = options.GameName,
+                        gameName = player.Options.GameName,
                         playerIdSpecified = false,
-                        preferredRole = options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-                        preferredTeam = options?.PreferredTeam == "red" ? Common.Schema.TeamColour.red : Common.Schema.TeamColour.blue
+                        preferredRole = player.Options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
+                        preferredTeam = player.Options?.PreferredTeam == "red" ? Common.Schema.TeamColour.red : Common.Schema.TeamColour.blue
                     });
                     player.Send(xmlMessage);
                 }
@@ -523,39 +519,41 @@ namespace Player.Net
             return (MoveType)values.GetValue(random.Next(values.Length));
         }
 
+   
+
         public State BiuldDfa()
         {
             return new DfaBuilder()
-                //finding piece
-                .AddState("start")
-                .AddState("discover", Discover)
-                .AddTransition("start", "discover")
-                .AddState("moving", MoveToNieghborClosestToPiece)
-                .AddTransition("discover", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
-                .AddTransition("moving", "discover", () => DistToPiece() > 0 || DistToPiece() == null)
-                .AddState("onPiece", PickUpPiece)
-                //picking piece
-                .AddTransition("discover", "onPiece", () => DistToPiece() == 0)
-                .AddTransition("moving", "onPiece", () => DistToPiece() == 0)
-                .AddState("notTested", Test)
-                .AddTransition("onPiece", "notTested")
-                .AddState("carryingNormal", LookForGoal)
-                //testing piece
-                .AddTransition("onPiece", "notTested", HasPiece)
-                .AddTransition("onPiece", "discover", () => !HasPiece())
-                .AddState("carryingSham", DestroySham)
-                .AddState("shamPicked", Discover)
-                .AddTransition("notTested", "carryingNormal",
-                    () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
-                .AddTransition("notTested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
-                .AddTransition("notTested", "discover", () => CarriedPiece == null)
-                //destroying sham
-                .AddTransition("shamPicked", "carryingSham")
-                .AddTransition("carryingSham", "discover", () => !HasPiece())
-                //place normal piece               
-                .AddTransition("carryingNormal", "discover", () => !HasPiece())
+               //finding piece
+               .AddState("start")
+               .AddState("discover", Discover)
+               .AddTransition("start", "discover")
+               .AddState("moving", MoveToNieghborClosestToPiece)
+               .AddTransition("discover", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
+               .AddTransition("moving", "discover", () => DistToPiece() > 0 || DistToPiece() == null)
+               .AddState("onPiece", PickUpPiece)
+               //picking piece
+               .AddTransition("discover", "onPiece", () => DistToPiece() == 0)
+               .AddTransition("moving", "onPiece", () => DistToPiece() == 0)
+               .AddState("notTested", Test)
+               .AddTransition("onPiece", "notTested")
+               .AddState("carryingNormal", LookForGoal)
+               //testing piece
+               .AddTransition("onPiece", "notTested", HasPiece)
+               .AddTransition("onPiece", "discover", () => !HasPiece())
+               .AddState("carryingSham", DestroySham)
+               .AddState("shamPicked", Discover)
+               .AddTransition("notTested", "carryingNormal",
+                   () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
+               .AddTransition("notTested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
+               .AddTransition("notTested", "discover", () => CarriedPiece == null)
+               //destroying sham
+               .AddTransition("shamPicked", "carryingSham")
+               .AddTransition("carryingSham", "discover", () => !HasPiece())
+               //place normal piece               
+               .AddTransition("carryingNormal", "discover", () => !HasPiece())
 
-                .StartingState();
+               .StartingState();
         }
     }//class
 }

@@ -25,32 +25,53 @@ namespace Player.Net
     {
         private IGame game;
         private IConnection connection;
+        private AgentCommandLineOptions options;
         private PlayerSettings settings;
         private Socket serverSocket;
-        private ulong _gameId;
-        private string _guid;
-        private Common.Schema.TeamColour _team;
-        private Common.Schema.Player[] _players;
-        private IList<Piece> _pieces;
-        private GameBoard _board;
-        private Common.Schema.PlayerType _type;
-        private Common.SchemaWrapper.Field[,] _fields;
-        private Random random = new Random();
         private State currentState;
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
+        public AgentCommandLineOptions Options
+        {
+            get
+            {
+                return options;
+            }
+
+            set
+            {
+                options = value;
+            }
+        }
+
+        public PlayerSettings Settings
+        {
+            get
+            {
+                return settings;
+            }
+
+            set
+            {
+                settings = value;
+            }
+        }
+
         private const int NO_PIECE = -1;
+
+        
 
        
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
         {
             this.connection = connection;
-            this.settings = settings;
+            this.Settings = settings;
+            this.Options = options;
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
-            game = new Game(this, settings, options);
+            game = new Game(this);
             currentState = game.BiuldDfa();
         }
 
@@ -113,29 +134,29 @@ namespace Player.Net
 
 
 
-        
-
-
-        //private void RegisterForNextGameAfterGameEnd()
-        //{
-        //    JoinGame joinGame = new JoinGame()
-        //    {
-        //        preferredTeam = options.PreferredTeam == "blue"
-        //            ? Common.Schema.TeamColour.blue
-        //            : Common.Schema.TeamColour.red,
-        //        preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-        //        gameName = options.GameName,
-        //        playerIdSpecified = false
-        //    };
-
-        //    connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
-        //}
-
-      
 
 
 
-       
+        private void RegisterForNextGameAfterGameEnd()
+        {
+            JoinGame joinGame = new JoinGame()
+            {
+                preferredTeam = Options.PreferredTeam == "blue"
+                    ? Common.Schema.TeamColour.blue
+                    : Common.Schema.TeamColour.red,
+                preferredRole = Options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
+                gameName = Options.GameName,
+                playerIdSpecified = false
+            };
+
+            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
+        }
+
+
+
+
+
+
 
         private async Task startKeepAlive(Socket server)
         {
@@ -143,7 +164,7 @@ namespace Player.Net
             {
                 if (keepAliveToken.Token.IsCancellationRequested)
                     break;
-                await Task.Delay(TimeSpan.FromMilliseconds(settings.KeepAliveInterval));
+                await Task.Delay(TimeSpan.FromMilliseconds(Settings.KeepAliveInterval));
                 if (keepAliveToken.Token.IsCancellationRequested)
                     break;
                 connection.SendFromClient(server, string.Empty);

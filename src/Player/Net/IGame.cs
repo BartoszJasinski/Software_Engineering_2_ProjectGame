@@ -1,4 +1,5 @@
 ﻿using Common.Schema;
+using Player.Strategy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Player.Net
         void HandleMessage(RegisteredGames message);
         void HandleMessage(ConfirmJoiningGame message);
         void HandleMessage(RejectJoiningGame message);
-        void HandleMessage(Game message);
+        void HandleMessage(Common.Schema.Game message);
         void HandleMessage(Data message);
         void HandleMessage(KnowledgeExchangeRequest message);
         void HandleMessage(AcceptExchangeRequest message);
