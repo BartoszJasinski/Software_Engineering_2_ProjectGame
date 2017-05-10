@@ -14,7 +14,7 @@ namespace GameMaster
 
             GameMasterSettings settings = Configuration.FromFile<GameMasterSettings>(options.Conf);
             GameMasterClient client = new GameMasterClient(new Connection(options.Address, options.Port), settings, 
-                new Logger(UniqueNameGenerator.GetUniqueName(settings.GameDefinition.GameName)));
+                new Logger(UniqueNameGenerator.GetUniqueName(settings.GameDefinition.GameName)), new Game());
             client.Connect();
             client.Disconnect();
         }

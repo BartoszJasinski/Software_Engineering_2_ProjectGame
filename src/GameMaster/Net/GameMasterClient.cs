@@ -22,6 +22,8 @@ namespace GameMaster.Net
     {
         public IConnection Connection { get; }
 
+        private IMessageHandler messageHandler;
+
         //Contents of configuration file
         public Common.Config.GameMasterSettings Settings;
 
@@ -31,28 +33,28 @@ namespace GameMaster.Net
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         //The two teams
-        public Wrapper.Team TeamRed { get; set; }
-        public Wrapper.Team TeamBlue { get; set; }
-        public IEnumerable<Wrapper.Player> Players
-        {
-            get
-            {
-                return TeamRed.Players.Concat(TeamBlue.Players);
-            }
-        }
+       // public Wrapper.Team TeamRed { get; set; }
+      //  public Wrapper.Team TeamBlue { get; set; }
+        //public IEnumerable<Wrapper.Player> Players
+        //{
+        //    get
+        //    {
+        //        return TeamRed.Players.Concat(TeamBlue.Players);
+        //    }
+        //}
 
-        public ulong gameId { get; set; }
+        //public ulong gameId { get; set; }
 
-        public object BoardLock { get; set; } = new object();
+        //public object BoardLock { get; set; } = new object();
 
-        public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
-        public Wrapper.AddressableBoard Board { get; set; }
-        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
-
-        private Random rng = new Random();
+        //public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
+        //public Wrapper.AddressableBoard Board { get; set; }
+        //public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
 
 
-        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings, ILogger logger)
+
+
+        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings, ILogger logger, IMessageHandler messageHandler)
         {
             this.Connection = connection;
             this.Settings = settings;
@@ -61,19 +63,8 @@ namespace GameMaster.Net
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
-
-            TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
-            TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(settings.GameDefinition.NumberOfPlayersPerTeam));
-
-            //var boardGenerator = new RandomGoalBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
-            //    uint.Parse(Settings.GameDefinition.TaskAreaLength),
-            //    uint.Parse(Settings.GameDefinition.GoalAreaLength),
-            //    123);
-            var boardGenerator = new SimpleBoardGenerator(uint.Parse(Settings.GameDefinition.BoardWidth),
-                uint.Parse(Settings.GameDefinition.TaskAreaLength),
-                uint.Parse(Settings.GameDefinition.GoalAreaLength),
-                Settings.GameDefinition.Goals);
-            Board = boardGenerator.CreateBoard();
+            this.messageHandler = messageHandler;
+            messageHandler.GameMasterClient = this;
         }
 
         public void Connect()
@@ -124,9 +115,8 @@ namespace GameMaster.Net
             if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
             {
                 ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
-                BoardPrinter.PrintAlternative(Board);
-
-                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), this, socket);
+                messageHandler.PrintBoard();
+                messageHandler.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), socket);
             }
         }
 
@@ -139,72 +129,39 @@ namespace GameMaster.Net
         }
 
         //returns null if both teams are full
-        public Wrapper.Team SelectTeamForPlayer(TeamColour preferredTeam)
-        {
-            var selectedTeam = preferredTeam == TeamColour.blue ? TeamBlue : TeamRed;
-            var otherTeam = preferredTeam == TeamColour.blue ? TeamRed : TeamBlue;
+       
 
-            if (selectedTeam.IsFull)
-                selectedTeam = otherTeam;
+        //private static ulong pieceid = 0;
 
-            //both teams are full
-            if (selectedTeam.IsFull)
-            {
-                return null;
-            }
+        //public void PlaceNewPiece(Common.SchemaWrapper.TaskField field)
+        //{
 
-            return selectedTeam;
-        }
+        //    var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+        //    lock (BoardLock)
+        //    {
+        //        var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+        //        newPiece.Id = pieceid++;
+        //        if (field == null)
+        //        {
+        //            ConsoleDebug.Warning("There are no empty places for a new Piece!");
+        //            return;   //TODO BUSYWAITING HERE probably
+        //        }
+        //        //remove old piece
+        //        if (field.PieceId != null)
+        //        {
+        //            var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
+        //            Pieces.Remove(oldPiece);
+        //        }
+        //        field.PieceId = newPiece.Id;
+        //        newPiece.Location = new Location() { x = field.X, y = field.Y };
+        //        Pieces.Add(newPiece);
+        //        Board.UpdateDistanceToPiece(Pieces);
+        //        ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+        //    }
+        //    //BoardPrinter.Print(Board);
+        //}
 
-        private static ulong pieceid = 0;
-
-        public void PlaceNewPiece(Common.SchemaWrapper.TaskField field)
-        {
-
-            var pieceType = rng.NextDouble() < Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
-            lock (BoardLock)
-            {
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
-                newPiece.Id = pieceid++;
-                if (field == null)
-                {
-                    ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                    return;   //TODO BUSYWAITING HERE probably
-                }
-                //remove old piece
-                if (field.PieceId != null)
-                {
-                    var oldPiece = Pieces.Where(p => p.Id == field.PieceId.Value).Single();
-                    Pieces.Remove(oldPiece);
-                }
-                field.PieceId = newPiece.Id;
-                newPiece.Location = new Location() { x = field.X, y = field.Y };
-                Pieces.Add(newPiece);
-                Board.UpdateDistanceToPiece(Pieces);
-                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
-            }
-            //BoardPrinter.Print(Board);
-        }
-
-        public bool IsPlayerInGoalArea(Wrapper.Player p)
-        {
-            if (p.Team.Color == TeamColour.blue && p.Y < Board.GoalsHeight)
-                return true;
-            return p.Team.Color == TeamColour.red && p.Y >= Board.Height - Board.GoalsHeight;
-        }
-
-        public async Task GeneratePieces()
-        {
-            while (true)
-            {
-                if (CancelToken.Token.IsCancellationRequested)
-                    break;
-                await Task.Delay(TimeSpan.FromMilliseconds(Settings.GameDefinition.PlacingNewPiecesFrequency));
-                if (CancelToken.Token.IsCancellationRequested)
-                    break;
-                PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
-            }
-        }
+      
 
         public async Task startKeepAlive(Socket server)
         {
@@ -219,6 +176,11 @@ namespace GameMaster.Net
             }
         }
 
+
+        public void Send(Socket handler, string data)
+        {
+            Connection.SendFromClient(handler, data);
+        }
 
     }//class
 }//namespace
