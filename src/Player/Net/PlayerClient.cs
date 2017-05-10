@@ -23,7 +23,7 @@ namespace Player.Net
 {
     public class PlayerClient
     {
-        private IGame game;
+        private IMessageHandler messageHandler;
         private IConnection connection;
         private AgentCommandLineOptions options;
         private PlayerSettings settings;
@@ -63,7 +63,7 @@ namespace Player.Net
 
        
 
-        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
+        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options, IMessageHandler messageHandler)
         {
             this.connection = connection;
             this.Settings = settings;
@@ -71,8 +71,9 @@ namespace Player.Net
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
-            game = new Game(this);
-            currentState = game.BiuldDfa();
+            this.messageHandler = messageHandler;
+            messageHandler.Player = this;
+            currentState = messageHandler.BiuldDfa();
         }
 
         public void Connect()
@@ -108,7 +109,7 @@ namespace Player.Net
             if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
             {
                 ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
-                game.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
+                messageHandler.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
             }
         }
 
@@ -123,7 +124,7 @@ namespace Player.Net
         public void Play()
         {
             ConsoleDebug.Strategy(currentState.Name);
-            BoardPrinter.Print(game.Fields);
+            messageHandler.PrintBoard();
             
             currentState = currentState.NextState();
             if (currentState.Action == null)

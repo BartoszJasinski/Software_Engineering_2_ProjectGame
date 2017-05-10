@@ -13,7 +13,7 @@ using Player.Strategy;
 
 namespace Player.Net
 {
-    public class Game : IGame
+    public class Game : IGame, IMessageHandler
     {
         private PlayerClient player;
         private ulong _gameId;
@@ -31,9 +31,8 @@ namespace Player.Net
 
         private const int NO_PIECE = -1;
 
-        public Game(PlayerClient player)
+        public Game()
         {
-            this.player = player;
             Pieces = new List<Piece>();
         }
 
@@ -107,6 +106,19 @@ namespace Player.Net
             =>
                 Team == Common.Schema.TeamColour.blue && Location.y < Board.goalsHeight ||
                 Team == Common.Schema.TeamColour.red && Location.y >= Board.tasksHeight + Board.goalsHeight;
+
+        public PlayerClient Player
+        {
+            get
+            {
+                return player;
+            }
+
+            set
+            {
+                player = value;
+            }
+        }
 
         public void HandleMessage(RejectJoiningGame message)
         {
@@ -554,6 +566,11 @@ namespace Player.Net
                .AddTransition("carryingNormal", "discover", () => !HasPiece())
 
                .StartingState();
+        }
+
+        public void PrintBoard()
+        {
+            BoardPrinter.Print(Fields);
         }
     }//class
 }

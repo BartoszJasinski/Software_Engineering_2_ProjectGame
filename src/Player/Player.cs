@@ -13,7 +13,7 @@ namespace Player
 
             PlayerSettings settings = Configuration.FromFile<PlayerSettings>(options.Conf);
 
-            PlayerClient client = new PlayerClient(new Connection(options.Address, options.Port), settings, options);
+            PlayerClient client = new PlayerClient(new Connection(options.Address, options.Port), settings, options, new Game());
             client.Connect();
             client.Disconnect();
 
