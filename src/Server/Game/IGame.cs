@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Server.Game
 {
@@ -12,5 +13,7 @@ namespace Server.Game
         Socket GameMaster { get; set; }
 
         bool HasStarted { get; set; }
+
+        IList<IPlayer> Players { get; set; }
     }
 }

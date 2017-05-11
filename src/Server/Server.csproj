@@ -52,7 +52,9 @@
     <Compile Include="Game\IdExistsException.cs" />
     <Compile Include="Game\IGame.cs" />
     <Compile Include="Game\IGamesContainer.cs" />
+    <Compile Include="Game\IPlayer.cs" />
     <Compile Include="Game\NameExistsException.cs" />
+    <Compile Include="Game\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommunicationServer.cs" />
     <Compile Include="Connection\StateObject.cs" />
