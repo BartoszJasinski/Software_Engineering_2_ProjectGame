@@ -100,10 +100,10 @@ namespace Server.Connection
 
         public static void HandleMessage(ConfirmJoiningGame request, CommunicationServer server, Socket handler)
         {
-            Game.IGame g = server.RegisteredGames.GetGameById((int)request.gameId);
-            g.Players.Add(new Game.Player { Id = request.playerId });
-
             HandleMessage(request as PlayerMessage, server, handler);
+
+            Game.IGame g = server.RegisteredGames.GetGameById((int)request.gameId);
+            g.Players.Add(new Game.Player { Id = request.playerId });   
         }
 
         public static void HandleMessage(GameStarted request, CommunicationServer server, Socket handler)
