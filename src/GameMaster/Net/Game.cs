@@ -20,13 +20,7 @@ namespace GameMaster.Net
         //The two teams
         public Wrapper.Team TeamRed { get; set; }
         public Wrapper.Team TeamBlue { get; set; }
-        public IEnumerable<Wrapper.Player> Players
-        {
-            get
-            {
-                return TeamRed.Players.Concat(TeamBlue.Players);
-            }
-        }
+        public IList<Wrapper.Player> Players => TeamRed.Players.Concat(TeamBlue.Players).ToList();
 
         public ulong gameId { get; set; }
 
@@ -165,6 +159,7 @@ namespace GameMaster.Net
                     PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
                 }
                 //start infinite Piece place loop
+                GameInProgress = true;
                 GeneratePieces();
             }
         }
@@ -469,6 +464,7 @@ namespace GameMaster.Net
 
                 if (MakeDecision.endGame)
                 {
+                    GameInProgress = false;
                     EndGameEventArgs args;
                     GameMasterClient.CancelToken.Cancel();
 
@@ -549,6 +545,13 @@ namespace GameMaster.Net
         public void HandleMessage(PlayerDisconnected message, Socket handler)
         {
             ConsoleDebug.Error($"Player disconnected! Player id: {message.playerId}");
+            var player = Players.First(p => p.Id == message.playerId);
+            TeamBlue.Players.Remove(player);
+            TeamRed.Players.Remove(player);
+            if (TeamRed.Players.Count + TeamBlue.Players.Count == 0)
+            {
+                GameInProgress = false;
+            }
         }
 
         public void HandleMessage(object message, Socket handler)
@@ -618,7 +621,7 @@ namespace GameMaster.Net
 
         public async Task GeneratePieces()
         {
-            while (true)
+            while (GameInProgress)
             {
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
                     break;
@@ -626,6 +629,29 @@ namespace GameMaster.Net
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
                     break;
                 PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
+            }
+        }
+
+        protected bool gameInProgress;
+        public bool GameInProgress
+        {
+            get { return gameInProgress; }
+            set
+            {
+                if (value == false && gameInProgress)
+                {
+                    ConsoleDebug.Warning("Game ends via GameInProgress assignment");
+                }
+                else if (value && gameInProgress == false)
+                {
+                    ConsoleDebug.Warning("Game starts via GameInProgress assignment");
+                }
+                else
+                {
+                    ConsoleDebug.Error("Useless GameInProgress assignment");
+                }
+
+                gameInProgress = value;
             }
         }
     }
