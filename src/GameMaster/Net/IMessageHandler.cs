@@ -21,6 +21,7 @@ namespace GameMaster.Net
         void HandleMessage(PlayerDisconnected message, Socket handler);
         void HandleMessage(object message, Socket handler);
         void PrintBoard();
+        event EventHandler<EndGameEventArgs> OnGameEnd;
         GameMasterClient GameMasterClient { get; set; }
     }
 }

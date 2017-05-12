@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using GameMaster.Log;
 using GameMaster.Logic.Board;
 using System.Threading;
+using GameMaster.Logic;
 
 namespace GameMaster.Net
 {
@@ -23,6 +24,7 @@ namespace GameMaster.Net
         public IConnection Connection { get; }
 
         private IMessageHandler messageHandler;
+        private IRanking ranking;
 
         //Contents of configuration file
         public Common.Config.GameMasterSettings Settings;
@@ -54,15 +56,17 @@ namespace GameMaster.Net
 
 
 
-        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings, ILogger logger, IMessageHandler messageHandler)
+        public GameMasterClient(IConnection connection, Common.Config.GameMasterSettings settings, ILogger logger, IMessageHandler messageHandler, IRanking ranking)
         {
             this.Connection = connection;
             this.Settings = settings;
             Logger = logger;
+            this.ranking = ranking;
 
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
+            messageHandler.OnGameEnd += onGameEnd;
             this.messageHandler = messageHandler;
             messageHandler.GameMasterClient = this;
         }
@@ -123,9 +127,16 @@ namespace GameMaster.Net
         private void OnMessageSend(object sender, MessageSendEventArgs eventArgs)
         {
             var address = (eventArgs.Handler.RemoteEndPoint as IPEndPoint).Address;
-            System.Console.WriteLine("New message sent to {0}", address.ToString());
+            //System.Console.WriteLine("New message sent to {0}", address.ToString());
             var socket = eventArgs.Handler as Socket;
 
+        }
+
+        private void onGameEnd(object sender, EndGameEventArgs eventArgs)
+        {
+            ranking.AddTeam(eventArgs.LoserTeam);
+            ranking.AddWinForTeam(eventArgs.WinnerTeam);
+            ranking.Print();
         }
 
         //returns null if both teams are full

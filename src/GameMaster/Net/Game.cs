@@ -79,7 +79,7 @@ namespace GameMaster.Net
             gameId = message.gameId;
         }
 
-        public  void HandleMessage(JoinGame message, Socket handler)
+        public void HandleMessage(JoinGame message, Socket handler)
         {
 
             lock (BoardLock)
@@ -169,7 +169,7 @@ namespace GameMaster.Net
             }
         }
 
-        public  async Task HandleMessage(Move message, Socket handler)
+        public async Task HandleMessage(Move message, Socket handler)
         {
             int dx, dy;
             Data resp = new Data();
@@ -238,7 +238,7 @@ namespace GameMaster.Net
             gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
         }
 
-         Wrapper.TaskField FieldAt(Wrapper.Field[,] fields, uint x, uint y)
+        Wrapper.TaskField FieldAt(Wrapper.Field[,] fields, uint x, uint y)
         {
             try
             {
@@ -298,7 +298,7 @@ namespace GameMaster.Net
             gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
         }
 
-        public  async Task HandleMessage(PickUpPiece message, Socket handler)
+        public async Task HandleMessage(PickUpPiece message, Socket handler)
         {
             string resp = "";
             await Task.Delay((int)gameMaster.Settings.ActionCosts.PickUpDelay);
@@ -469,11 +469,19 @@ namespace GameMaster.Net
 
                 if (MakeDecision.endGame)
                 {
+                    EndGameEventArgs args;
+                    GameMasterClient.CancelToken.Cancel();
+
                     if (blueWon)
+                    {
                         ConsoleDebug.Good("Blue team won!");
+                        args = new EndGameEventArgs(TeamBlue, TeamRed);
+                    }
                     else
+                    {
                         ConsoleDebug.Good("Red team won!");
-                    BoardPrinter.Print(Board);
+                        args = new EndGameEventArgs(TeamRed, TeamBlue);
+                    }
 
                     foreach (var player in Players)
                     {
@@ -487,7 +495,7 @@ namespace GameMaster.Net
                         GameMasterClient.Connection.SendFromClient(handler, endGameResponse);
                     }
 
-                    GameMasterClient.CancelToken.Cancel();
+                    OnGameEnd(this, args);
                 }
 
                 resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
@@ -498,7 +506,7 @@ namespace GameMaster.Net
 
         }
 
-        public  async Task HandleMessage(AuthorizeKnowledgeExchange message, Socket handler)
+        public async Task HandleMessage(AuthorizeKnowledgeExchange message, Socket handler)
         {
             var playerFrom = Players.Where(p => p.Guid == message.playerGuid).Single();
             var playerTo = Players.Where(p => p.Id == message.withPlayerId).SingleOrDefault();
@@ -538,17 +546,20 @@ namespace GameMaster.Net
             GameMasterClient.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(response));
         }
 
-        public  void HandleMessage(PlayerDisconnected message, Socket handler)
+        public void HandleMessage(PlayerDisconnected message, Socket handler)
         {
             ConsoleDebug.Error($"Player disconnected! Player id: {message.playerId}");
         }
 
-        public  void HandleMessage(object message, Socket handler)
+        public void HandleMessage(object message, Socket handler)
         {
             ConsoleDebug.Warning("Unknown Type");
         }
 
         private static ulong pieceid = 0;
+
+        public event EventHandler<EndGameEventArgs> OnGameEnd;
+
         public void PlaceNewPiece(Common.SchemaWrapper.TaskField field)
         {
 
