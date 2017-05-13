@@ -1,5 +1,6 @@
 ﻿using GameMaster.Log;
 using Common.Schema;
+using Game = GameMaster.Net.Game;
 
 namespace GameMasterTests
 {
@@ -18,6 +19,11 @@ namespace GameMasterTests
         public void Log(GameMessage msg, Common.SchemaWrapper.Player p)
         {
 
+        }
+
+        public void LogEndGame(Game game, TeamColour winner)
+        {
+            
         }
     }
 }

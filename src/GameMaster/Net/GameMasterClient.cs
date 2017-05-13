@@ -134,6 +134,7 @@ namespace GameMaster.Net
 
         private void onGameEnd(object sender, EndGameEventArgs eventArgs)
         {
+            
             ranking.AddTeam(eventArgs.LoserTeam);
             ranking.AddWinForTeam(eventArgs.WinnerTeam);
             ranking.Print();

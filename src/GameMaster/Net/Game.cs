@@ -490,7 +490,7 @@ namespace GameMaster.Net
 
                         GameMasterClient.Connection.SendFromClient(handler, endGameResponse);
                     }
-
+                    gameMaster.Logger.LogEndGame(this, blueWon?TeamColour.blue : TeamColour.red);
                     OnGameEnd(this, args);
                 }
 

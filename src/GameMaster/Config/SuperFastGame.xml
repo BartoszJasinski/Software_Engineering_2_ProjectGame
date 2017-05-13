@@ -10,7 +10,7 @@
     <BoardWidth>5</BoardWidth>
     <TaskAreaLength>4</TaskAreaLength>
     <GoalAreaLength>2</GoalAreaLength>
-    <NumberOfPlayersPerTeam>1</NumberOfPlayersPerTeam>
+    <NumberOfPlayersPerTeam>3</NumberOfPlayersPerTeam>
     <GameName>Initial game</GameName>
   </GameDefinition>
   <ActionCosts>
