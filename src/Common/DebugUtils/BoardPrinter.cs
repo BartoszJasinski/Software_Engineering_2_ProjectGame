@@ -85,8 +85,9 @@ namespace Common.DebugUtils
                         }
                         if (f.PlayerId.HasValue)
                         {
+                            ulong plid = f.PlayerId.Value;
                             Console.ForegroundColor = ConsoleColor.Black;
-                            Console.Write(f.PlayerId.Value);
+                            Console.Write(plid);
                         }
                         else
                         {
