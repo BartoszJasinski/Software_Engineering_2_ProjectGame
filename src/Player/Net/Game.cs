@@ -187,8 +187,10 @@ namespace Player.Net
             {
                 ConsoleDebug.Good("\nGame just ended\n");
                 BoardPrinter.Print(Fields);
-                System.Console.ReadLine();
-                player.Disconnect();
+                //System.Console.ReadLine();
+                //player.Disconnect();
+                player.Connect();
+                return;
             }
 
             player.Play();
