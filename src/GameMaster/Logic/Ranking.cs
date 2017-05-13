@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Common.SchemaWrapper;
 using Common.Schema;
@@ -29,7 +30,13 @@ namespace GameMaster.Logic
         {
             int i = 1;
             string[] rankingStrings = numberOfWinsDict.OrderByDescending(n => n.Value).Select(n => $"{i++}. {n.Key} Team - {n.Value} Wins").ToArray();
-            Console.WriteLine(string.Join("\n", rankingStrings).DrawInConsoleBox());
+            //Not sure about this, but looks like only way to print it at the end
+            Task.Delay(1000).ContinueWith(t =>
+            {
+                
+                Console.WriteLine(string.Join("\n", rankingStrings).DrawInConsoleBox());
+            }).Start(); 
+            
         }
     }
 }
