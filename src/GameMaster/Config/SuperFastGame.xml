@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<GameMasterSettings xmlns="https://se2.mini.pw.edu.pl/17-pl-19/17-pl-19/"
+                    KeepAliveInterval="500"
+                    RetryRegisterGameInterval="60000">
+  <GameDefinition>
+    <Goals team="blue" x="0" y="0" type="goal" />
+    <ShamProbability>0.33</ShamProbability>
+    <PlacingNewPiecesFrequency>250</PlacingNewPiecesFrequency>
+    <InitialNumberOfPieces>1</InitialNumberOfPieces>
+    <BoardWidth>5</BoardWidth>
+    <TaskAreaLength>4</TaskAreaLength>
+    <GoalAreaLength>2</GoalAreaLength>
+    <NumberOfPlayersPerTeam>3</NumberOfPlayersPerTeam>
+    <GameName>Initial game</GameName>
+  </GameDefinition>
+  <ActionCosts>
+    <MoveDelay>10</MoveDelay>
+    <DiscoverDelay>45</DiscoverDelay>
+    <TestDelay>50</TestDelay>
+    <PickUpDelay>10</PickUpDelay>
+    <PlacingDelay>10</PlacingDelay>
+    <KnowledgeExchangeDelay>150</KnowledgeExchangeDelay>
+  </ActionCosts>
+</GameMasterSettings>

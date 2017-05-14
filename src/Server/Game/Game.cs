@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace Server.Game
 {
@@ -8,6 +9,7 @@ namespace Server.Game
         public string Name { get; set; }
         public ulong BlueTeamPlayersCount { get; set; }
         public ulong RedTeamPlayersCount { get; set; }
+        public IList<IPlayer> Players { get; set; }
 
         public Socket GameMaster { get; set; }
 
@@ -20,6 +22,7 @@ namespace Server.Game
             BlueTeamPlayersCount = bluePlayers;
             RedTeamPlayersCount = redPlayers;
             GameMaster = gameMaster;
+            Players = new List<IPlayer>();
         }
     }
 }

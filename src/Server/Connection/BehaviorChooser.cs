@@ -89,12 +89,21 @@ namespace Server.Connection
                 request.playerId = server.IdForNewClient();
                 request.playerIdSpecified = true;
                 server.Clients.Add(request.playerId, handler);
+                g.Players.Add(new Game.Player{Id = request.playerId});
             }
 
             var response = XmlMessageConverter.ToXml(request);
 
                 server.ConnectionEndpoint.SendFromServer(g.GameMaster, response);
                 return;
+        }
+
+        public static void HandleMessage(ConfirmJoiningGame request, CommunicationServer server, Socket handler)
+        {
+            HandleMessage(request as PlayerMessage, server, handler);
+
+            Game.IGame g = server.RegisteredGames.GetGameById((int)request.gameId);
+            g.Players.Add(new Game.Player { Id = request.playerId });   
         }
 
         public static void HandleMessage(GameStarted request, CommunicationServer server, Socket handler)

@@ -39,36 +39,38 @@ namespace Common.DebugUtils
                     if (field is GoalField)
                     {
                         var f = field as GoalField;
-                        switch (f.Team)
-                        {
-                            case Schema.TeamColour.red:
-                                Console.ForegroundColor = ConsoleColor.DarkRed;
-                                break;
-                            case Schema.TeamColour.blue:
-                                Console.ForegroundColor = ConsoleColor.DarkBlue;
-                                break;
-                        }
+                        //switch (f.Team)
+                        //{
+                        //    case Schema.TeamColour.red:
+                        //        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        //        break;
+                        //    case Schema.TeamColour.blue:
+                        //        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        //        break;
+                        //}
                         switch (f.Type)
                         {
-                            case Schema.GoalFieldType.goal:
-                                {
-                                    Console.BackgroundColor = ConsoleColor.Yellow;
-                                    Console.Write("g");
-                                    break;
-                                }
-                            case Schema.GoalFieldType.nongoal:
-                                {
-                                    Console.BackgroundColor = ConsoleColor.DarkYellow;
-                                    Console.Write(" ");
-                                    break;
-                                }
-                            case Schema.GoalFieldType.unknown:
-                                {
-                                    Console.BackgroundColor = ConsoleColor.Gray;
-                                    Console.Write("?");
-                                    break;
-                                }
+                        case Schema.GoalFieldType.goal:
+                            {
+                                Console.BackgroundColor = ConsoleColor.Yellow;
+                                break;
+                            }
+                        case Schema.GoalFieldType.nongoal:
+                            {
+                                Console.BackgroundColor = ConsoleColor.DarkYellow;
+                                break;
+                            }
+                        case Schema.GoalFieldType.unknown:
+                            {
+                                Console.BackgroundColor = ConsoleColor.Gray;
+                                break;
+                            }
                         }
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        if (f.PlayerId.HasValue)
+                            Console.Write(f.PlayerId.Value);
+                        else
+                            Console.Write(" ");
 
                     }
                     else if (field is TaskField)
@@ -83,8 +85,9 @@ namespace Common.DebugUtils
                         }
                         if (f.PlayerId.HasValue)
                         {
+                            ulong plid = f.PlayerId.Value;
                             Console.ForegroundColor = ConsoleColor.Black;
-                            Console.Write(f.PlayerId.Value);
+                            Console.Write(plid);
                         }
                         else
                         {

@@ -22,7 +22,6 @@ namespace Server
         public IGamesContainer RegisteredGames;
         public Dictionary<ulong, Socket> Clients;
         private List<ulong> freeIdList;
-        public IDictionary<ulong, ICollection<ulong>> GameIdPlayerIdDictionary;
         public IList<string> startedGames;
 
         private CommunicationServerSettings settings;
@@ -38,7 +37,6 @@ namespace Server
             connectionEndpoint.OnDisconnected += OnDisconnect;
             Clients = new Dictionary<ulong, Socket>();
             freeIdList = new List<ulong>();
-            GameIdPlayerIdDictionary = new Dictionary<ulong, ICollection<ulong>>();
             startedGames = new List<string>();
 
         }
@@ -53,24 +51,18 @@ namespace Server
             {
                 ulong playerId = Clients.First(pair => pair.Value == e.Handler).Key;
                 ConsoleDebug.Message($"ID: {playerId}");
-                ICollection<ulong> gameIds = GameIdPlayerIdDictionary
-                    .Where(pair => pair.Value.Contains(playerId))
-                    .ToDictionary(pair => pair.Key, pair => pair.Value)
-                    .Keys;
 
-                ICollection<Socket> gameMasters = new List<Socket>(gameIds.Count);
-                foreach (var gameId in gameIds)
+
+
+                IEnumerable<IGame> abandonedGames = RegisteredGames
+                    .Where(game => game.Players.Any(player => player.Id == playerId));
+                foreach (var game in abandonedGames)
                 {
-                    gameMasters.Add(RegisteredGames.GetGameById((int)gameId).GameMaster);
-                    ConsoleDebug.Message($"Informing game master of game {gameId} about disconnected player, id: {playerId}");
+                    ConsoleDebug.Message($"Informing game master of game {game.Id} about disconnected player, id: {playerId}");
+                    InformGameMasterAboutDisconnectedPlayer(game.GameMaster, playerId);
 
                     // remove player id occurrence
-                    GameIdPlayerIdDictionary[gameId].Remove(playerId);
-                }
-
-                foreach (var gameMaster in gameMasters)
-                {
-                    InformGameMasterAboutDisconnectedPlayer(gameMaster, playerId);
+                    game.Players.Remove(game.Players.First(player => playerId == player.Id));
                 }
             }
             catch (Exception exception)
@@ -131,7 +123,7 @@ namespace Server
         }
 
 
-        public  ulong IdForNewClient()
+        public ulong IdForNewClient()
         {
             ulong id;
 

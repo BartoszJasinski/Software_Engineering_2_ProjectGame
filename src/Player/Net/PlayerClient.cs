@@ -23,104 +23,57 @@ namespace Player.Net
 {
     public class PlayerClient
     {
+        private IMessageHandler messageHandler;
         private IConnection connection;
-        private PlayerSettings settings;
         private AgentCommandLineOptions options;
+        private PlayerSettings settings;
         private Socket serverSocket;
-        private ulong _gameId;
-        private string _guid;
-        private Common.Schema.TeamColour _team;
-        private Common.Schema.Player[] _players;
-        private IList<Piece> _pieces;
-        private GameBoard _board;
-        private Common.Schema.PlayerType _type;
-        private Common.SchemaWrapper.Field[,] _fields;
-        private Random random = new Random();
         private State currentState;
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
-        private const int NO_PIECE = -1;
-
-        public ulong GameId
-        {
-            get { return _gameId; }
-            set { _gameId = value; }
-        }
-
-        public ulong Id { get; set; }
-
-        public Common.Schema.Player[] Players
-        {
-            set { _players = value; }
-            get { return _players; }
-        }
-
-        public Common.SchemaWrapper.Field[,] Fields
-        {
-            set { _fields = value; }
-            get { return _fields; }
-        }
-
-
-        public Piece CarriedPiece
+        public AgentCommandLineOptions Options
         {
             get
             {
-                return Pieces.SingleOrDefault(
-                    pc =>
-                        pc.playerIdSpecified && pc.playerId == Id);
+                return options;
+            }
+
+            set
+            {
+                options = value;
             }
         }
 
-        public GameBoard Board
+        public PlayerSettings Settings
         {
-            set { _board = value; }
-            get { return _board; }
-        }
-
-        public string Guid
-        {
-            get { return _guid; }
-            set { _guid = value; }
-        }
-
-        public Common.Schema.TeamColour Team
-        {
-            get { return _team; }
-            set { _team = value; }
-        }
-
-        public Location Location { get; set; }
-
-        public PlayerType Type
-        {
-            get { return _type; }
-
-            set { _type = value; }
+            get
+            {
+                return settings;
             }
 
-        public IList<Piece> Pieces
-        {
-            get { return _pieces; }
-
-            set { _pieces = value; }
+            set
+            {
+                settings = value;
             }
+        }
 
-        public bool IsInGoalArea
-            =>
-                Team == TeamColour.blue && Location.y < Board.goalsHeight ||
-                Team == TeamColour.red && Location.y >= Board.tasksHeight + Board.goalsHeight;
+        private const int NO_PIECE = -1;
 
-        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options)
+        
+
+       
+
+        public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options, IMessageHandler messageHandler)
         {
             this.connection = connection;
-            this.settings = settings;
-            this.options = options;
+            this.Settings = settings;
+            this.Options = options;
             connection.OnConnection += OnConnection;
             connection.OnMessageRecieve += OnMessageReceive;
             connection.OnMessageSend += OnMessageSend;
-            Pieces = new List<Piece>();
-            currentState = BiuldDfa();
+            this.messageHandler = messageHandler;
+            messageHandler.Player = this;
+            currentState = messageHandler.BiuldDfa();
         }
 
         public void Connect()
@@ -156,9 +109,7 @@ namespace Player.Net
             if (eventArgs.Message.Length > 0) //the message is not the keepalive packet
             {
                 ConsoleDebug.Message("New message from: " + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
-
-                BehaviorChooser.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message),
-                    new PlayerMessageHandleArgs(connection, eventArgs.Handler, settings, options, this));
+                messageHandler.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message));
             }
         }
 
@@ -173,7 +124,7 @@ namespace Player.Net
         public void Play()
         {
             ConsoleDebug.Strategy(currentState.Name);
-            BoardPrinter.Print(Fields);
+            messageHandler.PrintBoard();
             
             currentState = currentState.NextState();
             if (currentState.Action == null)
@@ -182,262 +133,31 @@ namespace Player.Net
                 currentState.Action();
         }
 
-        private MoveType RandomMoveType()
-        {
-            Array values = Enum.GetValues(typeof(MoveType));
-            return (MoveType)values.GetValue(random.Next(values.Length));
-        }
 
-        private void Move(MoveType direction)
-        {
-            if (previousLocation != null && Location != null && Location.x == previousLocation.x && Location.y == previousLocation.y)
-            {
-                ConsoleDebug.Error("Snake time! =====================================");
-                //if (direction==MoveType.up)
-                //    direction=MoveType.right;
-                //else if (direction == MoveType.right)
-                //    direction = MoveType.down;
-                //else if (direction == MoveType.down)
-                //    direction = MoveType.left;
-                //else
-                //    direction = MoveType.up;
-                direction = RandomMoveType();
-            }
-            previousLocation=new Location(){x=Location.x,y=Location.y};
-            Move m = new Move()
-            {
-                direction = direction,
-                directionSpecified = true,
-                gameId = _gameId,
-                playerGuid = _guid
-            };
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(m));
-        }
 
-        private void Discover()
-        {
-            Common.Schema.Discover d = new Discover()
-            {
-                gameId = GameId,
-                playerGuid = Guid
-            };
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(d));
-        }
 
-        private void PickUpPiece()
-        {
-            Common.Schema.PickUpPiece p = new PickUpPiece()
-            {
-                playerGuid = Guid,
-                gameId = GameId
-            };
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
-        }
-
-        private void PlacePiece()
-        {
-            Common.Schema.PlacePiece p = new PlacePiece()
-            {
-                gameId = GameId,
-                playerGuid = Guid
-            };
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(p));
-            Pieces.Remove(CarriedPiece);
-        }
-
-        private void Test()
-        {
-            TestPiece t = new TestPiece()
-            {
-                gameId = GameId,
-                playerGuid = Guid
-            };
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(t));
-        }
-
-        Wrapper.TaskField FieldAt(uint x, uint y)
-        {
-            try
-            {
-                return (Fields[x, y] as Wrapper.TaskField);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private Location previousLocation=null;
-        MoveType Where(int? d)
-        {
-            if (FieldAt(Location.x + 1, Location.y)
-                    ?.DistanceToPiece == d)
-                return MoveType.right;
-            if (FieldAt(Location.x - 1, Location.y)
-                    ?.DistanceToPiece == d)
-                return MoveType.left;
-            if (FieldAt(Location.x, Location.y + 1)
-                    ?.DistanceToPiece == d)
-                return MoveType.up;
-            if (FieldAt(Location.x, Location.y - 1)
-                    ?.DistanceToPiece == d)
-                return MoveType.down;
-            if (Location.y <= Board.goalsHeight)
-                return MoveType.up;
-            return MoveType.down;
-        }
-
-        private void MoveToNieghborClosestToPiece()
-        {
-            var t = new[]
-            {
-                FieldAt(Location.x + 1, Location.y)
-                    ?.DistanceToPiece,
-                FieldAt(Location.x - 1, Location.y)
-                    ?.DistanceToPiece,
-                FieldAt(Location.x, Location.y + 1)
-                    ?.DistanceToPiece,
-                FieldAt(Location.x, Location.y - 1)
-                    ?.DistanceToPiece
-            }.Where(u => u.HasValue && u != NO_PIECE).Select(u => u.Value);
-            int? d;
-            if (t.Count() == 0)
-                d = NO_PIECE;
-            else
-            {
-                d = (int?) t.Min();
-            }
-            if (d >= FieldAt(Location.x, Location.y)?.DistanceToPiece)
-                Discover();
-            else
-                Move(Where(d));
-        }
 
 
         private void RegisterForNextGameAfterGameEnd()
         {
             JoinGame joinGame = new JoinGame()
             {
-                preferredTeam = options.PreferredTeam == "blue"
+                preferredTeam = Options.PreferredTeam == "blue"
                     ? Common.Schema.TeamColour.blue
                     : Common.Schema.TeamColour.red,
-                preferredRole = options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-                gameName = options.GameName,
+                preferredRole = Options.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
+                gameName = Options.GameName,
                 playerIdSpecified = false
             };
 
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
 
-        int? DistToPiece()
-        {
-            return (Fields[Location.x, Location.y] as Wrapper.TaskField)?.DistanceToPiece;
-        }
 
-        private State BiuldDfa()
-        {
-            return new DfaBuilder()
-                //finding piece
-                .AddState("start")
-                .AddState("discover", Discover)                
-                .AddTransition("start", "discover")
-                .AddState("moving", MoveToNieghborClosestToPiece)
-                .AddTransition("discover", "moving", () => DistToPiece() > 0 || DistToPiece() == null)
-                .AddTransition("moving", "discover", () => DistToPiece() > 0 || DistToPiece() == null)
-                .AddState("onPiece", PickUpPiece)
-                //picking piece
-                .AddTransition("discover", "onPiece", () => DistToPiece() == 0)
-                .AddTransition("moving", "onPiece", () => DistToPiece() == 0)
-                .AddState("notTested", Test)
-                .AddTransition("onPiece", "notTested")
-                .AddState("carryingNormal", LookForGoal)
-                //testing piece
-                .AddTransition("onPiece", "notTested", HasPiece)
-                .AddTransition("onPiece", "discover", () => !HasPiece())
-                .AddState("carryingSham", DestroySham)
-                .AddState("shamPicked", Discover)
-                .AddTransition("notTested", "carryingNormal",
-                    () => CarriedPiece != null && CarriedPiece.type == PieceType.normal)
-                .AddTransition("notTested", "shamPicked", () => CarriedPiece != null && CarriedPiece.type == PieceType.sham)
-                .AddTransition("notTested", "discover", () => CarriedPiece == null)
-                //destroying sham
-                .AddTransition("shamPicked", "carryingSham")                
-                .AddTransition("carryingSham", "discover", () => !HasPiece())                
-                //place normal piece               
-                .AddTransition("carryingNormal", "discover", () => !HasPiece())
 
-                .StartingState();
-        }
 
-        private void DestroySham()
-        {
-            if (DistToPiece() > 0)
-                MoveToNieghborClosestToPiece();
-            else
-                PlacePiece();
-        }
 
-        private bool left = true;
 
-        private void LookForGoal()
-        {
-            if (Fields[Location.x, Location.y] == null && !IsInGoalArea)
-            {
-                Discover();
-                return;
-            }
-            if (!IsInGoalArea)
-            {
-                if (Team == TeamColour.blue)
-                    Move(MoveType.down);
-                else
-                    Move(MoveType.up);
-                return;
-            }
-            var gf = Fields[Location.x, Location.y] as Wrapper.GoalField;
-            if (gf == null || gf.Type == GoalFieldType.goal || gf.Type == GoalFieldType.unknown)
-                PlacePiece();
-            else
-            {
-                if (Team == TeamColour.blue &&
-                    (Location.y == 0 && Location.x % 2 == 0 ||
-                     Location.y == Board.goalsHeight - 1 && Location.x % 2 == 1)
-                    ||
-                    Team == TeamColour.red &&
-                    (Location.y == Board.tasksHeight + Board.goalsHeight * 2 - 1 && Location.x % 2 == 1 ||
-                     Location.y == Board.tasksHeight + Board.goalsHeight && Location.x % 2 == 0))
-                {
-                    if (left && Location.x == 0 || !left && Location.x + 1 == Board.width)
-                        left = !left;
-                    if (left)
-                    {
-                        Move(MoveType.left);
-                    }
-                    else
-                    {
-                        Move(MoveType.right);
-                    }
-                    return;
-                }
-                if (Location.x % 2 == 1)
-                {
-                    Move(MoveType.up);
-                }
-                else
-                {
-                    Move(MoveType.down);
-                }
-            }
-        }
-
-        private bool HasPiece()
-        {
-            var carriedPiece =
-                Pieces.SingleOrDefault(
-                    pc =>
-                        pc.playerIdSpecified && pc.playerId == Id);
-            return carriedPiece != null;
-        }
 
         private async Task startKeepAlive(Socket server)
         {
@@ -445,11 +165,16 @@ namespace Player.Net
             {
                 if (keepAliveToken.Token.IsCancellationRequested)
                     break;
-                await Task.Delay(TimeSpan.FromMilliseconds(settings.KeepAliveInterval));
+                await Task.Delay(TimeSpan.FromMilliseconds(Settings.KeepAliveInterval));
                 if (keepAliveToken.Token.IsCancellationRequested)
                     break;
                 connection.SendFromClient(server, string.Empty);
             }
+        }
+
+        public void Send(string data)
+        {
+            connection.SendFromClient(serverSocket, data);
         }
     } //class
 } //namespace

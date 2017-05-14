@@ -1,9 +1,9 @@
-SET ip=192.168.0.16
+SET ip=192.168.0.101
 
 cd ServerConsole/bin/Debug/
 START ServerConsole.exe -p 5000 -c Config/ServerSettings.xml
 cd ../../../GameMaster/bin/Debug/
-START GameMaster.exe -a %ip% -p 5000 -c Config/GameMasterSettings.xml
+START GameMaster.exe -a %ip% -p 5000 -c Config/SuperFastGame.xml
 cd ../../../Player/bin/Debug/
 
 IF "%1"=="" set a=1 
