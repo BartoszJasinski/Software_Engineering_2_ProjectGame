@@ -29,6 +29,9 @@ namespace GameMaster.Net
         public bool IsReady => TeamRed.IsFull && TeamBlue.IsFull;
         public Wrapper.AddressableBoard Board { get; set; }
 
+        private static bool endGame { get; set; }
+
+
         public GameMasterClient GameMasterClient
         {
             get
@@ -46,8 +49,8 @@ namespace GameMaster.Net
 
         private void InitializeTeams()
         {
-            TeamRed = new Wrapper.Team(TeamColour.red, uint.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
-            TeamBlue = new Wrapper.Team(TeamColour.blue, uint.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamRed = new Wrapper.Team(TeamColour.red, UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Wrapper.Team(TeamColour.blue, UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         private void InitializeBoard()
@@ -56,9 +59,9 @@ namespace GameMaster.Net
             //    uint.Parse(Settings.GameDefinition.TaskAreaLength),
             //    uint.Parse(Settings.GameDefinition.GoalAreaLength),
             //    123);
-            var boardGenerator = new SimpleBoardGenerator(uint.Parse(gameMaster.Settings.GameDefinition.BoardWidth),
-                uint.Parse(gameMaster.Settings.GameDefinition.TaskAreaLength),
-                uint.Parse(gameMaster.Settings.GameDefinition.GoalAreaLength),
+            var boardGenerator = new SimpleBoardGenerator(UInt32.Parse(gameMaster.Settings.GameDefinition.BoardWidth),
+                UInt32.Parse(gameMaster.Settings.GameDefinition.TaskAreaLength),
+                UInt32.Parse(gameMaster.Settings.GameDefinition.GoalAreaLength),
                 gameMaster.Settings.GameDefinition.Goals);
             Board = boardGenerator.CreateBoard();
         }
@@ -310,7 +313,7 @@ namespace GameMaster.Net
                 {
                     ConsoleDebug.Warning("No piece here or you have already a piece!");
                     //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
+                    resp = new DataMessageBuilder(currentPlayer.Id, endGame)
                         .SetPieces(new Piece[0])
                         .GetXml();
                 }
@@ -337,7 +340,7 @@ namespace GameMaster.Net
                         //     ?.DistanceToPiece
                         //}.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
                     }
-                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
+                    resp = new DataMessageBuilder(currentPlayer.Id, endGame)
                          .AddPiece(new Piece()
                          {
                              id = piece.Id,
@@ -373,14 +376,14 @@ namespace GameMaster.Net
                 {
                     ConsoleDebug.Warning("Not on a piece!");
                     //send empty piece collection
-                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
+                    resp = new DataMessageBuilder(currentPlayer.Id, endGame)
                         .SetPieces(new Piece[0])
                         .GetXml();
                 }
                 else
                 {
                     ConsoleDebug.Warning("On a piece!");
-                    resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
+                    resp = new DataMessageBuilder(currentPlayer.Id, endGame)
                          .AddPiece(piece.SchemaPiece)
                          .GetXml();
                 }
@@ -456,13 +459,13 @@ namespace GameMaster.Net
 
                 bool blueWon = false;
 
-                MakeDecision.EndGame(Board, TeamColour.blue);
-                if (MakeDecision.endGame)
+                EndGame(Board, TeamColour.blue);
+                if (endGame)
                     blueWon = true;
                 else
-                    MakeDecision.EndGame(Board, TeamColour.red);
+                    EndGame(Board, TeamColour.red);
 
-                if (MakeDecision.endGame)
+                if (endGame)
                 {
                     GameInProgress = false;
                     EndGameEventArgs args;
@@ -481,7 +484,7 @@ namespace GameMaster.Net
 
                     foreach (var player in Players)
                     {
-                        string endGameResponse = new DataMessageBuilder(player.Id, MakeDecision.endGame)
+                        string endGameResponse = new DataMessageBuilder(player.Id, endGame)
                              .SetWrapperTaskFields(Board.GetTaskFields())
                              .SetWrapperGoalFields(Board.GetGoalFields())
                              .SetWrapperPieces(Pieces)
@@ -494,7 +497,7 @@ namespace GameMaster.Net
                     OnGameEnd(this, args);
                 }
 
-                resp = new DataMessageBuilder(currentPlayer.Id, MakeDecision.endGame)
+                resp = new DataMessageBuilder(currentPlayer.Id, endGame)
                  .AddGoalField(gf.SchemaField as GoalField)
                  .GetXml();
             }
@@ -563,7 +566,7 @@ namespace GameMaster.Net
 
         public event EventHandler<EndGameEventArgs> OnGameEnd;
 
-        public void PlaceNewPiece(Common.SchemaWrapper.TaskField field)
+        public void PlaceNewPiece(Wrapper.TaskField field)
         {
 
             var pieceType = rng.NextDouble() < GameMasterClient.Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
@@ -653,6 +656,14 @@ namespace GameMaster.Net
 
                 gameInProgress = value;
             }
+        }
+
+
+        private void EndGame(Wrapper.AddressableBoard board, TeamColour teamColour)
+        {
+            IList<Wrapper.GoalField> goalFields = board.GetNotOccupiedGoalFields(teamColour);
+            if (goalFields.Count == 0)
+                endGame = true;
         }
     }
 }
