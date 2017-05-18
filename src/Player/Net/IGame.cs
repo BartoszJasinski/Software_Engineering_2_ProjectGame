@@ -14,8 +14,9 @@ namespace Player.Net
         ulong GameId { get; set; }
         ulong Id { get; set; }
         Common.Schema.Player[] Players { set; get; }
-        Piece CarriedPiece { get; }
         GameBoard Board { get; set; }
+        void PrintBoard();
+        void UpdateFields(Common.SchemaWrapper.Field[] newTaskFields);
         string Guid { get; set; }
         Common.Schema.TeamColour Team { get; set; }
         Common.Schema.Location Location { get; set; }
