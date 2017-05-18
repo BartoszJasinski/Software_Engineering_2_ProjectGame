@@ -9,13 +9,7 @@ using Common.Message;
 using Common.Config;
 using Common.IO.Console;
 using Common.Schema;
-using Location = Common.Schema.Location;
-using System.Collections.Generic;
-using System.Linq;
 using Player.Strategy;
-using GoalFieldType = Common.Schema.GoalFieldType;
-using TeamColour = Common.Schema.TeamColour;
-using Wrapper = Common.SchemaWrapper;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -25,43 +19,28 @@ namespace Player.Net
     {
         private IMessageHandler messageHandler;
         private IConnection connection;
-        private AgentCommandLineOptions options;
-        private PlayerSettings settings;
-        private Socket serverSocket;
-        private State currentState;
+        private AgentCommandLineOptions _options;
+        private PlayerSettings _settings;
+        private Socket _serverSocket;
+        private State _currentState;
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         public AgentCommandLineOptions Options
         {
-            get
-            {
-                return options;
-            }
+            get { return _options; }
 
-            set
-            {
-                options = value;
-            }
+            set { _options = value; }
         }
 
         public PlayerSettings Settings
         {
-            get
-            {
-                return settings;
-            }
+            get { return _settings; }
 
-            set
-            {
-                settings = value;
-            }
+            set { _settings = value; }
         }
 
         private const int NO_PIECE = -1;
 
-        
-
-       
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options, IMessageHandler messageHandler)
         {
@@ -73,7 +52,7 @@ namespace Player.Net
             connection.OnMessageSend += OnMessageSend;
             this.messageHandler = messageHandler;
             messageHandler.Player = this;
-            currentState = messageHandler.BiuldDfa();
+            _currentState = messageHandler.BiuldDfa();
         }
 
         public void Connect()
@@ -93,7 +72,7 @@ namespace Player.Net
             var address = eventArgs.Handler.GetRemoteAddress();
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
-            serverSocket = socket;
+            _serverSocket = socket;
             string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
 
             connection.SendFromClient(socket, xmlMessage);
@@ -123,19 +102,15 @@ namespace Player.Net
 
         public void Play()
         {
-            ConsoleDebug.Strategy(currentState.Name);
+            ConsoleDebug.Strategy(_currentState.Name);
             messageHandler.PrintBoard();
             
-            currentState = currentState.NextState();
-            if (currentState.Action == null)
+            _currentState = _currentState.NextState();
+            if (_currentState.Action == null)
                 Play();
             else
-                currentState.Action();
+                _currentState.Action();
         }
-
-
-
-
 
 
         private void RegisterForNextGameAfterGameEnd()
@@ -150,13 +125,8 @@ namespace Player.Net
                 playerIdSpecified = false
             };
 
-            connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
+            connection.SendFromClient(_serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
-
-
-
-
-
 
 
         private async Task startKeepAlive(Socket server)
@@ -174,7 +144,7 @@ namespace Player.Net
 
         public void Send(string data)
         {
-            connection.SendFromClient(serverSocket, data);
+            connection.SendFromClient(_serverSocket, data);
         }
     } //class
 } //namespace

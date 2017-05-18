@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Common.Schema;
 using System.Threading;
-using Common.Config;
 using Common.DebugUtils;
 using Common.Message;
-using Common.IO.Console;
 using Player.Strategy;
 
 namespace Player.Net
 {
-    public class Game : IGame, IMessageHandler
+    public class Game: IGame, IMessageHandler
     {
-        private PlayerClient player;
+        private PlayerClient _player;
         private ulong _gameId;
         private string _guid;
         private Common.Schema.TeamColour _team;
@@ -28,8 +25,8 @@ namespace Player.Net
 
         private static object joinLock = new object();
 
-
         private const int NO_PIECE = -1;
+
 
         public Game()
         {
@@ -102,22 +99,16 @@ namespace Player.Net
             set { _pieces = value; }
         }
 
-        public bool IsInGoalArea
+        private bool IsInGoalArea
             =>
                 Team == Common.Schema.TeamColour.blue && Location.y < Board.goalsHeight ||
                 Team == Common.Schema.TeamColour.red && Location.y >= Board.tasksHeight + Board.goalsHeight;
 
         public PlayerClient Player
         {
-            get
-            {
-                return player;
-            }
-
-            set
-            {
-                player = value;
-            }
+            get { return _player; }
+     
+            set { _player = value; }
         }
 
         public void HandleMessage(RejectJoiningGame message)
@@ -125,7 +116,7 @@ namespace Player.Net
             if (message == null)
                 return;
             //try to connect again
-            player.Send(XmlMessageConverter.ToXml(new GetGames()));
+            _player.Send(XmlMessageConverter.ToXml(new GetGames()));
 
             return;
         }
@@ -142,7 +133,7 @@ namespace Player.Net
                 Common.SchemaWrapper.TaskField[] taskFields = new Common.SchemaWrapper.TaskField[message.TaskFields.Length];
                 for (int i = 0; i < taskFields.Length; i++)
                     taskFields[i] = new Common.SchemaWrapper.TaskField(message.TaskFields[i]);
-                FieldsUpdater(Fields, taskFields); ;
+                FieldsUpdater(Fields, taskFields);
             }
             if (message.GoalFields != null)
             {
@@ -158,14 +149,11 @@ namespace Player.Net
                     lock (joinLock)
                     {
                         if (piece.playerIdSpecified)
-                        {
                             Pieces = Pieces.Where(piece1 => piece1.playerId != piece.playerId).ToList();
-                        }
                         if (Pieces.Count(p => p.id == piece.id) == 0)
                             Pieces.Add(piece);
                         else
                         {
-
                             var pp = Pieces.Single(p => p.id == piece.id);
                             pp.playerId = piece.playerId;
                             pp.playerIdSpecified = piece.playerIdSpecified;
@@ -183,17 +171,17 @@ namespace Player.Net
                 //    args.PlayerClient.Pieces.Add(piece);
                 //}
             }
-            if (message.gameFinished == true)
+            if (message.gameFinished)
             {
                 ConsoleDebug.Good("\nGame just ended\n");
                 BoardPrinter.Print(Fields);
                 //System.Console.ReadLine();
                 //player.Disconnect();
-                player.Connect();
+                _player.Connect();
                 return;
             }
 
-            player.Play();
+            _player.Play();
         }
 
         public void HandleMessage(AcceptExchangeRequest message)
@@ -204,9 +192,10 @@ namespace Player.Net
             builder.SetGoalFields(Fields.Cast<Common.Schema.Field>().Where(f => f is Common.Schema.GoalField).Cast<Common.Schema.GoalField>());
             builder.SetTaskFields(Fields.Cast<Common.Schema.Field>().Where(f => f is TaskField).Cast<TaskField>());
             builder.SetPieces(Pieces);
+            builder.SetPlayerLocation(Location);
 
             var data = builder.GetXml();
-            player.Send(data);
+            _player.Send(data);
             //do not call play, we call play already when we get our data
         }
 
@@ -217,7 +206,7 @@ namespace Player.Net
 
         public void HandleMessage(RejectKnowledgeExchange message)
         {
-            player.Play();
+            _player.Play();
         }
 
         public void HandleMessage(KnowledgeExchangeRequest message)
@@ -241,7 +230,7 @@ namespace Player.Net
                     playerGuid = Guid,
                     withPlayerId = fromPlayer.id
                 };
-                player.Send(XmlMessageConverter.ToXml(exchange));
+                _player.Send(XmlMessageConverter.ToXml(exchange));
                 //do not play, wait for data answer
             }
             else
@@ -252,9 +241,9 @@ namespace Player.Net
                     playerId = fromPlayer.id,
                     senderPlayerId = Id
                 };
-                player.Send(XmlMessageConverter.ToXml(reject));
+                _player.Send(XmlMessageConverter.ToXml(reject));
                 //after reject we have to play, otherwise we will be stuck (because reject does not generate an answer)
-                player.Play();
+                _player.Play();
             }
         }
 
@@ -265,7 +254,7 @@ namespace Player.Net
             Location = message.PlayerLocation;
             Fields = new Common.SchemaWrapper.Field[message.Board.width, 2 * message.Board.goalsHeight + message.Board.tasksHeight];
             ConsoleDebug.Good("Game started");
-            player.Play();
+            _player.Play();
         }
 
         public void HandleMessage(ConfirmJoiningGame message)
@@ -287,33 +276,33 @@ namespace Player.Net
 
         public void HandleMessage(RegisteredGames message)
         {
-            if (message.GameInfo == null || message.GameInfo.Length == 0 || !message.GameInfo.Where(g => g.gameName == player.Options.GameName).Any())
+            if (message.GameInfo == null || message.GameInfo.Length == 0 || !message.GameInfo.Where(g => g.gameName == _player.Options.GameName).Any())
             {
                 Task.Run(() =>
                 {
-                    Thread.Sleep((int)player.Settings.RetryJoinGameInterval);
+                    Thread.Sleep((int)_player.Settings.RetryJoinGameInterval);
                     string xmlMessage = XmlMessageConverter.ToXml(new GetGames());
-                    player.Send(xmlMessage);
+                    _player.Send(xmlMessage);
                 });
             }
             else
             {
                 ConsoleDebug.Good("Games available");
-                if (player.Options.GameName == null)
+                if (_player.Options.GameName == null)
                 {
                     ConsoleDebug.Warning("Game name not specified");
                     return;
                 }
-                if (message.GameInfo.Count(info => info.gameName == player.Options.GameName) == 1)
+                if (message.GameInfo.Count(info => info.gameName == _player.Options.GameName) == 1)
                 {
                     string xmlMessage = XmlMessageConverter.ToXml(new JoinGame()
                     {
-                        gameName = player.Options.GameName,
+                        gameName = _player.Options.GameName,
                         playerIdSpecified = false,
-                        preferredRole = player.Options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
-                        preferredTeam = player.Options?.PreferredTeam == "red" ? Common.Schema.TeamColour.red : Common.Schema.TeamColour.blue
+                        preferredRole = _player.Options?.PreferredRole == "player" ? PlayerType.member : PlayerType.leader,
+                        preferredTeam = _player.Options?.PreferredTeam == "red" ? Common.Schema.TeamColour.red : Common.Schema.TeamColour.blue
                     });
-                    player.Send(xmlMessage);
+                    _player.Send(xmlMessage);
                 }
             }
         }
@@ -331,7 +320,7 @@ namespace Player.Net
         {
             if (previousLocation != null && Location != null && Location.x == previousLocation.x && Location.y == previousLocation.y)
             {
-                ConsoleDebug.Error("Snake time! =====================================");
+                ConsoleDebug.Warning("Snake time! =====================================");
                 //if (direction==MoveType.up)
                 //    direction=MoveType.right;
                 //else if (direction == MoveType.right)
@@ -350,7 +339,7 @@ namespace Player.Net
                 gameId = _gameId,
                 playerGuid = _guid
             };
-            player.Send(XmlMessageConverter.ToXml(m));
+            _player.Send(XmlMessageConverter.ToXml(m));
         }
 
         private void Discover()
@@ -360,7 +349,7 @@ namespace Player.Net
                 gameId = GameId,
                 playerGuid = Guid
             };
-            player.Send(XmlMessageConverter.ToXml(d));
+            _player.Send(XmlMessageConverter.ToXml(d));
         }
 
         private void PickUpPiece()
@@ -370,7 +359,7 @@ namespace Player.Net
                 playerGuid = Guid,
                 gameId = GameId
             };
-            player.Send(XmlMessageConverter.ToXml(p));
+            _player.Send(XmlMessageConverter.ToXml(p));
         }
 
         private void PlacePiece()
@@ -380,7 +369,7 @@ namespace Player.Net
                 gameId = GameId,
                 playerGuid = Guid
             };
-            player.Send(XmlMessageConverter.ToXml(p));
+            _player.Send(XmlMessageConverter.ToXml(p));
             Pieces.Remove(CarriedPiece);
         }
 
@@ -391,7 +380,7 @@ namespace Player.Net
                 gameId = GameId,
                 playerGuid = Guid
             };
-            player.Send(XmlMessageConverter.ToXml(t));
+            _player.Send(XmlMessageConverter.ToXml(t));
         }
 
         Common.SchemaWrapper.TaskField FieldAt(uint x, uint y)
@@ -440,12 +429,11 @@ namespace Player.Net
                     ?.DistanceToPiece
             }.Where(u => u.HasValue && u != NO_PIECE).Select(u => u.Value);
             int? d;
+
             if (t.Count() == 0)
                 d = NO_PIECE;
             else
-            {
                 d = (int?)t.Min();
-            }
             if (d >= FieldAt(Location.x, Location.y)?.DistanceToPiece)
                 Discover();
             else
@@ -498,23 +486,15 @@ namespace Player.Net
                     if (left && Location.x == 0 || !left && Location.x + 1 == Board.width)
                         left = !left;
                     if (left)
-                    {
                         Move(MoveType.left);
-                    }
                     else
-                    {
                         Move(MoveType.right);
-                    }
                     return;
                 }
                 if (Location.x % 2 == 1)
-                {
                     Move(MoveType.up);
-                }
                 else
-                {
                     Move(MoveType.down);
-                }
             }
         }
 
