@@ -213,6 +213,7 @@ namespace GameMaster.Net
                 if (newField is Wrapper.TaskField)
                 {
                     var taskField = newField as Wrapper.TaskField;
+                    taskField.Timestamp = DateTime.Now;
                     taskField.AddFieldData(taskFields, null);
                     resp.TaskFields = taskFields.ToArray();
                     if (taskField.PieceId.HasValue)
