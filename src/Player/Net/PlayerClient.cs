@@ -476,6 +476,7 @@ namespace Player.Net
                 builder.SetGoalFields(Player.game.Fields.Cast<Common.Schema.Field>().Where(f => f is Common.Schema.GoalField).Cast<Common.Schema.GoalField>());
                 builder.SetTaskFields(Player.game.Fields.Cast<Common.Schema.Field>().Where(f => f is TaskField).Cast<TaskField>());
                 builder.SetPieces(Player.game.Pieces);
+                builder.SetPlayerLocation(Player.game.Location);
 
                 var data = builder.GetXml();
                 Player.Send(data);

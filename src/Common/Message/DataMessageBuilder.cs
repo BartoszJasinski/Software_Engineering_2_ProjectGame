@@ -62,8 +62,7 @@ namespace Common.Message
                 taskFields = new TaskField[] {taskField};
             else
             {
-                var l = new List<TaskField>(taskFields);
-                l.Add(taskField);
+                var l = new List<TaskField>(taskFields) {taskField};
                 taskFields = l.ToArray();
             }
             return this;
@@ -87,8 +86,7 @@ namespace Common.Message
                 pieces = new []{ piece };
             else
             {
-                var l = new List<Piece>(pieces);
-                l.Add(piece);
+                var l = new List<Piece>(pieces) {piece};
                 pieces = l.ToArray();
             }
             return this;
@@ -106,8 +104,7 @@ namespace Common.Message
                 goalFields = new[] { goalField };
             else
             {
-                var l = new List<GoalField>(goalFields);
-                l.Add(goalField);
+                var l = new List<GoalField>(goalFields) {goalField};
                 goalFields = l.ToArray();
             }
             return this;
