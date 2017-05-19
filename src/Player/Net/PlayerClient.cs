@@ -65,10 +65,6 @@ namespace Player.Net
 
         private const int NO_PIECE = -1;
 
-        
-
-       
-
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options, IGame game)
         {
             this.connection = connection;
@@ -141,12 +137,6 @@ namespace Player.Net
 
             connection.SendFromClient(serverSocket, XmlMessageConverter.ToXml(joinGame));
         }
-
-
-
-
-
-
 
         private async Task startKeepAlive(Socket server)
         {

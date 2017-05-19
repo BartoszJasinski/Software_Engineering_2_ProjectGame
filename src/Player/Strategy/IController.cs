@@ -9,7 +9,6 @@ namespace Player.Strategy
 {
     public interface IController
     {
-        void Play();
         IController Possess(PlayerClient player);
     }
 }

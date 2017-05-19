@@ -52,6 +52,7 @@
     <Compile Include="Net\Game.cs" />
     <Compile Include="Net\IGame.cs" />
     <Compile Include="Net\IMessageHandler.cs" />
+    <Compile Include="Net\IPlayer.cs" />
     <Compile Include="Net\PlayerMessageHandleArgs.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Net\BehaviorChooser.cs" />
