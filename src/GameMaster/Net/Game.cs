@@ -191,7 +191,7 @@ namespace GameMaster.Net
                         Board.IsInEnemyGoalArea(player.Location.y + dy, player.Team.Color))
                 {
                     resp.PlayerLocation = player.Location;
-                    gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
+                    gameMaster.Send(handler, XmlMessageConverter.ToXml(resp));
                     return;
                 }
 
@@ -234,7 +234,7 @@ namespace GameMaster.Net
                         resp.Pieces = pieceList.ToArray();
                 }
             }
-            gameMaster.Connection.SendFromClient(handler, XmlMessageConverter.ToXml(resp));
+            gameMaster.Send(handler, XmlMessageConverter.ToXml(resp));
         }
 
         Wrapper.TaskField FieldAt(Wrapper.Field[,] fields, uint x, uint y)

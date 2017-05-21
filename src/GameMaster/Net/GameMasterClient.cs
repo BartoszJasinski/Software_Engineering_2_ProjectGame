@@ -34,6 +34,18 @@ namespace GameMaster.Net
         public CancellationTokenSource CancelToken { get; } = new CancellationTokenSource();
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
+        public IMessageHandler MessageHandler
+        {
+            get
+            {
+                return messageHandler;
+            }
+            set
+            {
+                messageHandler = value;
+            }
+        }
+
         //The two teams
        // public Wrapper.Team TeamRed { get; set; }
       //  public Wrapper.Team TeamBlue { get; set; }
