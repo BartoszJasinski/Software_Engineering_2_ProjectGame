@@ -23,5 +23,6 @@ namespace GameMaster.Net
         void PrintBoard();
         event EventHandler<EndGameEventArgs> OnGameEnd;
         GameMasterClient GameMasterClient { get; set; }
+        void Clear();
     }
 }

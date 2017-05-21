@@ -37,7 +37,7 @@ namespace Server.Game
         {
             //TODO maybe we should create new
             if (GetGameByName(game.Name) != null)
-                throw new NameExistsException();
+                RemoveGame(game);
             if (GetGameById(game.Id) != null)
                 throw new IdExistsException();
             Add(game);
