@@ -31,7 +31,7 @@ namespace GameMaster.Net
 
         public ILogger Logger { get; set; }
 
-        public CancellationTokenSource CancelToken { get; } = new CancellationTokenSource();
+        public CancellationTokenSource CancelToken { get; set; } = new CancellationTokenSource();
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         //The two teams
@@ -103,7 +103,6 @@ namespace GameMaster.Net
             //at the beginning both teams have same number of open player slots
             ulong noOfPlayersPerTeam = ulong.Parse(Settings.GameDefinition.NumberOfPlayersPerTeam);
             messageHandler.Clear();
-            keepAliveToken = new CancellationTokenSource();
             RegisterGame registerGameMessage = new RegisterGame()
             {
                 NewGameInfo = new GameInfo()

@@ -9,6 +9,7 @@ using GameMaster.Logic;
 using Common.DebugUtils;
 using Wrapper = Common.SchemaWrapper;
 using System.Net.Sockets;
+using System.Threading;
 using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
@@ -649,10 +650,16 @@ namespace GameMaster.Net
             while (GameInProgress)
             {
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
+                {
+                    gameMaster.CancelToken=new CancellationTokenSource();
                     break;
+                }
                 await Task.Delay(TimeSpan.FromMilliseconds(gameMaster.Settings.GameDefinition.PlacingNewPiecesFrequency));
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
+                {
+                    gameMaster.CancelToken = new CancellationTokenSource();
                     break;
+                }
                 PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
             }
         }
