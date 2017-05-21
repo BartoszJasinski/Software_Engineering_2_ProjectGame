@@ -63,6 +63,18 @@ namespace Player.Net
             }
         }
 
+        public IMessageHandler Handler
+        {
+            get
+            {
+                return messageHandler;
+            }
+            set
+            {
+                messageHandler = value;
+            }
+        }
+
         private const int NO_PIECE = -1;
 
         public PlayerClient(IConnection connection, PlayerSettings settings, AgentCommandLineOptions options, IGame game)
