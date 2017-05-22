@@ -52,14 +52,11 @@
     <Compile Include="Logic\Board\RandomGoalBoardGenerator.cs" />
     <Compile Include="Logic\Board\SimpleBoardGenerator.cs" />
     <Compile Include="Logic\IRanking.cs" />
-    <Compile Include="Logic\MakeDecision.cs" />
     <Compile Include="Logic\Ranking.cs" />
-    <Compile Include="Logic\XmlMessageGenerator.cs" />
     <Compile Include="GameMaster.cs" />
     <Compile Include="Log\ILogger.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\UniqueNameGenerator.cs" />
-    <Compile Include="Net\BehaviorChooser.cs" />
     <Compile Include="Net\EndGameEventArgs.cs" />
     <Compile Include="Net\GameMasterClient.cs" />
     <Compile Include="Net\IMessageHandler.cs" />

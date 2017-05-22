@@ -1,6 +1,6 @@
 SET ip=192.168.0.16
 
-cd ServerConsole/bin/Debug/
+cd ../src/ServerConsole/bin/Debug/
 START ServerConsole.exe -p 5000 -c Config/ServerSettings.xml
 cd ../../../GameMaster/bin/Debug/
 START GameMaster.exe -a %ip% -p 5000 -c Config/GameMasterSettings.xml
