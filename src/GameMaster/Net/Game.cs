@@ -9,6 +9,7 @@ using GameMaster.Logic;
 using Common.DebugUtils;
 using Wrapper = Common.SchemaWrapper;
 using System.Net.Sockets;
+using System.Threading;
 using GameMaster.Logic.Board;
 
 namespace GameMaster.Net
@@ -31,13 +32,17 @@ namespace GameMaster.Net
 
         private static bool endGame { get; set; }
 
+        public void Clear()
+        {
+            gameId = UInt64.MaxValue;
+            endGame = false;
+            InitializeTeams();
+            InitializeBoard();
+        }
 
         public GameMasterClient GameMasterClient
         {
-            get
-            {
-                return gameMaster;
-            }
+            get { return gameMaster; }
 
             set
             {
@@ -49,8 +54,10 @@ namespace GameMaster.Net
 
         private void InitializeTeams()
         {
-            TeamRed = new Wrapper.Team(TeamColour.red, UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
-            TeamBlue = new Wrapper.Team(TeamColour.blue, UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamRed = new Wrapper.Team(TeamColour.red,
+                UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
+            TeamBlue = new Wrapper.Team(TeamColour.blue,
+                UInt32.Parse(gameMaster.Settings.GameDefinition.NumberOfPlayersPerTeam));
         }
 
         private void InitializeBoard()
@@ -66,7 +73,7 @@ namespace GameMaster.Net
             Board = boardGenerator.CreateBoard();
         }
 
-        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>();//TODO pieces are not added to this collection
+        public IList<Wrapper.Piece> Pieces = new List<Wrapper.Piece>(); //TODO pieces are not added to this collection
 
         private Random rng = new Random();
 
@@ -76,9 +83,13 @@ namespace GameMaster.Net
             gameId = message.gameId;
         }
 
+        private bool ValidateMessage(GameMessage msg)
+        {
+            return msg.gameId == gameId;
+        }
+
         public void HandleMessage(JoinGame message, Socket handler)
         {
-
             lock (BoardLock)
             {
                 var selectedTeam = SelectTeamForPlayer(message.preferredTeam);
@@ -134,7 +145,6 @@ namespace GameMaster.Net
             }
 
 
-
             if (IsReady)
             {
                 var board = Board;
@@ -145,14 +155,14 @@ namespace GameMaster.Net
                     {
                         Board = board.SchemaBoard,
                         playerId = player.Id,
-                        PlayerLocation = new Location() { x = player.X, y = player.Y },
+                        PlayerLocation = new Location() {x = player.X, y = player.Y},
                         Players = players
                     };
                     var gameString = XmlMessageConverter.ToXml(startGame);
                     //ConsoleDebug.Message(gameString);
                     gameMaster.Connection.SendFromClient(handler, gameString);
                     //send GameStarted message to server so it won't show it as an open game
-                    var gameStarted = new GameStarted() { gameId = gameId };
+                    var gameStarted = new GameStarted() {gameId = gameId};
                     var startedString = XmlMessageConverter.ToXml(gameStarted);
                     gameMaster.Connection.SendFromClient(handler, startedString);
                 }
@@ -169,10 +179,11 @@ namespace GameMaster.Net
 
         public async Task HandleMessage(Move message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             int dx, dy;
             Data resp = new Data();
 
-            await Task.Delay((int)gameMaster.Settings.ActionCosts.MoveDelay);
+            await Task.Delay((int) gameMaster.Settings.ActionCosts.MoveDelay);
             Wrapper.Player player = Players.First(p => message.playerGuid == p.Guid);
             gameMaster.Logger.Log(message, player);
             resp.playerId = player.Id;
@@ -186,9 +197,10 @@ namespace GameMaster.Net
                 if (!message.directionSpecified ||
                     (player.Location.x + dx < 0 || player.Location.x + dx >= Board.Width) ||
                     (player.Location.y + dy < 0 ||
-                         player.Location.y + dy >= Board.Height) ||
-                        Players.Where(p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy).Any() ||
-                        Board.IsInEnemyGoalArea(player.Location.y + dy, player.Team.Color))
+                     player.Location.y + dy >= Board.Height) ||
+                    Players.Where(p => p.Location.x == player.Location.x + dx && p.Location.y == player.Location.y + dy)
+                        .Any() ||
+                    Board.IsInEnemyGoalArea(player.Location.y + dy, player.Team.Color))
                 {
                     resp.PlayerLocation = player.Location;
                     gameMaster.Send(handler, XmlMessageConverter.ToXml(resp));
@@ -197,8 +209,8 @@ namespace GameMaster.Net
 
                 resp.PlayerLocation = new Location()
                 {
-                    x = (uint)(player.Location.x + dx),
-                    y = (uint)(player.Location.y + dy)
+                    x = (uint) (player.Location.x + dx),
+                    y = (uint) (player.Location.y + dy)
                 };
                 var oldField = Board.Fields[player.Location.x, player.Location.y];
                 player.Location = resp.PlayerLocation;
@@ -251,8 +263,9 @@ namespace GameMaster.Net
 
         public async Task HandleMessage(Discover message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             Data resp = new Data();
-            await Task.Delay((int)gameMaster.Settings.ActionCosts.DiscoverDelay);
+            await Task.Delay((int) gameMaster.Settings.ActionCosts.DiscoverDelay);
             Wrapper.Player currentPlayer = Players.Where(p => p.Guid == message.playerGuid).Single();
             gameMaster.Logger.Log(message, currentPlayer);
             resp.playerId = currentPlayer.Id;
@@ -261,10 +274,10 @@ namespace GameMaster.Net
 
             lock (BoardLock)
             {
-                for (int i = (int)currentPlayer.Location.x - 1; i <= (int)currentPlayer.Location.x + 1; i++)
+                for (int i = (int) currentPlayer.Location.x - 1; i <= (int) currentPlayer.Location.x + 1; i++)
                 {
                     if (i < 0 || i >= Board.Width) continue;
-                    for (int j = (int)currentPlayer.Location.y - 1; j <= (int)currentPlayer.Location.y + 1; j++)
+                    for (int j = (int) currentPlayer.Location.y - 1; j <= (int) currentPlayer.Location.y + 1; j++)
                     {
                         if (j < 0 || j >= Board.Height) continue;
                         if (Board.Fields[i, j] is Wrapper.TaskField)
@@ -299,17 +312,18 @@ namespace GameMaster.Net
 
         public async Task HandleMessage(PickUpPiece message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             string resp = "";
-            await Task.Delay((int)gameMaster.Settings.ActionCosts.PickUpDelay);
+            await Task.Delay((int) gameMaster.Settings.ActionCosts.PickUpDelay);
             Wrapper.Player currentPlayer = Players.Single(p => p.Guid == message.playerGuid);
             gameMaster.Logger.Log(message, currentPlayer);
             lock (BoardLock)
             {
                 Wrapper.Piece piece =
-                         Pieces.FirstOrDefault(
-                         pc =>
-                             pc.Location.x == currentPlayer.Location.x && pc.Location.y == currentPlayer.Location.y &&
-                             !pc.PlayerId.HasValue);
+                    Pieces.FirstOrDefault(
+                        pc =>
+                            pc.Location.x == currentPlayer.Location.x && pc.Location.y == currentPlayer.Location.y &&
+                            !pc.PlayerId.HasValue);
                 if (piece == null || Pieces.Any(pc => pc.PlayerId == currentPlayer.Id))
                 {
                     ConsoleDebug.Warning("No piece here or you have already a piece!");
@@ -342,15 +356,15 @@ namespace GameMaster.Net
                         //}.Where(u => u.HasValue).Select(u => u.Value).Min() + 1;
                     }
                     resp = new DataMessageBuilder(currentPlayer.Id, endGame)
-                         .AddPiece(new Piece()
-                         {
-                             id = piece.Id,
-                             timestamp = piece.TimeStamp,
-                             playerId = currentPlayer.Id,
-                             playerIdSpecified = true,
-                             type = PieceType.unknown
-                         })
-                         .GetXml();
+                        .AddPiece(new Piece()
+                        {
+                            id = piece.Id,
+                            timestamp = piece.TimeStamp,
+                            playerId = currentPlayer.Id,
+                            playerIdSpecified = true,
+                            type = PieceType.unknown
+                        })
+                        .GetXml();
                 }
             }
             GameMasterClient.Connection.SendFromClient(handler, resp);
@@ -358,20 +372,23 @@ namespace GameMaster.Net
 
         public async void HandleMessage(TestPiece message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             string resp = "";
-            await Task.Delay((int)GameMasterClient.Settings.ActionCosts.TestDelay);
-            Wrapper.Player currentPlayer = Players.Single(p => p.Guid == message.playerGuid);
+            await Task.Delay((int) GameMasterClient.Settings.ActionCosts.TestDelay);
+            Wrapper.Player currentPlayer = Players.SingleOrDefault(p => p.Guid == message.playerGuid);
+            if (currentPlayer==null)
+                return;
             GameMasterClient.Logger.Log(message, currentPlayer);
             lock (BoardLock)
             {
                 Wrapper.Piece piece =
-                     Pieces.SingleOrDefault(
-                         pc =>
-                             pc.PlayerId == currentPlayer.Id);
+                    Pieces.SingleOrDefault(
+                        pc =>
+                            pc.PlayerId == currentPlayer.Id);
                 if (piece == null) // not carrying anything
                 {
                     ConsoleDebug.Warning("Not carrying a piece!");
-                    piece = Pieces.SingleOrDefault(pc => pc.Location.Equals(currentPlayer.Location));
+                    piece = Pieces.FirstOrDefault(pc => pc.Location.Equals(currentPlayer.Location));
                 }
                 if (piece == null)
                 {
@@ -385,8 +402,8 @@ namespace GameMaster.Net
                 {
                     ConsoleDebug.Warning("On a piece!");
                     resp = new DataMessageBuilder(currentPlayer.Id, endGame)
-                         .AddPiece(piece.SchemaPiece)
-                         .GetXml();
+                        .AddPiece(piece.SchemaPiece)
+                        .GetXml();
                 }
             }
             GameMasterClient.Connection.SendFromClient(handler, resp);
@@ -394,22 +411,23 @@ namespace GameMaster.Net
 
         public async Task HandleMessage(PlacePiece message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             string resp = "";
-            await Task.Delay((int)GameMasterClient.Settings.ActionCosts.PlacingDelay);
+            await Task.Delay((int) GameMasterClient.Settings.ActionCosts.PlacingDelay);
             Wrapper.Player currentPlayer = Players.Single(p => p.Guid == message.playerGuid);
             GameMasterClient.Logger.Log(message, currentPlayer);
             var dmb = new DataMessageBuilder(currentPlayer.Id);
             lock (BoardLock)
             {
                 Wrapper.Piece carriedPiece =
-                     Pieces.SingleOrDefault(
-                         pc =>
-                             pc.PlayerId == currentPlayer.Id);
+                    Pieces.SingleOrDefault(
+                        pc =>
+                            pc.PlayerId == currentPlayer.Id);
 
                 if (carriedPiece != null && !IsPlayerInGoalArea(currentPlayer))
                 {
                     Wrapper.Piece lyingPiece =
-                        Pieces.SingleOrDefault(
+                        Pieces.FirstOrDefault(
                             pc =>
                                 pc.PlayerId != currentPlayer.Id && pc.Location.Equals(currentPlayer.Location));
 
@@ -418,7 +436,8 @@ namespace GameMaster.Net
                         carriedPiece.PlayerId = null;
                         carriedPiece.Location.x = currentPlayer.Location.x;
                         carriedPiece.Location.y = currentPlayer.Location.y;
-                        (Board.Fields[carriedPiece.Location.x, carriedPiece.Location.y] as Wrapper.TaskField).PieceId = carriedPiece.Id;
+                        (Board.Fields[carriedPiece.Location.x, carriedPiece.Location.y] as Wrapper.TaskField).PieceId =
+                            carriedPiece.Id;
                         Board.UpdateDistanceToPiece(Pieces);
                     }
                     else //destroying piece
@@ -438,8 +457,8 @@ namespace GameMaster.Net
                     {
                         //send empty piece collection
                         resp = dmb
-                   .SetGoalFields(new GoalField[0])
-                   .GetXml();
+                            .SetGoalFields(new GoalField[0])
+                            .GetXml();
                     }
                     else
                     {
@@ -475,43 +494,44 @@ namespace GameMaster.Net
                     if (blueWon)
                     {
                         ConsoleDebug.Good("Blue team won!");
-                        args = new EndGameEventArgs(TeamBlue, TeamRed);
+                        args = new EndGameEventArgs(TeamBlue, TeamRed) {Handler = handler};
                     }
                     else
                     {
                         ConsoleDebug.Good("Red team won!");
-                        args = new EndGameEventArgs(TeamRed, TeamBlue);
+                        args = new EndGameEventArgs(TeamRed, TeamBlue) {Handler = handler};
                     }
 
                     foreach (var player in Players)
                     {
-                        string endGameResponse = new DataMessageBuilder(player.Id, endGame)
-                             .SetWrapperTaskFields(Board.GetTaskFields())
-                             .SetWrapperGoalFields(Board.GetGoalFields())
-                             .SetWrapperPieces(Pieces)
-                             .SetPlayerLocation(player.Location)
-                             .GetXml();
+                        string endGameResponse = new DataMessageBuilder(player.Id, true)
+                            .SetWrapperTaskFields(Board.GetTaskFields())
+                            .SetWrapperGoalFields(Board.GetGoalFields())
+                            .SetWrapperPieces(Pieces)
+                            .SetPlayerLocation(player.Location)
+                            .GetXml();
 
                         GameMasterClient.Connection.SendFromClient(handler, endGameResponse);
                     }
-                    gameMaster.Logger.LogEndGame(this, blueWon?TeamColour.blue : TeamColour.red);
+                    gameMaster.Logger.LogEndGame(this, blueWon ? TeamColour.blue : TeamColour.red);
                     OnGameEnd(this, args);
+                    return;
                 }
 
                 resp = new DataMessageBuilder(currentPlayer.Id, endGame)
-                 .AddGoalField(gf.SchemaField as GoalField)
-                 .GetXml();
+                    .AddGoalField(gf.SchemaField as GoalField)
+                    .GetXml();
             }
             GameMasterClient.Connection.SendFromClient(handler, resp);
-
         }
 
         public async Task HandleMessage(AuthorizeKnowledgeExchange message, Socket handler)
         {
+            if (!ValidateMessage(message)) return;
             var playerFrom = Players.Where(p => p.Guid == message.playerGuid).Single();
             var playerTo = Players.Where(p => p.Id == message.withPlayerId).SingleOrDefault();
 
-            await Task.Delay((int)GameMasterClient.Settings.ActionCosts.KnowledgeExchangeDelay);
+            await Task.Delay((int) GameMasterClient.Settings.ActionCosts.KnowledgeExchangeDelay);
             if (playerTo == null)
             {
                 var permanentReject = new RejectKnowledgeExchange()
@@ -569,16 +589,17 @@ namespace GameMaster.Net
 
         public void PlaceNewPiece(Wrapper.TaskField field)
         {
-
-            var pieceType = rng.NextDouble() < GameMasterClient.Settings.GameDefinition.ShamProbability ? PieceType.sham : PieceType.normal;
+            var pieceType = rng.NextDouble() < GameMasterClient.Settings.GameDefinition.ShamProbability
+                ? PieceType.sham
+                : PieceType.normal;
             lock (BoardLock)
             {
-                var newPiece = new Wrapper.Piece((ulong)Pieces.Count, pieceType, DateTime.Now);
+                var newPiece = new Wrapper.Piece((ulong) Pieces.Count, pieceType, DateTime.Now);
                 newPiece.Id = pieceid++;
                 if (field == null)
                 {
                     ConsoleDebug.Warning("There are no empty places for a new Piece!");
-                    return;   //TODO BUSYWAITING HERE probably
+                    return; //TODO BUSYWAITING HERE probably
                 }
                 //remove old piece
                 if (field.PieceId != null)
@@ -587,10 +608,10 @@ namespace GameMaster.Net
                     Pieces.Remove(oldPiece);
                 }
                 field.PieceId = newPiece.Id;
-                newPiece.Location = new Location() { x = field.X, y = field.Y };
+                newPiece.Location = new Location() {x = field.X, y = field.Y};
                 Pieces.Add(newPiece);
                 Board.UpdateDistanceToPiece(Pieces);
-                ConsoleDebug.Good($"Placed new Piece at: ({ field.X }, {field.Y})");
+                ConsoleDebug.Good($"Placed new Piece at: ({field.X}, {field.Y})");
             }
             //BoardPrinter.Print(Board);
         }
@@ -616,6 +637,7 @@ namespace GameMaster.Net
 
             return selectedTeam;
         }
+
         public bool IsPlayerInGoalArea(Wrapper.Player p)
         {
             if (p.Team.Color == TeamColour.blue && p.Y < Board.GoalsHeight)
@@ -628,15 +650,22 @@ namespace GameMaster.Net
             while (GameInProgress)
             {
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
+                {
+                    gameMaster.CancelToken=new CancellationTokenSource();
                     break;
+                }
                 await Task.Delay(TimeSpan.FromMilliseconds(gameMaster.Settings.GameDefinition.PlacingNewPiecesFrequency));
                 if (gameMaster.CancelToken.Token.IsCancellationRequested)
+                {
+                    gameMaster.CancelToken = new CancellationTokenSource();
                     break;
+                }
                 PlaceNewPiece(Board.GetRandomEmptyFieldInTaskArea());
             }
         }
 
         protected bool gameInProgress;
+
         public bool GameInProgress
         {
             get { return gameInProgress; }

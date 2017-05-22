@@ -31,7 +31,7 @@ namespace GameMaster.Net
 
         public ILogger Logger { get; set; }
 
-        public CancellationTokenSource CancelToken { get; } = new CancellationTokenSource();
+        public CancellationTokenSource CancelToken { get; set; } = new CancellationTokenSource();
         private CancellationTokenSource keepAliveToken { get; } = new CancellationTokenSource();
 
         public IMessageHandler MessageHandler
@@ -102,9 +102,19 @@ namespace GameMaster.Net
             ConsoleDebug.Ordinary("Successful connection with address " + address.ToString());
             var socket = eventArgs.Handler as Socket;
 
+            RegisterNewGame(socket);
+
+            //start sending keepalive bytes
+            startKeepAlive(socket);
+
+
+        }
+
+        private void RegisterNewGame(Socket socket)
+        {
             //at the beginning both teams have same number of open player slots
             ulong noOfPlayersPerTeam = ulong.Parse(Settings.GameDefinition.NumberOfPlayersPerTeam);
-
+            messageHandler.Clear();
             RegisterGame registerGameMessage = new RegisterGame()
             {
                 NewGameInfo = new GameInfo()
@@ -118,10 +128,6 @@ namespace GameMaster.Net
 
             string registerGameString = XmlMessageConverter.ToXml(registerGameMessage);
             Connection.SendFromClient(socket, registerGameString);
-
-            //start sending keepalive bytes
-            startKeepAlive(socket);
-
         }
 
         private void OnMessageReceive(object sender, MessageRecieveEventArgs eventArgs)
@@ -132,7 +138,14 @@ namespace GameMaster.Net
             {
                 ConsoleDebug.Message("New message from:" + socket.GetRemoteAddress() + "\n" + eventArgs.Message);
                 messageHandler.PrintBoard();
-                messageHandler.HandleMessage((dynamic)XmlMessageConverter.ToObject(eventArgs.Message), socket);
+                try
+                {
+                    messageHandler.HandleMessage((dynamic) XmlMessageConverter.ToObject(eventArgs.Message), socket);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
         }
 
@@ -144,12 +157,15 @@ namespace GameMaster.Net
 
         }
 
-        private void onGameEnd(object sender, EndGameEventArgs eventArgs)
+        private  void onGameEnd(object sender, EndGameEventArgs eventArgs)
         {
             
             ranking.AddTeam(eventArgs.LoserTeam);
             ranking.AddWinForTeam(eventArgs.WinnerTeam);
             ranking.Print();
+            
+            RegisterNewGame(eventArgs.Handler);
+
         }
 
         //returns null if both teams are full

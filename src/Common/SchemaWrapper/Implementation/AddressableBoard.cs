@@ -9,7 +9,7 @@ namespace Common.SchemaWrapper
     public class AddressableBoard: ISchemaCompliantBoard
     {
         private GameBoard board;
-        private Random rng = new Random();
+        private Random rnd = new Random();
 
         private const int NO_PIECE = -1;
 
@@ -59,10 +59,11 @@ namespace Common.SchemaWrapper
         public TaskField GetRandomEmptyFieldInTaskArea()
         {
             //TODO this can overwrite existing Pieces
+            rnd=new Random(Guid.NewGuid().GetHashCode());
             var possibleFields = Fields.Cast<Field>().Where(f => f.Y >= GoalsHeight && f.Y < GoalsHeight + TasksHeight && f.PlayerId == null);
             if (possibleFields.Count() == 0)
                 return null;
-            return (TaskField)possibleFields.RandomElementUsing(rng);
+            return (TaskField)possibleFields.RandomElementUsing(rnd);
         }
 
         public IList<GoalField> GetNotOccupiedGoalFields(TeamColour teamColour)
@@ -77,7 +78,7 @@ namespace Common.SchemaWrapper
             //no player, TaskField or our GoalField
             var possibleFields = Fields.Cast<Field>().Where(f => (f is TaskField || ( f is GoalField && !IsInEnemyGoalArea(f.Y, team))) && f.PlayerId == null);
             //maybe random is a bad idea (unfair?)
-            return possibleFields.RandomElementUsing(rng);
+            return possibleFields.RandomElementUsing(rnd);
 
         }
 
