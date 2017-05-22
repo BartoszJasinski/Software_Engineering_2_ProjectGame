@@ -31,12 +31,10 @@ namespace GameMaster.Logic
             int i = 1;
             string[] rankingStrings = numberOfWinsDict.OrderByDescending(n => n.Value).Select(n => $"{i++}. {n.Key} Team - {n.Value} Wins").ToArray();
             //Not sure about this, but looks like only way to print it at the end
-            Task.Delay(1000).ContinueWith(t =>
-            {
-                
-                Console.WriteLine(string.Join("\n", rankingStrings).DrawInConsoleBox());
-            }).Start(); 
-            
+           
+            Console.WriteLine(string.Join("\n", rankingStrings).DrawInConsoleBox());
+        
+
         }
     }
 }

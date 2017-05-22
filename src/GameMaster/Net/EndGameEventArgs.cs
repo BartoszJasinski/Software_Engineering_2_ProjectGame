@@ -1,5 +1,6 @@
 ﻿using Common.SchemaWrapper;
 using System;
+using System.Net.Sockets;
 
 namespace GameMaster.Net
 {
@@ -13,5 +14,7 @@ namespace GameMaster.Net
 
         public Team WinnerTeam { get; set; }
         public Team LoserTeam { get; set; }
+
+        public Socket Handler { get; set; }
     }
 }
