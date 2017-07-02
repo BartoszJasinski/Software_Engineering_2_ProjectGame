@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<responce
+	xmlns="http://www.mini.pw.edu.pl/~gameProject/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mini.pw.edu.pl/~gameProject/ serverResponceOnMove.xsd">
+	<status>Allow</status>
+	<info>
+		<field x="0" y="0">1</field>
+		<field x="0" y="1">0</field>
+		<field x="1" y="0">1</field>
+	</info>
+</responce>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ping
+	xmlns="http://www.mini.pw.edu.pl/~gameProject/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mini.pw.edu.pl/~gameProject/ ping.xsd">
+	<id>0</id>
+</ping>

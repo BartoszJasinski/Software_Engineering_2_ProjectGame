@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<moveAttributes
+	xmlns="http://www.mini.pw.edu.pl/~gameProject/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mini.pw.edu.pl/~gameProject/ move.xsd">
+	<gameId>0</gameId>
+	<agentId>10<agentId/>
+	<direction>Up</direction>
+</moveAttributes>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gameConnectAttributes
+	xmlns="http://www.mini.pw.edu.pl/~gameProject/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mini.pw.edu.pl/~gameProject/ gameConnectAttributes.xsd">
+	<desiredRole>Agent</desiredRole>
+	<desiredTeam>0</desiredTeam>
+</gameConnectAttributes>

@@ -1,0 +1,6 @@
+Lost connection with agent:
+Server send ping message to all agents every 3 seconds and agents  must send answer message. 
+If agent doesn't answer,  server send lostConnection message to Game Master. Game Master doesn't   remove agent from the board, place he occupied is locked to the moment he return and server send bringBackConnection message to server.
+
+Lost connection with server:
+Server send ping message to all Game Master every 3 seconds and Game Master must send answer message.  If Game Master doesn't answer, server send lostConnection message to all agents and they stop working. When Game Master come back, server send bringBackConnection message to all agents.

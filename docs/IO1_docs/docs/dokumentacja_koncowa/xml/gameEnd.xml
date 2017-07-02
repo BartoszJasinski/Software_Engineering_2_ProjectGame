@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gameResults
+	xmlns="http://www.mini.pw.edu.pl/~gameProject/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mini.pw.edu.pl/~gameProject/ gameEnd.xsd">
+	  <gameId>12</gameId>
+  	  <winningTeam>0</winningTeam>
+  	  <team0Score>100</team0Score>
+	  <team1Score>99</team1Score>
+</gameResults>
